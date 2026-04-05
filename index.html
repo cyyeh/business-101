@@ -83,6 +83,12 @@
     .nav-tab.active.cross {
       color: var(--accent2);
     }
+    .nav-tab.active.roadmap {
+      color: var(--accent);
+    }
+    .nav-tab.active.glossary {
+      color: #38a169;
+    }
     .nav-tab:hover:not(.active) { color: var(--primary); background: #edf2f7; }
     .nav-tab .count {
       font-size: .8rem;
@@ -138,6 +144,7 @@
 
     /* Reader */
     .reader { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .reader.section-divider { padding-top: 2rem; }
     .tabs {
       display: flex;
       gap: .25rem;
@@ -262,7 +269,7 @@
     let topicSections = [];
     let crossSections = [];
     let currentTabIdx = 0;
-    let activeHomeTab = 'topics'; // 'topics' or 'cross'
+    let activeHomeTab = 'roadmap'; // 'roadmap', 'topics', 'cross', or 'glossary'
 
     marked.setOptions({ breaks: true, gfm: true });
 
@@ -323,7 +330,7 @@
     function extractTopicTags(desc) {
       const match = desc.match(/橫跨(.+)/);
       if (!match) return [];
-      return match[1].split(/[、，,]/).map(s => s.replace(/[大主題\d]/g, '').trim()).filter(Boolean);
+      return match[1].split(/[、，,]/).map(s => s.replace(/[大主題\d一二三四五六七八九十]/g, '').trim()).filter(Boolean);
     }
 
     /* ---- Render home ---- */
@@ -354,6 +361,18 @@
       }).join('');
 
       const isTopics = activeHomeTab === 'topics';
+      const isRoadmap = activeHomeTab === 'roadmap';
+
+      const isGlossary = activeHomeTab === 'glossary';
+
+      let mainContent;
+      if (isRoadmap) {
+        mainContent = `<main class="reader section-divider"><div class="content-box loading" id="roadmap-content">載入中…</div></main>`;
+      } else if (isGlossary) {
+        mainContent = `<main class="reader section-divider"><div class="content-box loading" id="glossary-content">載入中…</div></main>`;
+      } else {
+        mainContent = `<main class="home section-divider"><div class="grid">${isTopics ? topicCards : crossCards}</div></main>`;
+      }
 
       document.getElementById('app').innerHTML = `
         <header>
@@ -361,16 +380,20 @@
           <p class="subtitle">商業與金融基礎知識學習筆記</p>
         </header>
         <div class="nav-tabs">
+          <button class="nav-tab${isRoadmap ? ' active roadmap' : ' roadmap'}" data-tab="roadmap">
+            學習路線圖
+          </button>
           <button class="nav-tab${isTopics ? ' active' : ''}" data-tab="topics">
             各主題分析<span class="count">${topicSections.length}</span>
           </button>
-          <button class="nav-tab${!isTopics ? ' active cross' : ' cross'}" data-tab="cross">
+          <button class="nav-tab${activeHomeTab === 'cross' ? ' active cross' : ' cross'}" data-tab="cross">
             跨主題整合分析<span class="count">${crossSections.length}</span>
           </button>
+          <button class="nav-tab${activeHomeTab === 'glossary' ? ' active glossary' : ' glossary'}" data-tab="glossary">
+            術語總表
+          </button>
         </div>
-        <main class="home section-divider">
-          <div class="grid">${isTopics ? topicCards : crossCards}</div>
-        </main>
+        ${mainContent}
         <footer>
           <a href="https://github.com/cyyeh/business-101" target="_blank" rel="noopener">GitHub</a>
         </footer>`;
@@ -381,6 +404,62 @@
           renderHome();
         });
       });
+
+      // Load roadmap markdown if on roadmap tab
+      if (isRoadmap) {
+        loadRoadmap();
+      }
+      // Load glossary markdown if on glossary tab
+      if (isGlossary) {
+        loadGlossary();
+      }
+    }
+
+    /* ---- Load roadmap content ---- */
+    async function loadRoadmap() {
+      const el = document.getElementById('roadmap-content');
+      if (!el) return;
+      try {
+        const res = await fetch(encodeURI('學習路線圖.md'));
+        if (!res.ok) throw new Error(res.status);
+        const md = await res.text();
+        el.className = 'content-box';
+        el.innerHTML = marked.parse(md);
+        // Make topic links in roadmap clickable
+        el.querySelectorAll('strong').forEach(strong => {
+          const text = strong.textContent.trim();
+          const allTopics = [...topicSections, ...crossSections];
+          const topic = allTopics.find(t => t.title === text);
+          if (topic) {
+            const link = document.createElement('a');
+            link.href = '#' + encodeURIComponent(topic.title);
+            link.textContent = text;
+            link.style.color = 'var(--primary-light)';
+            link.style.textDecoration = 'underline';
+            link.style.fontWeight = '600';
+            strong.replaceWith(link);
+          }
+        });
+      } catch (e) {
+        el.className = 'content-box error';
+        el.textContent = '載入失敗，請重新整理頁面。';
+      }
+    }
+
+    /* ---- Load glossary content ---- */
+    async function loadGlossary() {
+      const el = document.getElementById('glossary-content');
+      if (!el) return;
+      try {
+        const res = await fetch(encodeURI('術語總表.md'));
+        if (!res.ok) throw new Error(res.status);
+        const md = await res.text();
+        el.className = 'content-box';
+        el.innerHTML = marked.parse(md);
+      } catch (e) {
+        el.className = 'content-box error';
+        el.textContent = '載入失敗，請重新整理頁面。';
+      }
     }
 
     /* ---- Render topic (with tabs) ---- */

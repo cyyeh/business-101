@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>風險管理與保險：互動圖表工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background-color: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            color: #333;
+            transition: all 0.3s ease;
+            min-width: 150px;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button:hover {
+            background-color: #eeeeee;
+        }
+
+        .tab-button.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .content {
+            padding: 30px 40px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #fda085;
+            padding-bottom: 10px;
+        }
+
+        /* Risk Matrix Tab */
+        .matrix-grid {
+            margin: 20px 0;
+            border: 2px solid #ddd;
+            display: inline-block;
+            min-width: 600px;
+        }
+
+        .matrix-row {
+            display: flex;
+        }
+
+        .matrix-cell {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .matrix-cell:hover {
+            transform: scale(1.05);
+        }
+
+        .matrix-label-row {
+            padding: 10px;
+            font-size: 0.9em;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .matrix-label-col {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .green { background-color: #90EE90; color: #333; }
+        .yellow { background-color: #FFD700; color: #333; }
+        .red { background-color: #FF6B6B; color: white; }
+
+        /* Input Forms */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        input[type="range"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            font-size: 1em;
+        }
+
+        input[type="range"] {
+            padding: 0;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .input-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        .result-box {
+            background-color: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .result-item {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .result-label {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            background: white;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .comparison-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .questionnaire-options {
+            margin: 15px 0;
+        }
+
+        .radio-group {
+            margin-bottom: 10px;
+        }
+
+        .radio-group input[type="radio"] {
+            margin-right: 8px;
+        }
+
+        .score-box {
+            background: linear-gradient(135deg, #fda085 0%, #f6d365 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .score-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .info-box {
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .info-box strong {
+            color: #1976d2;
+        }
+
+        @media (max-width: 768px) {
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .tab-button {
+                flex: auto;
+                font-size: 0.9em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .matrix-grid {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>風險管理與保險</h1>
+            <p>互動圖表和計算工具</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('matrix')">風險矩陣</button>
+            <button class="tab-button" onclick="switchTab('var')">VaR 計算器</button>
+            <button class="tab-button" onclick="switchTab('insurance')">保險需求評估</button>
+            <button class="tab-button" onclick="switchTab('bcp')">BCP 規劃清單</button>
+            <button class="tab-button" onclick="switchTab('hedging')">避險工具比較</button>
+        </div>
+
+        <div class="content">
+            <!-- 風險矩陣 -->
+            <div id="matrix" class="tab-content active">
+                <h2 class="section-title">風險矩陣建構器</h2>
+                <div class="info-box">
+                    <strong>說明：</strong> 在下方 5×5 網格中點選相應的風險程度。綠色 = 低風險，黃色 = 中等風險，紅色 = 高風險。
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <label style="display: block; margin-bottom: 10px;">
+                        <strong>識別風險</strong>
+                    </label>
+                    <input type="text" id="riskName" placeholder="例：市場競爭風險、供應鏈中斷..." style="width: 100%; margin-bottom: 10px;">
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <div class="matrix-grid">
+                        <div class="matrix-row">
+                            <div style="width: 100px; height: 100px;"></div>
+                            <div class="matrix-label-row" style="width: 100px;">非常可能<br>80-100%</div>
+                            <div class="matrix-label-row" style="width: 100px;">可能<br>60-80%</div>
+                            <div class="matrix-label-row" style="width: 100px;">中等<br>30-60%</div>
+                            <div class="matrix-label-row" style="width: 100px;">不太可能<br>10-30%</div>
+                            <div class="matrix-label-row" style="width: 100px;">極少<br>&lt;10%</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-label-col" style="width: 100px; height: 100px;">災難性<br>&gt;1億</div>
+                            <div class="matrix-cell red" onclick="selectRisk(5, 5)">5,5</div>
+                            <div class="matrix-cell red" onclick="selectRisk(5, 4)">5,4</div>
+                            <div class="matrix-cell red" onclick="selectRisk(5, 3)">5,3</div>
+                            <div class="matrix-cell yellow" onclick="selectRisk(5, 2)">5,2</div>
+                            <div class="matrix-cell yellow" onclick="selectRisk(5, 1)">5,1</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-label-col" style="width: 100px; height: 100px;">重大<br>5000-1億</div>
+                            <div class="matrix-cell red" onclick="selectRisk(4, 5)">4,5</div>
+                            <div class="matrix-cell red" onclick="selectRisk(4, 4)">4,4</div>
+                            <div class="matrix-cell yellow" onclick="selectRisk(4, 3)">4,3</div>
+                            <div class="matrix-cell yellow" onclick="selectRisk(4, 2)">4,2</div>
+                            <div class="matrix-cell green" onclick="selectRisk(4, 1)">4,1</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-label-col" style="width: 100px; height: 100px;">中等<br>500-5000萬</div>
+                            <div class="matrix-cell red" onclick="selectRisk(3, 5)">3,5</div>
+                            <div class="matrix-cell yellow" onclick="selectRisk(3, 4)">3,4</div>
+                            <div class="matrix-cell yellow" onclick="selectRisk(3, 3)">3,3</div>
+                            <div class="matrix-cell green" onclick="selectRisk(3, 2)">3,2</div>
+                            <div class="matrix-cell green" onclick="selectRisk(3, 1)">3,1</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-label-col" style="width: 100px; height: 100px;">輕微<br>50-500萬</div>
+                            <div class="matrix-cell yellow" onclick="selectRisk(2, 5)">2,5</div>
+                            <div class="matrix-cell green" onclick="selectRisk(2, 4)">2,4</div>
+                            <div class="matrix-cell green" onclick="selectRisk(2, 3)">2,3</div>
+                            <div class="matrix-cell green" onclick="selectRisk(2, 2)">2,2</div>
+                            <div class="matrix-cell green" onclick="selectRisk(2, 1)">2,1</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-label-col" style="width: 100px; height: 100px;">微小<br>&lt;50萬</div>
+                            <div class="matrix-cell yellow" onclick="selectRisk(1, 5)">1,5</div>
+                            <div class="matrix-cell green" onclick="selectRisk(1, 4)">1,4</div>
+                            <div class="matrix-cell green" onclick="selectRisk(1, 3)">1,3</div>
+                            <div class="matrix-cell green" onclick="selectRisk(1, 2)">1,2</div>
+                            <div class="matrix-cell green" onclick="selectRisk(1, 1)">1,1</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="matrixResult" class="result-box" style="display: none; margin-top: 20px;">
+                    <div class="result-item">
+                        <span class="result-label">風險名稱：</span>
+                        <span id="matrixRiskName"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">風險評級：</span>
+                        <span id="matrixLevel"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">建議策略：</span>
+                        <span id="matrixStrategy"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VaR 計算器 -->
+            <div id="var" class="tab-content">
+                <h2 class="section-title">VaR (風險價值) 計算器</h2>
+                <div class="info-box">
+                    <strong>說明：</strong> VaR = 頭寸 × 日標準差 × Z值。計算在特定置信度下，特定期間的最大預期損失。
+                </div>
+
+                <div class="input-row">
+                    <div class="form-group">
+                        <label>敞口規模 (元)</label>
+                        <input type="number" id="varExposure" value="100000000" placeholder="例：10億">
+                    </div>
+                    <div class="form-group">
+                        <label>年度標準差 (%)</label>
+                        <input type="number" id="varStdDev" value="2" step="0.1" placeholder="例：2">
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="form-group">
+                        <label>置信度</label>
+                        <select id="varConfidence">
+                            <option value="1.645">95% (Z=1.645)</option>
+                            <option value="1.96">97.5% (Z=1.96)</option>
+                            <option value="2.326">99% (Z=2.326)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>計算期間</label>
+                        <select id="varPeriod">
+                            <option value="1">1 天</option>
+                            <option value="10">10 天</option>
+                            <option value="30">1 個月</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button onclick="calculateVaR()">計算 VaR</button>
+
+                <div id="varResult" class="result-box" style="display: none; margin-top: 20px;">
+                    <div class="result-item">
+                        <span class="result-label">日標準差：</span>
+                        <span id="dailyStdDev"></span>%
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">期間標準差：</span>
+                        <span id="periodStdDev"></span>%
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">VaR 值：</span>
+                        <span id="varValue" style="font-size: 1.3em; color: #ff6b6b; font-weight: bold;"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">含義：</span>
+                        <span id="varMeaning"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 保險需求評估 -->
+            <div id="insurance" class="tab-content">
+                <h2 class="section-title">保險需求評估器</h2>
+                <div class="info-box">
+                    <strong>說明：</strong> 回答以下問題，評估企業的保險需求。
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <div class="form-group">
+                        <label>1. 您的企業年營收 (元)</label>
+                        <input type="number" id="revenue" value="100000000" placeholder="例：1億">
+                    </div>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <label style="display: block; margin-bottom: 10px;"><strong>2. 企業類型</strong></label>
+                    <div class="radio-group">
+                        <input type="radio" name="industry" value="manufacturing"> 製造業
+                    </div>
+                    <div class="radio-group">
+                        <input type="radio" name="industry" value="retail"> 零售/服務業
+                    </div>
+                    <div class="radio-group">
+                        <input type="radio" name="industry" value="tech"> 科技/軟件
+                    </div>
+                    <div class="radio-group">
+                        <input type="radio" name="industry" value="finance"> 金融服務
+                    </div>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <label style="display: block; margin-bottom: 10px;"><strong>3. 主要資產</strong></label>
+                    <div class="radio-group">
+                        <input type="checkbox" id="property"> 固定資產 (廠房、設備)
+                    </div>
+                    <div class="radio-group">
+                        <input type="checkbox" id="inventory"> 存貨/原材料
+                    </div>
+                    <div class="radio-group">
+                        <input type="checkbox" id="employees"> 員工 (&gt;500人)
+                    </div>
+                    <div class="radio-group">
+                        <input type="checkbox" id="data"> 敏感數據/客戶信息
+                    </div>
+                    <div class="radio-group">
+                        <input type="checkbox" id="highvalue"> 高價值產品/服務
+                    </div>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <label style="display: block; margin-bottom: 10px;"><strong>4. 風險承受能力</strong></label>
+                    <input type="range" id="riskTolerance" min="1" max="5" value="3">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9em; margin-top: 5px;">
+                        <span>低</span>
+                        <span>中等</span>
+                        <span>高</span>
+                    </div>
+                </div>
+
+                <button onclick="assessInsurance()">評估保險需求</button>
+
+                <div id="insuranceResult" class="result-box" style="display: none; margin-top: 20px;">
+                    <div class="result-item">
+                        <span class="result-label">建議保險組合：</span>
+                    </div>
+                    <ul id="insuranceList" style="margin-left: 20px; margin-top: 10px;"></ul>
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                        <span class="result-label">預期保費成本：</span>
+                        <span id="insuranceCost"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BCP 規劃清單 -->
+            <div id="bcp" class="tab-content">
+                <h2 class="section-title">業務持續計畫 (BCP) 規劃清單</h2>
+                <div class="info-box">
+                    <strong>說明：</strong> 檢查以下 BCP 要素是否已建立。勾選完成的項目。
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">1. 風險評估與優先級</h3>
+                    <ul class="checklist">
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            識別關鍵業務功能 (Critical Business Functions)
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            評估中斷影響 (Impact Assessment)
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            確定恢復優先級 (Recovery Priority)
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            設定 RTO (恢復時間目標) 和 RPO (恢復點目標)
+                        </li>
+                    </ul>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">2. 數據備份與恢復</h3>
+                    <ul class="checklist">
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            建立完全備份策略 (完整備份)
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            建立增量/差分備份 (定期備份)
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            異地備份 (地理分散)
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            測試數據恢復流程
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            驗證備份數據完整性
+                        </li>
+                    </ul>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">3. 應急團隊與溝通</h3>
+                    <ul class="checklist">
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            成立危機管理委員會
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            建立應急聯絡名冊 (含備用聯絡方式)
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            制定內部溝通協議
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            制定外部溝通方案 (媒體、客戶、監管機構)
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            定期更新聯絡信息
+                        </li>
+                    </ul>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">4. 替代場地與系統</h3>
+                    <ul class="checklist">
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            建立熱備份 (Hot Standby) - 實時複製
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            建立溫備份 (Warm Standby) - 定期同步
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            建立冷備份 (Cold Standby) - 基本設施
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            備用場地位置選擇 (地理分散，避免同時災害)
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            備用場地定期測試與維護
+                        </li>
+                    </ul>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">5. 測試與改進</h3>
+                    <ul class="checklist">
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            年度桌面演練 (Tabletop Exercise)
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            年度功能測試 (系統備份恢復測試)
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            年度全面演練 (完整系統切換測試)
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            記錄測試結果與發現的問題
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox">
+                            持續改進 BCP 計畫
+                        </li>
+                    </ul>
+                </div>
+
+                <button onclick="assessBCP()">檢查進度</button>
+
+                <div id="bcpResult" class="result-box" style="display: none; margin-top: 20px;">
+                    <div class="result-item">
+                        <span class="result-label">完成項目數：</span>
+                        <span id="bcpCompleted"></span> 項 / 23 項
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">完成度：</span>
+                        <span id="bcpPercentage"></span>%
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">評價：</span>
+                        <span id="bcpEvaluation"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 避險工具比較 -->
+            <div id="hedging" class="tab-content">
+                <h2 class="section-title">避險工具比較器</h2>
+                <div class="info-box">
+                    <strong>說明：</strong> 比較不同避險工具的特點，選擇最適合的工具。
+                </div>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>工具</th>
+                            <th>交易方式</th>
+                            <th>靈活性</th>
+                            <th>流動性</th>
+                            <th>初期成本</th>
+                            <th>對手風險</th>
+                            <th>最適用場景</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>遠期</strong></td>
+                            <td>場外</td>
+                            <td>高</td>
+                            <td>低</td>
+                            <td>無</td>
+                            <td>高</td>
+                            <td>一次性交易</td>
+                        </tr>
+                        <tr>
+                            <td><strong>期貨</strong></td>
+                            <td>交易所</td>
+                            <td>低</td>
+                            <td>高</td>
+                            <td>保證金</td>
+                            <td>低</td>
+                            <td>標準化商品</td>
+                        </tr>
+                        <tr>
+                            <td><strong>看漲期權</strong></td>
+                            <td>交易所/場外</td>
+                            <td>高</td>
+                            <td>中</td>
+                            <td>期權費</td>
+                            <td>低</td>
+                            <td>保護下行風險</td>
+                        </tr>
+                        <tr>
+                            <td><strong>看跌期權</strong></td>
+                            <td>交易所/場外</td>
+                            <td>高</td>
+                            <td>中</td>
+                            <td>期權費</td>
+                            <td>低</td>
+                            <td>保護上行風險</td>
+                        </tr>
+                        <tr>
+                            <td><strong>利率互換</strong></td>
+                            <td>場外</td>
+                            <td>高</td>
+                            <td>低</td>
+                            <td>無</td>
+                            <td>高</td>
+                            <td>轉換利率類型</td>
+                        </tr>
+                        <tr>
+                            <td><strong>貨幣互換</strong></td>
+                            <td>場外</td>
+                            <td>高</td>
+                            <td>低</td>
+                            <td>無</td>
+                            <td>高</td>
+                            <td>轉換幣種風險</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">情景選擇：找出最適合的避險工具</h3>
+
+                    <div style="margin: 20px 0; padding: 15px; background: #f5f5f5; border-radius: 4px;">
+                        <label style="display: block; margin-bottom: 10px;"><strong>選擇您的風險情景：</strong></label>
+                        <select id="hedgeScenario" onchange="showHedgeAdvice()">
+                            <option value="">-- 請選擇 --</option>
+                            <option value="currency">進口企業擔心美元升值</option>
+                            <option value="commodity">農業企業擔心穀物價格下跌</option>
+                            <option value="interest">企業擔心升息導致貸款成本上升</option>
+                            <option value="fx-volatility">跨國企業需要長期匯率保護</option>
+                            <option value="stock">投資者擔心股票下跌</option>
+                        </select>
+                    </div>
+
+                    <div id="hedgeAdvice" style="display: none; margin-top: 20px;">
+                        <div class="result-box">
+                            <div class="result-item">
+                                <span class="result-label">推薦工具：</span>
+                                <span id="adviceTool"></span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">原因：</span>
+                                <span id="adviceReason"></span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">替代方案：</span>
+                                <span id="adviceAlternative"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            const contents = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+
+            contents.forEach(content => content.classList.remove('active'));
+            buttons.forEach(button => button.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function selectRisk(impact, likelihood) {
+            const riskName = document.getElementById('riskName').value || '未命名風險';
+            const score = impact * likelihood;
+            let level = '';
+            let strategy = '';
+
+            if (score >= 15) {
+                level = '紅色 - 極高風險';
+                strategy = '立即採取行動！規避風險、尋求風險轉移（保險、對沖），或進行積極的風險緩解。';
+            } else if (score >= 8) {
+                level = '黃色 - 中等風險';
+                strategy = '定期監控此風險，實施風險緩解措施，考慮風險轉移。';
+            } else {
+                level = '綠色 - 低風險';
+                strategy = '常規管理，可以接受。但仍需定期評估。';
+            }
+
+            const resultBox = document.getElementById('matrixResult');
+            document.getElementById('matrixRiskName').textContent = riskName;
+            document.getElementById('matrixLevel').textContent = level;
+            document.getElementById('matrixStrategy').textContent = strategy;
+            resultBox.style.display = 'block';
+        }
+
+        function calculateVaR() {
+            const exposure = parseFloat(document.getElementById('varExposure').value);
+            const stdDev = parseFloat(document.getElementById('varStdDev').value);
+            const confidence = parseFloat(document.getElementById('varConfidence').value);
+            const period = parseInt(document.getElementById('varPeriod').value);
+
+            const dailyStdDev = (stdDev / Math.sqrt(250)).toFixed(3);
+            const periodStdDev = (dailyStdDev * Math.sqrt(period)).toFixed(3);
+            const var_value = (exposure * (periodStdDev / 100) * confidence).toFixed(0);
+
+            document.getElementById('dailyStdDev').textContent = dailyStdDev;
+            document.getElementById('periodStdDev').textContent = periodStdDev;
+            document.getElementById('varValue').textContent = '¥' + (var_value / 100000000).toFixed(2) + '億';
+
+            const meaning = `在 ${document.getElementById('varConfidence').options[document.getElementById('varConfidence').selectedIndex].text} 的置信度下，` +
+                `在 ${period} 天內，您有最大 ¥${(var_value / 100000000).toFixed(2)}億 的預期損失。`;
+            document.getElementById('varMeaning').textContent = meaning;
+
+            document.getElementById('varResult').style.display = 'block';
+        }
+
+        function assessInsurance() {
+            const revenue = parseFloat(document.getElementById('revenue').value);
+            const industry = document.querySelector('input[name="industry"]:checked')?.value;
+            const property = document.getElementById('property').checked;
+            const inventory = document.getElementById('inventory').checked;
+            const employees = document.getElementById('employees').checked;
+            const data = document.getElementById('data').checked;
+            const highvalue = document.getElementById('highvalue').checked;
+            const riskTolerance = parseInt(document.getElementById('riskTolerance').value);
+
+            const insuranceList = [];
+            let estimatedCost = 0;
+
+            // 基礎保險
+            insuranceList.push('財產保險 (工廠、設備、存貨)');
+            estimatedCost += revenue * 0.004;
+
+            if (property) {
+                insuranceList.push('特別財產保險 (固定資產增強保護)');
+                estimatedCost += revenue * 0.003;
+            }
+
+            if (inventory) {
+                insuranceList.push('貨運保險 (運輸途中保護)');
+                estimatedCost += revenue * 0.002;
+            }
+
+            if (employees) {
+                insuranceList.push('員工傷害責任險');
+                estimatedCost += revenue * 0.005;
+            }
+
+            if (data) {
+                insuranceList.push('網絡責任保險 (數據洩露保護)');
+                estimatedCost += revenue * 0.008;
+            }
+
+            insuranceList.push('商業責任險');
+            estimatedCost += revenue * 0.003;
+
+            insuranceList.push('業務中斷保險');
+            estimatedCost += revenue * 0.006;
+
+            if (riskTolerance <= 2) {
+                insuranceList.push('董事與高管責任險 (D&O)');
+                estimatedCost += revenue * 0.004;
+            }
+
+            const resultBox = document.getElementById('insuranceResult');
+            const list = document.getElementById('insuranceList');
+            list.innerHTML = insuranceList.map(item => `<li>${item}</li>`).join('');
+            document.getElementById('insuranceCost').textContent =
+                '年度保費預估：¥' + (estimatedCost / 10000).toFixed(0) + '萬 (' + ((estimatedCost / revenue) * 100).toFixed(2) + '% 銷售額)';
+
+            resultBox.style.display = 'block';
+        }
+
+        function assessBCP() {
+            const checkboxes = document.querySelectorAll('#bcp input[type="checkbox"]:checked');
+            const total = 23;
+            const completed = checkboxes.length;
+            const percentage = Math.round((completed / total) * 100);
+
+            let evaluation = '';
+            if (percentage >= 80) {
+                evaluation = '優秀！BCP 準備充分，可以應對大多數風險情景。';
+            } else if (percentage >= 60) {
+                evaluation = '良好。建議補充關鍵缺失項目，特別是測試和演練。';
+            } else if (percentage >= 40) {
+                evaluation = '需要改進。建議優先建立基本 BCP 要素。';
+            } else {
+                evaluation = '急需強化。BCP 準備嚴重不足，應立即採取行動。';
+            }
+
+            document.getElementById('bcpCompleted').textContent = completed;
+            document.getElementById('bcpPercentage').textContent = percentage;
+            document.getElementById('bcpEvaluation').textContent = evaluation;
+            document.getElementById('bcpResult').style.display = 'block';
+        }
+
+        function showHedgeAdvice() {
+            const scenario = document.getElementById('hedgeScenario').value;
+            const adviceBox = document.getElementById('hedgeAdvice');
+
+            const advices = {
+                'currency': {
+                    tool: '看漲期權 (Call Option) 或遠期合約 (Forward)',
+                    reason: '期權提供下行保護但保留上升空間；遠期用於一次性交易。',
+                    alternative: '期貨合約（若有標準化合約）、貨幣互換'
+                },
+                'commodity': {
+                    tool: '期貨合約 (Futures) 或看跌期權 (Put Option)',
+                    reason: '農產品期貨流動性強且價格透明；期權可保護價格下跌風險。',
+                    alternative: '遠期合約、長期供應合約'
+                },
+                'interest': {
+                    tool: '利率互換 (Interest Rate Swap)',
+                    reason: '將浮動利率轉換為固定利率，鎖定成本。',
+                    alternative: '利率期貨、利率上限期權 (Cap Option)'
+                },
+                'fx-volatility': {
+                    tool: '貨幣互換 (Currency Swap)',
+                    reason: '長期鎖定匯率，適合跨國企業的持續匯率風險。',
+                    alternative: '遠期合約組合、期權組合'
+                },
+                'stock': {
+                    tool: '看跌期權 (Put Option)',
+                    reason: '保護股票下跌風險，成本為期權費，保留上升潛力。',
+                    alternative: '賣出期貨、投資組合多元化'
+                }
+            };
+
+            if (scenario && advices[scenario]) {
+                const advice = advices[scenario];
+                document.getElementById('adviceTool').textContent = advice.tool;
+                document.getElementById('adviceReason').textContent = advice.reason;
+                document.getElementById('adviceAlternative').textContent = advice.alternative;
+                adviceBox.style.display = 'block';
+            } else {
+                adviceBox.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

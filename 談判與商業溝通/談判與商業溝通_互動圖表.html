@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>談判與商業溝通：互動工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            background: #f5f5f5;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 20px;
+            border: none;
+            background: #f5f5f5;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            color: #666;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button:hover {
+            background: #e8e8e8;
+            color: #333;
+        }
+
+        .tab-button.active {
+            background: white;
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .content {
+            padding: 40px;
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #a18cd1;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin: 20px 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            font-size: 1em;
+        }
+
+        input[type="number"]:focus,
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            transition: transform 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result-box {
+            background: #f0f4ff;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            margin: 10px 0;
+            font-size: 1.05em;
+        }
+
+        .result-item strong {
+            color: #667eea;
+        }
+
+        .chart {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .quiz-option {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .quiz-option input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .quiz-option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .dimension-scale {
+            margin: 20px 0;
+        }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(to right, #764ba2, #667eea);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #667eea;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #667eea;
+            cursor: pointer;
+        }
+
+        .style-indicator {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        .tkm-quadrant {
+            width: 100%;
+            height: 500px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            position: relative;
+            background: white;
+            margin: 20px 0;
+        }
+
+        .tkm-quadrant-axis {
+            position: absolute;
+            background: #ddd;
+        }
+
+        .tkm-horizontal {
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            transform: translateY(-1px);
+        }
+
+        .tkm-vertical {
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            transform: translateX(-1px);
+        }
+
+        .tkm-quadrant-text {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .tkm-competing {
+            top: 5%;
+            right: 5%;
+            width: 40%;
+            height: 40%;
+            color: #d32f2f;
+            border: 2px solid #ffcdd2;
+            background: #ffebee;
+            border-radius: 6px;
+        }
+
+        .tkm-collaborating {
+            top: 5%;
+            left: 5%;
+            width: 40%;
+            height: 40%;
+            color: #2196f3;
+            border: 2px solid #bbdefb;
+            background: #e3f2fd;
+            border-radius: 6px;
+        }
+
+        .tkm-compromising {
+            top: 50%;
+            left: 50%;
+            width: 20%;
+            height: 20%;
+            transform: translate(-50%, -50%);
+            color: #ff9800;
+            border: 2px solid #ffe0b2;
+            background: #fff3e0;
+            border-radius: 6px;
+        }
+
+        .tkm-avoiding {
+            bottom: 5%;
+            right: 5%;
+            width: 40%;
+            height: 40%;
+            color: #999;
+            border: 2px solid #e0e0e0;
+            background: #f5f5f5;
+            border-radius: 6px;
+        }
+
+        .tkm-accommodating {
+            bottom: 5%;
+            left: 5%;
+            width: 40%;
+            height: 40%;
+            color: #4caf50;
+            border: 2px solid #c8e6c9;
+            background: #f1f8e9;
+            border-radius: 6px;
+        }
+
+        .axis-label {
+            position: absolute;
+            font-weight: bold;
+            color: #666;
+            font-size: 0.85em;
+        }
+
+        .axis-x-low {
+            bottom: -30px;
+            left: 10px;
+        }
+
+        .axis-x-high {
+            bottom: -30px;
+            right: 10px;
+        }
+
+        .axis-y-low {
+            left: -100px;
+            bottom: 10px;
+            width: 90px;
+        }
+
+        .axis-y-high {
+            left: -120px;
+            top: 10px;
+            width: 110px;
+        }
+
+        .presentation-builder {
+            margin: 20px 0;
+        }
+
+        .slide-item {
+            background: #f9f9f9;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slide-item input {
+            flex: 1;
+        }
+
+        .slide-item button {
+            margin-left: 10px;
+            padding: 8px 15px;
+            background: #d32f2f;
+            color: white;
+        }
+
+        .slides-preview {
+            background: white;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .slides-preview h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .slide-preview-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f0f4ff;
+            border-left: 3px solid #667eea;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .dimension-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-button {
+                min-width: 100px;
+                padding: 12px 10px;
+                font-size: 0.85em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>談判與商業溝通</h1>
+            <p>互動工具與決策輔助系統</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab(0)">BATNA/ZOPA分析器</button>
+            <button class="tab-button" onclick="switchTab(1)">談判風格診斷</button>
+            <button class="tab-button" onclick="switchTab(2)">衝突管理模式圖</button>
+            <button class="tab-button" onclick="switchTab(3)">跨文化溝通指南</button>
+            <button class="tab-button" onclick="switchTab(4)">簡報結構建構器</button>
+        </div>
+
+        <!-- Tab 1: BATNA/ZOPA分析器 -->
+        <div class="content active" id="tab0">
+            <h2 class="section-title">BATNA / ZOPA 分析器</h2>
+            <p style="margin-bottom: 20px; color: #666;">輸入雙方的保留價格，系統將自動計算談判區間並給出建議。</p>
+
+            <div class="grid-2">
+                <div>
+                    <h3 style="color: #667eea; margin-bottom: 15px;">你的信息</h3>
+                    <div class="input-group">
+                        <label>你的BATNA價值</label>
+                        <input type="number" id="myBatna" placeholder="例：100000" value="100000">
+                    </div>
+                    <div class="input-group">
+                        <label>你的保留價格（最高願付/最低願收）</label>
+                        <input type="number" id="myReservation" placeholder="例：120000" value="120000">
+                    </div>
+                    <div class="input-group">
+                        <label>你的目標價格</label>
+                        <input type="number" id="myTarget" placeholder="例：130000" value="130000">
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="color: #667eea; margin-bottom: 15px;">對方信息</h3>
+                    <div class="input-group">
+                        <label>對方的BATNA價值</label>
+                        <input type="number" id="theirBatna" placeholder="例：95000" value="95000">
+                    </div>
+                    <div class="input-group">
+                        <label>對方的保留價格</label>
+                        <input type="number" id="theirReservation" placeholder="例：110000" value="110000">
+                    </div>
+                    <div class="input-group">
+                        <label>對方的目標價格</label>
+                        <input type="number" id="theirTarget" placeholder="例：100000" value="100000">
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="calculateZOPA()" style="margin-top: 20px;">計算談判區間</button>
+
+            <div id="zopaResult"></div>
+        </div>
+
+        <!-- Tab 2: 談判風格診斷 -->
+        <div class="content" id="tab1">
+            <h2 class="section-title">談判風格診斷</h2>
+            <p style="margin-bottom: 20px; color: #666;">根據你的談判傾向判斷你屬於哪種談判風格。</p>
+
+            <div id="quizContainer"></div>
+            <button onclick="calculateNegotiationStyle()" style="margin-top: 20px;">看我的談判風格</button>
+
+            <div id="styleResult"></div>
+        </div>
+
+        <!-- Tab 3: 衝突管理模式圖 -->
+        <div class="content" id="tab2">
+            <h2 class="section-title">衝突管理模式圖 (Thomas-Kilmann)</h2>
+            <p style="margin-bottom: 20px; color: #666;">調整滑塊找出你的衝突管理風格。</p>
+
+            <div class="grid-2">
+                <div>
+                    <h3 style="color: #667eea;">我的傾向評估</h3>
+
+                    <div class="dimension-scale">
+                        <label>主張性 (關心自己的利益)</label>
+                        <div class="scale-labels">
+                            <span>低</span>
+                            <span>中</span>
+                            <span>高</span>
+                        </div>
+                        <input type="range" id="assertiveness" min="1" max="10" value="5" oninput="updateTKM()">
+                        <div style="text-align: center; color: #667eea; font-weight: bold; margin-top: 5px;" id="assertivenessValue">5</div>
+                    </div>
+
+                    <div class="dimension-scale">
+                        <label>合作性 (關心他人的利益)</label>
+                        <div class="scale-labels">
+                            <span>低</span>
+                            <span>中</span>
+                            <span>高</span>
+                        </div>
+                        <input type="range" id="cooperativeness" min="1" max="10" value="5" oninput="updateTKM()">
+                        <div style="text-align: center; color: #667eea; font-weight: bold; margin-top: 5px;" id="cooperativenessValue">5</div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="color: #667eea;">我的衝突管理風格</h3>
+                    <div id="tkmStyle" class="style-indicator">請調整滑塊</div>
+                </div>
+            </div>
+
+            <div class="tkm-quadrant">
+                <div class="tkm-quadrant-axis tkm-horizontal"></div>
+                <div class="tkm-quadrant-axis tkm-vertical"></div>
+
+                <div class="tkm-quadrant-text tkm-competing">競爭<br>(Competing)</div>
+                <div class="tkm-quadrant-text tkm-collaborating">合作<br>(Collaborating)</div>
+                <div class="tkm-quadrant-text tkm-compromising">協商<br>(Compromising)</div>
+                <div class="tkm-quadrant-text tkm-avoiding">迴避<br>(Avoiding)</div>
+                <div class="tkm-quadrant-text tkm-accommodating">退讓<br>(Accommodating)</div>
+
+                <div class="axis-label axis-x-low">合作性低</div>
+                <div class="axis-label axis-x-high">合作性高</div>
+                <div class="axis-label axis-y-low">主張性低</div>
+                <div class="axis-label axis-y-high">主張性高</div>
+            </div>
+
+            <div class="result-box" id="tkmExplanation" style="margin-top: 30px;"></div>
+        </div>
+
+        <!-- Tab 4: 跨文化溝通指南 -->
+        <div class="content" id="tab3">
+            <h2 class="section-title">跨文化溝通指南</h2>
+            <p style="margin-bottom: 20px; color: #666;">比較不同文化的Hofstede文化維度，獲得跨文化談判建議。</p>
+
+            <div class="input-group">
+                <label>選擇文化進行對比</label>
+                <select id="cultureSelect" onchange="loadCultureData()">
+                    <option value="">-- 選擇文化 --</option>
+                    <option value="china">中國（台灣）</option>
+                    <option value="japan">日本</option>
+                    <option value="usa">美國</option>
+                    <option value="germany">德國</option>
+                    <option value="brazil">巴西</option>
+                    <option value="india">印度</option>
+                    <option value="mexico">墨西哥</option>
+                </select>
+            </div>
+
+            <div id="cultureComparison"></div>
+        </div>
+
+        <!-- Tab 5: 簡報結構建構器 -->
+        <div class="content" id="tab4">
+            <h2 class="section-title">簡報結構建構器</h2>
+            <p style="margin-bottom: 20px; color: #666;">構建一份有說服力的簡報，按照最佳結構組織你的內容。</p>
+
+            <div class="presentation-builder">
+                <h3 style="color: #667eea; margin-bottom: 15px;">添加簡報投影片</h3>
+
+                <div class="input-group">
+                    <label>投影片類型</label>
+                    <select id="slideType">
+                        <option value="title">標題頁</option>
+                        <option value="problem">問題陳述</option>
+                        <option value="solution">解決方案</option>
+                        <option value="benefits">好處與價值</option>
+                        <option value="evidence">證據與案例</option>
+                        <option value="timeline">實施計劃</option>
+                        <option value="budget">預算與成本</option>
+                        <option value="risks">風險管理</option>
+                        <option value="call">行動呼籲</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>投影片內容（標題或要點）</label>
+                    <input type="text" id="slideContent" placeholder="輸入投影片的主要內容">
+                </div>
+
+                <button onclick="addSlide()" style="margin-top: 10px;">添加投影片</button>
+
+                <div id="slidesList" style="margin-top: 20px;"></div>
+
+                <button onclick="generatePresentation()" style="margin-top: 20px; background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);">生成簡報結構建議</button>
+
+                <div id="presentationPreview"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let slides = [];
+        let quizAnswers = {};
+
+        function switchTab(index) {
+            // Hide all content
+            const contents = document.querySelectorAll('.content');
+            contents.forEach(c => c.classList.remove('active'));
+
+            // Remove active from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(b => b.classList.remove('active'));
+
+            // Show selected content and activate button
+            document.getElementById('tab' + index).classList.add('active');
+            buttons[index].classList.add('active');
+
+            // Initialize tab-specific content
+            if (index === 1) initializeQuiz();
+            if (index === 3) loadCultureData();
+        }
+
+        function calculateZOPA() {
+            const myBatna = parseFloat(document.getElementById('myBatna').value);
+            const myReservation = parseFloat(document.getElementById('myReservation').value);
+            const myTarget = parseFloat(document.getElementById('myTarget').value);
+            const theirBatna = parseFloat(document.getElementById('theirBatna').value);
+            const theirReservation = parseFloat(document.getElementById('theirReservation').value);
+            const theirTarget = parseFloat(document.getElementById('theirTarget').value);
+
+            // Calculate ZOPA
+            const zopaMin = Math.max(Math.min(myReservation, myTarget), Math.min(theirReservation, theirTarget));
+            const zopaMax = Math.min(Math.max(myReservation, myTarget), Math.max(theirReservation, theirTarget));
+
+            let resultHTML = '<div class="result-box" style="margin-top: 20px;">';
+
+            if (zopaMin <= zopaMax) {
+                const midpoint = (zopaMin + zopaMax) / 2;
+                resultHTML += `
+                    <div class="result-item"><strong>✓ 談判區間存在</strong></div>
+                    <div class="result-item">談判區間下限: <strong>${zopaMin.toFixed(0)}</strong></div>
+                    <div class="result-item">談判區間上限: <strong>${zopaMax.toFixed(0)}</strong></div>
+                    <div class="result-item">建議目標價格: <strong>${midpoint.toFixed(0)}</strong></div>
+                    <div class="result-item" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                        <strong>建議：</strong> 你可以在 ${zopaMin.toFixed(0)} 到 ${zopaMax.toFixed(0)} 之間的任何價格成交。建議從你的目標價格 ${myTarget.toFixed(0)} 開始談，給對方商量空間。
+                    </div>
+                `;
+            } else {
+                resultHTML += `
+                    <div class="result-item" style="color: #d32f2f;"><strong>✗ 談判區間不存在</strong></div>
+                    <div class="result-item">你的範圍: ${Math.min(myReservation, myTarget).toFixed(0)} - ${Math.max(myReservation, myTarget).toFixed(0)}</div>
+                    <div class="result-item">對方的範圍: ${Math.min(theirReservation, theirTarget).toFixed(0)} - ${Math.max(theirReservation, theirTarget).toFixed(0)}</div>
+                    <div class="result-item" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                        <strong>建議：</strong> 雙方的保留價格沒有重疊，談判會很困難。考慮：
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>重新評估你的BATNA是否可行</li>
+                            <li>嘗試擴展談判議題（加入其他條件）</li>
+                            <li>尋找能改變對方BATNA的創意解決方案</li>
+                        </ul>
+                    </div>
+                `;
+            }
+
+            resultHTML += '</div>';
+            document.getElementById('zopaResult').innerHTML = resultHTML;
+        }
+
+        function initializeQuiz() {
+            const questions = [
+                { q: "當面對不同意見時，我傾向於...", options: ["堅持我的立場", "嘗試理解對方", "尋求折中", "暫時不談", "放棄我的立場"] },
+                { q: "在談判中，我最關心的是...", options: ["贏得最佳交易", "維持良好關係", "快速完成", "避免衝突", "對方的滿意度"] },
+                { q: "當對方拒絕我的提案時，我會...", options: ["堅持要求", "提出新方案", "各讓一點", "退縮", "接受他們的條件"] },
+                { q: "在長期合作中，我認為最重要的是...", options: ["從每次交易中獲利最多", "建立信任與理解", "維持穩定協議", "避免麻煩", "滿足對方需求"] },
+                { q: "面對複雜的談判問題時，我傾向於...", options: ["用強硬方式解決", "深入分析所有選項", "尋求妥協點", "暫時擱置", "尋求對方的建議"] }
+            ];
+
+            let quizHTML = '';
+            questions.forEach((q, index) => {
+                quizHTML += `<div style="margin: 20px 0;">
+                    <h4 style="margin-bottom: 10px; color: #333;">Q${index + 1}: ${q.q}</h4>`;
+                q.options.forEach((opt, optIndex) => {
+                    const styleMap = ["Competing", "Collaborating", "Compromising", "Avoiding", "Accommodating"];
+                    quizHTML += `<label class="quiz-option">
+                        <input type="radio" name="q${index}" value="${optIndex}" onchange="quizAnswers['q${index}'] = ${optIndex}">
+                        ${opt}
+                    </label>`;
+                });
+                quizHTML += '</div>';
+            });
+
+            document.getElementById('quizContainer').innerHTML = quizHTML;
+        }
+
+        function calculateNegotiationStyle() {
+            const styles = ["Competing", "Collaborating", "Compromising", "Avoiding", "Accommodating"];
+            const styleScores = [0, 0, 0, 0, 0];
+
+            for (let i = 0; i < 5; i++) {
+                const answer = quizAnswers['q' + i];
+                if (answer !== undefined) {
+                    styleScores[answer]++;
+                }
+            }
+
+            const maxScore = Math.max(...styleScores);
+            const dominantStyle = styles[styleScores.indexOf(maxScore)];
+
+            const styleDescriptions = {
+                "Competing": {
+                    name: "競爭型",
+                    desc: "你傾向於強調自己的利益，堅持立場。適合在需要快速決策或維護重要原則的情況下。但長期可能傷害關係。",
+                    situations: "緊急決策、知識產權保護、自衛、原則性分歧"
+                },
+                "Collaborating": {
+                    name: "合作型",
+                    desc: "你尋求雙贏方案，願意深入理解對方需求。最適合長期合作與複雜談判。需要時間和信任。",
+                    situations: "戰略聯盟、創意解決、長期合作、高價值談判"
+                },
+                "Compromising": {
+                    name: "協商型",
+                    desc: "你尋求折中方案，各讓一點。平衡但可能雙方都不完全滿意。適合時間有限或相對等值的談判。",
+                    situations: "預算談判、時間有限、中等優先級問題"
+                },
+                "Avoiding": {
+                    name: "迴避型",
+                    desc: "你傾向於暫時不面對衝突。適合低優先級或時機不當的問題，但長期會導致問題堆積。",
+                    situations: "低優先級、時機不當、複雜度高、關係受影響"
+                },
+                "Accommodating": {
+                    name: "退讓型",
+                    desc: "你優先考慮對方的利益與關係。適合維護關係或在乎問題相對不重要時。但可能損害長期利益。",
+                    situations: "維護關係、非關鍵議題、新供應商合作、道歉與和解"
+                }
+            };
+
+            const styleInfo = styleDescriptions[dominantStyle];
+            const resultHTML = `
+                <div class="result-box" style="margin-top: 20px;">
+                    <div class="result-item" style="font-size: 1.3em; color: #667eea; margin-bottom: 15px;">
+                        <strong>你的談判風格：${styleInfo.name}</strong>
+                    </div>
+                    <div class="result-item">
+                        <strong>特徵：</strong> ${styleInfo.desc}
+                    </div>
+                    <div class="result-item">
+                        <strong>最適用的場景：</strong> ${styleInfo.situations}
+                    </div>
+                    <div class="result-item" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd; color: #666;">
+                        <strong>建議：</strong> 沒有絕對的「最好」風格，關鍵是根據具體情況調整。如果你發現自己某一種風格過強，可嘗試發展其他風格。
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('styleResult').innerHTML = resultHTML;
+        }
+
+        function updateTKM() {
+            const assertiveness = parseFloat(document.getElementById('assertiveness').value);
+            const cooperativeness = parseFloat(document.getElementById('cooperativeness').value);
+
+            document.getElementById('assertivenessValue').textContent = assertiveness.toFixed(0);
+            document.getElementById('cooperativenessValue').textContent = cooperativeness.toFixed(0);
+
+            let style = "協商型";
+            let color = "#ff9800";
+
+            if (assertiveness >= 7 && cooperativeness >= 7) {
+                style = "合作型";
+                color = "#2196f3";
+            } else if (assertiveness >= 7 && cooperativeness < 4) {
+                style = "競爭型";
+                color = "#d32f2f";
+            } else if (assertiveness < 4 && cooperativeness >= 7) {
+                style = "退讓型";
+                color = "#4caf50";
+            } else if (assertiveness < 4 && cooperativeness < 4) {
+                style = "迴避型";
+                color = "#999";
+            }
+
+            document.getElementById('tkmStyle').textContent = style;
+            document.getElementById('tkmStyle').style.background = `linear-gradient(135deg, ${color}80 0%, ${color}40 100%)`;
+
+            const explanations = {
+                "合作型": "你高度關心自己和對方的利益。適合長期合作、複雜談判和高價值項目。",
+                "競爭型": "你優先關心自己的利益。適合緊急決策、原則性問題或資訊不對等的談判。",
+                "協商型": "你在自己和對方的利益之間尋求平衡。適合時間有限或雙方籌碼相當的談判。",
+                "迴避型": "你傾向於迴避衝突。適合低優先級問題，但要警惕問題堆積。",
+                "退讓型": "你優先考慮對方的利益和關係。適合維護關係或問題相對不重要的情況。"
+            };
+
+            document.getElementById('tkmExplanation').innerHTML = `<strong>說明：</strong> ${explanations[style]}`;
+        }
+
+        const cultureData = {
+            china: {
+                name: "中國（台灣）",
+                pdi: 58,
+                uai: 30,
+                idv: 20,
+                mas: 50,
+                lto: 87,
+                advice: "尊重等級制度，通過高層溝通。強調長期合作與信任建立。使用正式稱謂與禮儀。"
+            },
+            japan: {
+                name: "日本",
+                pdi: 54,
+                uai: 92,
+                idv: 46,
+                mas: 95,
+                lto: 88,
+                advice: "詳細的書面協議至關重要。避免直言拒絕。提供充分的背景與細節。強調品質與長期關係。"
+            },
+            usa: {
+                name: "美國",
+                pdi: 40,
+                uai: 46,
+                idv: 91,
+                mas: 62,
+                lto: 26,
+                advice: "直接溝通與快速決策。強調個人成就與競爭優勢。靈活處理，不需詳細規則。"
+            },
+            germany: {
+                name: "德國",
+                pdi: 35,
+                uai: 65,
+                idv: 67,
+                mas: 66,
+                lto: 83,
+                advice: "詳細的數據與邏輯論證。尊重效率與規則。直白交流。強調長期計劃。"
+            },
+            brazil: {
+                name: "巴西",
+                pdi: 69,
+                uai: 76,
+                idv: 38,
+                mas: 49,
+                lto: 44,
+                advice: "建立個人關係優先。重視情感與人際連接。靈活的協議。講故事比數據更有效。"
+            },
+            india: {
+                name: "印度",
+                pdi: 77,
+                uai: 40,
+                idv: 48,
+                mas: 56,
+                lto: 51,
+                advice: "非常重視等級與正式稱謂。集體決策過程較長。靈活接受談判方向調整。重視人脈。"
+            },
+            mexico: {
+                name: "墨西哥",
+                pdi: 81,
+                uai: 82,
+                idv: 30,
+                mas: 69,
+                lto: 24,
+                advice: "強調領導人物與身份。詳細規則與清晰協議。建立個人信任。避免直接衝突。"
+            }
+        };
+
+        function loadCultureData() {
+            const selected = document.getElementById('cultureSelect').value;
+            if (!selected) return;
+
+            const data = cultureData[selected];
+            const defaultChina = cultureData.china;
+
+            const dimensions = [
+                { name: "權力距離 (PDI)", yours: defaultChina.pdi, theirs: data.pdi, desc: "對不平等的接受度" },
+                { name: "不確定性規避 (UAI)", yours: defaultChina.uai, theirs: data.uai, desc: "對風險與變化的容忍度" },
+                { name: "個人主義 (IDV)", yours: defaultChina.idv, theirs: data.idv, desc: "個人 vs 集體導向" },
+                { name: "男性特質 (MAS)", yours: defaultChina.mas, theirs: data.mas, desc: "競爭 vs 關係導向" },
+                { name: "長期取向 (LTO)", yours: defaultChina.lto, theirs: data.lto, desc: "短期 vs 長期目光" }
+            ];
+
+            let html = `<div style="margin-top: 30px;">
+                <h3 style="color: #667eea; margin-bottom: 20px;">中國 vs ${data.name} 的文化差異</h3>
+                <div class="grid-2">`;
+
+            dimensions.forEach(dim => {
+                const diff = Math.abs(dim.yours - dim.theirs);
+                const assessment = diff > 30 ? "差異很大" : diff > 15 ? "有差異" : "接近";
+                html += `
+                    <div class="card">
+                        <h4>${dim.name}</h4>
+                        <p style="margin-bottom: 10px; color: #999;">${dim.desc}</p>
+                        <div style="margin: 10px 0;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="font-size: 0.9em;">中國: ${dim.yours}</span>
+                                <span style="font-size: 0.9em;">${data.name}: ${dim.theirs}</span>
+                            </div>
+                            <div style="background: #f0f0f0; height: 20px; border-radius: 4px; position: relative; overflow: hidden;">
+                                <div style="background: linear-gradient(to right, #667eea, #764ba2); height: 100%; width: ${(dim.yours / 100) * 100}%; position: absolute; left: 0;"></div>
+                                <div style="background: linear-gradient(to right, #ff9800, #f44336); height: 100%; width: ${(dim.theirs / 100) * 100}%; position: absolute; right: 0;"></div>
+                            </div>
+                        </div>
+                        <p style="color: #666; font-size: 0.9em; margin-top: 10px;">差異程度: <strong>${assessment}</strong></p>
+                    </div>
+                `;
+            });
+
+            html += `</div>
+                <div class="card" style="margin-top: 20px; background: linear-gradient(135deg, #f0f4ff 0%, #fff3e0 100%);">
+                    <h4 style="color: #667eea; margin-bottom: 10px;">談判建議</h4>
+                    <p>${data.advice}</p>
+                </div>
+            </div>`;
+
+            document.getElementById('cultureComparison').innerHTML = html;
+        }
+
+        function addSlide() {
+            const type = document.getElementById('slideType').value;
+            const content = document.getElementById('slideContent').value;
+
+            if (!content) {
+                alert('請輸入投影片內容');
+                return;
+            }
+
+            slides.push({ type, content });
+            document.getElementById('slideContent').value = '';
+
+            updateSlidesList();
+        }
+
+        function updateSlidesList() {
+            const typeNames = {
+                "title": "標題頁",
+                "problem": "問題陳述",
+                "solution": "解決方案",
+                "benefits": "好處與價值",
+                "evidence": "證據與案例",
+                "timeline": "實施計劃",
+                "budget": "預算與成本",
+                "risks": "風險管理",
+                "call": "行動呼籲"
+            };
+
+            let html = '<h4 style="color: #667eea; margin-top: 20px; margin-bottom: 10px;">已添加的投影片：</h4>';
+            slides.forEach((slide, index) => {
+                html += `
+                    <div class="slide-item">
+                        <span><strong>${index + 1}.</strong> [${typeNames[slide.type]}] ${slide.content}</span>
+                        <button onclick="removeSlide(${index})" style="padding: 6px 12px; font-size: 0.9em;">刪除</button>
+                    </div>
+                `;
+            });
+
+            document.getElementById('slidesList').innerHTML = html;
+        }
+
+        function removeSlide(index) {
+            slides.splice(index, 1);
+            updateSlidesList();
+        }
+
+        function generatePresentation() {
+            if (slides.length === 0) {
+                alert('請先添加至少一個投影片');
+                return;
+            }
+
+            const typeNames = {
+                "title": "標題頁",
+                "problem": "問題陳述",
+                "solution": "解決方案",
+                "benefits": "好處與價值",
+                "evidence": "證據與案例",
+                "timeline": "實施計劃",
+                "budget": "預算與成本",
+                "risks": "風險管理",
+                "call": "行動呼籲"
+            };
+
+            const recommendedStructure = [
+                "title",
+                "problem",
+                "solution",
+                "benefits",
+                "evidence",
+                "timeline",
+                "budget",
+                "risks",
+                "call"
+            ];
+
+            let html = '<div class="slides-preview"><h4>簡報結構分析：</h4>';
+
+            const presentTypes = slides.map(s => s.type);
+            let missing = [];
+            recommendedStructure.forEach(type => {
+                if (!presentTypes.includes(type)) {
+                    missing.push(typeNames[type]);
+                }
+            });
+
+            if (missing.length > 0) {
+                html += `<p style="background: #fff3cd; padding: 10px; border-radius: 4px; margin-bottom: 10px;">
+                    ⚠️ 建議補充以下投影片以增強說服力：${missing.join('、')}
+                </p>`;
+            } else {
+                html += `<p style="background: #d4edda; padding: 10px; border-radius: 4px; margin-bottom: 10px;">
+                    ✓ 你的簡報包含了所有關鍵要素！
+                </p>`;
+            }
+
+            html += '<div style="margin-top: 15px;"><strong>簡報流程建議：</strong></div>';
+            slides.forEach((slide, index) => {
+                html += `<div class="slide-preview-item">${index + 1}. [${typeNames[slide.type]}] ${slide.content}</div>`;
+            });
+
+            html += `
+                <div style="background: #e3f2fd; padding: 15px; border-radius: 4px; margin-top: 15px;">
+                    <strong>說服力建議：</strong>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>開場以問題陳述吸引注意力（激發聽者同理心）</li>
+                        <li>呈現具體數據與案例，支撐你的解決方案</li>
+                        <li>使用故事敘述連接聽者情感與邏輯</li>
+                        <li>結尾明確的行動呼籲，告訴聽者你想要什麼</li>
+                    </ul>
+                </div>
+            </div>`;
+
+            document.getElementById('presentationPreview').innerHTML = html;
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            updateTKM();
+        };
+    </script>
+</body>
+</html>

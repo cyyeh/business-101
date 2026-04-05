@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公司金融互動工具 - 計算器與分析器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 40px 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            background: white;
+            border: 2px solid #4facfe;
+            color: #4facfe;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button:hover {
+            background: #4facfe;
+            color: white;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .tab-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        button.calculate {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button.calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8f1f8 100%);
+            border-left: 5px solid #4facfe;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .result-value {
+            font-weight: bold;
+            color: #4facfe;
+            font-size: 1.1em;
+        }
+
+        .slider-container {
+            margin: 30px 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: #ddd;
+            outline: none;
+            border-radius: 5px;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .chart-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 3px;
+            font-size: 0.95em;
+        }
+
+        .error {
+            color: #d32f2f;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .success {
+            color: #388e3c;
+            font-weight: 600;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #4facfe;
+            padding-bottom: 10px;
+        }
+
+        .metric-box {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>公司金融互動計算工具</h1>
+            <p class="subtitle">透過互動模擬掌握企業金融決策的關鍵指標</p>
+        </header>
+
+        <div class="tab-container">
+            <button class="tab-button active" onclick="switchTab('wacc')">WACC 計算器</button>
+            <button class="tab-button" onclick="switchTab('npv')">NPV/IRR 分析器</button>
+            <button class="tab-button" onclick="switchTab('capital')">資本結構模擬器</button>
+            <button class="tab-button" onclick="switchTab('dividend')">股利政策比較器</button>
+            <button class="tab-button" onclick="switchTab('merger')">併購綜效分析器</button>
+        </div>
+
+        <!-- Tab 1: WACC Calculator -->
+        <div id="wacc" class="tab-content active">
+            <h2>WACC 加權平均資本成本計算器</h2>
+            <p style="margin-bottom: 20px; color: #666;">
+                WACC 代表企業的加權平均融資成本，是評估投資項目的折現率基準。
+            </p>
+
+            <div class="input-row">
+                <div class="form-group">
+                    <label>股權市值（E）- 百萬元</label>
+                    <input type="number" id="wacc_equity" value="5000" min="0">
+                </div>
+                <div class="form-group">
+                    <label>債務市值（D）- 百萬元</label>
+                    <input type="number" id="wacc_debt" value="2000" min="0">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="form-group">
+                    <label>無風險利率（r_f）- %</label>
+                    <input type="number" id="wacc_rf" value="2.5" min="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>企業 Beta 係數</label>
+                    <input type="number" id="wacc_beta" value="1.2" min="0" step="0.1">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="form-group">
+                    <label>市場風險溢酬（MRP）- %</label>
+                    <input type="number" id="wacc_mrp" value="6" min="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>債務成本（r_D）- %</label>
+                    <input type="number" id="wacc_rd" value="4" min="0" step="0.1">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>企業所得稅率（T_c）- %</label>
+                <input type="number" id="wacc_tc" value="21" min="0" max="100" step="0.1">
+            </div>
+
+            <button class="calculate" onclick="calculateWACC()">計算 WACC</button>
+
+            <div id="wacc_result" class="result-box">
+                <div class="result-row">
+                    <span class="result-label">權益成本 (r_E)</span>
+                    <span class="result-value" id="wacc_re">-</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">總資本價值 (V)</span>
+                    <span class="result-value" id="wacc_v">-</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">股權權重 (E/V)</span>
+                    <span class="result-value" id="wacc_ev">-</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">債務權重 (D/V)</span>
+                    <span class="result-value" id="wacc_dv">-</span>
+                </div>
+                <div class="result-row" style="border-bottom: 2px solid #4facfe; padding-top: 15px; margin-top: 10px;">
+                    <span class="result-label" style="font-size: 1.2em;">加權平均資本成本 (WACC)</span>
+                    <span class="result-value" id="wacc_final" style="font-size: 1.2em;">-</span>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>解讀提示：</strong> WACC 越低，企業進行投資的成本越低。通常 WACC 在 5%-12% 之間屬於合理範圍。
+            </div>
+        </div>
+
+        <!-- Tab 2: NPV/IRR Calculator -->
+        <div id="npv" class="tab-content">
+            <h2>NPV/IRR 投資分析器</h2>
+            <p style="margin-bottom: 20px; color: #666;">
+                評估投資項目的淨現值和內部收益率，判斷項目是否值得投資。
+            </p>
+
+            <div class="form-group">
+                <label>初期投資 - 百萬元</label>
+                <input type="number" id="npv_initial" value="1000" min="0">
+            </div>
+
+            <div class="form-group">
+                <label>WACC 折現率 - %</label>
+                <input type="number" id="npv_wacc" value="10" min="0" step="0.1">
+            </div>
+
+            <div id="cash_flows_container"></div>
+
+            <button class="calculate" onclick="addCashFlowYear()">+ 新增年份</button>
+            <button class="calculate" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%); margin-left: 10px;" onclick="clearCashFlows()">清除現金流</button>
+
+            <button class="calculate" onclick="calculateNPV()" style="margin-top: 20px;">計算 NPV / IRR</button>
+
+            <div id="npv_result" class="result-box">
+                <div class="result-row">
+                    <span class="result-label">淨現值 (NPV)</span>
+                    <span class="result-value" id="npv_value">-</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">內部收益率 (IRR)</span>
+                    <span class="result-value" id="irr_value">-</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">投資決策</span>
+                    <span class="result-value" id="investment_decision" style="color: #ff6b6b;">-</span>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>決策規則：</strong><br>
+                • NPV > 0 時，應接受投資<br>
+                • IRR > WACC 時，應接受投資
+            </div>
+        </div>
+
+        <!-- Tab 3: Capital Structure Simulator -->
+        <div id="capital" class="tab-content">
+            <h2>資本結構模擬器</h2>
+            <p style="margin-bottom: 20px; color: #666;">
+                調整負債與股權的比例，觀察對 WACC 和企業價值的影響。
+            </p>
+
+            <div class="form-group">
+                <label>企業營業利潤 (EBIT) - 百萬元</label>
+                <input type="number" id="cs_ebit" value="500" min="0">
+            </div>
+
+            <div class="input-row">
+                <div class="form-group">
+                    <label>企業稅率 - %</label>
+                    <input type="number" id="cs_tc" value="25" min="0" max="100" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>債務利率 - %</label>
+                    <input type="number" id="cs_rate" value="5" min="0" step="0.1">
+                </div>
+            </div>
+
+            <div class="slider-container">
+                <div class="slider-label">
+                    <label>負債比例 (D/V):</label>
+                    <span id="debt_ratio">30%</span>
+                </div>
+                <input type="range" id="cs_leverage" min="0" max="80" value="30" oninput="updateCapitalStructure()">
+            </div>
+
+            <button class="calculate" onclick="simulateCapitalStructure()">模擬資本結構</button>
+
+            <div id="cs_result" class="result-box">
+                <div class="result-row">
+                    <span class="result-label">稅盾每年節省</span>
+                    <span class="result-value" id="cs_shield">-</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">企業稅後價值</span>
+                    <span class="result-value" id="cs_value">-</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">估計 WACC</span>
+                    <span class="result-value" id="cs_wacc">-</span>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>關鍵洞察：</strong><br>
+                在低槓桿階段，更高的負債比例會通過稅盾效應降低 WACC。但超過最優點後，財務困難成本會導致 WACC 上升。
+            </div>
+        </div>
+
+        <!-- Tab 4: Dividend Policy Comparison -->
+        <div id="dividend" class="tab-content">
+            <h2>股利政策比較器</h2>
+            <p style="margin-bottom: 20px; color: #666;">
+                比較不同的資本回報策略對股東的影響。
+            </p>
+
+            <div class="input-row">
+                <div class="form-group">
+                    <label>企業年利潤 - 百萬元</label>
+                    <input type="number" id="div_profit" value="1000" min="0">
+                </div>
+                <div class="form-group">
+                    <label>流通股數 - 百萬股</label>
+                    <input type="number" id="div_shares" value="100" min="0" step="1">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="form-group">
+                    <label>目前股價 - 元</label>
+                    <input type="number" id="div_price" value="100" min="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>資本回報比例 - %</label>
+                    <input type="number" id="div_payout" value="50" min="0" max="100" step="1">
+                </div>
+            </div>
+
+            <button class="calculate" onclick="compareDividendPolicies()">比較政策</button>
+
+            <div id="dividend_result" class="result-box">
+                <h3 style="margin-top: 0; color: #333; font-size: 1.2em;">三種策略對比</h3>
+                <table class="comparison-table">
+                    <tr>
+                        <th>策略</th>
+                        <th>現金股利</th>
+                        <th>回購股數</th>
+                        <th>剩餘股數</th>
+                        <th>每股盈利</th>
+                    </tr>
+                    <tr>
+                        <td><strong>策略 A：全額分紅</strong></td>
+                        <td id="policy_a_div">-</td>
+                        <td>0 股</td>
+                        <td id="policy_a_shares">-</td>
+                        <td id="policy_a_eps">-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>策略 B：股票回購</strong></td>
+                        <td>0 元</td>
+                        <td id="policy_b_buyback">-</td>
+                        <td id="policy_b_shares">-</td>
+                        <td id="policy_b_eps">-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>策略 C：保留盈利</strong></td>
+                        <td>0 元</td>
+                        <td>0 股</td>
+                        <td id="policy_c_shares">-</td>
+                        <td id="policy_c_eps">-</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="info-box">
+                <strong>稅務對比：</strong><br>
+                • 現金股利：立即課稅，稅率通常 20%-37%<br>
+                • 股票回購：推遲課稅，稅率通常 15%-20%
+            </div>
+        </div>
+
+        <!-- Tab 5: Merger Synergy Analyzer -->
+        <div id="merger" class="tab-content">
+            <h2>併購綜效分析器</h2>
+            <p style="margin-bottom: 20px; color: #666;">
+                評估併購交易中的協同效應和價值創造潛力。
+            </p>
+
+            <h3 style="color: #555; margin-top: 20px; margin-bottom: 15px;">被併購企業</h3>
+            <div class="input-row">
+                <div class="form-group">
+                    <label>年 EBITDA - 百萬元</label>
+                    <input type="number" id="merger_ebitda" value="100" min="0">
+                </div>
+                <div class="form-group">
+                    <label>行業平均 EV/EBITDA 倍數</label>
+                    <input type="number" id="merger_multiple" value="10" min="0" step="0.5">
+                </div>
+            </div>
+
+            <h3 style="color: #555; margin-top: 20px; margin-bottom: 15px;">協同效應估計</h3>
+            <div class="input-row">
+                <div class="form-group">
+                    <label>運營協同（年度成本削減）- 百萬元</label>
+                    <input type="number" id="merger_cost_saving" value="15" min="0">
+                </div>
+                <div class="form-group">
+                    <label>收入協同（年度增量營收利潤）- 百萬元</label>
+                    <input type="number" id="merger_revenue_synergy" value="10" min="0">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>折現率（WACC）- %</label>
+                <input type="number" id="merger_wacc" value="8" min="0" step="0.1">
+            </div>
+
+            <div class="form-group">
+                <label>整合費用 - 百萬元</label>
+                <input type="number" id="merger_costs" value="20" min="0">
+            </div>
+
+            <button class="calculate" onclick="analyzeMergerSynergies()">分析併購綜效</button>
+
+            <div id="merger_result" class="result-box">
+                <div class="result-row">
+                    <span class="result-label">目標企業基礎價值</span>
+                    <span class="result-value" id="merger_base_value">-</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">年度協同效應合計</span>
+                    <span class="result-value" id="merger_total_synergy">-</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">協同價值折現</span>
+                    <span class="result-value" id="merger_synergy_pv">-</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">整合費用</span>
+                    <span class="result-value" id="merger_integration_cost">-</span>
+                </div>
+                <div class="result-row" style="border-top: 2px solid #4facfe; padding-top: 15px; margin-top: 10px;">
+                    <span class="result-label" style="font-size: 1.1em;"><strong>合理收購價格範圍</strong></span>
+                    <span class="result-value" id="merger_fair_value" style="font-size: 1.1em;">-</span>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>價值評估邏輯：</strong><br>
+                合理收購價 = 基礎價值 + 協同價值淨值<br>
+                過高的溢價應以具體協同效應來支持。
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize with default cash flows
+        let cashFlows = [150, 200, 250, 200];
+        let cashFlowYears = 1;
+
+        function switchTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Remove active from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active to clicked button
+            event.target.classList.add('active');
+        }
+
+        function calculateWACC() {
+            const E = parseFloat(document.getElementById('wacc_equity').value);
+            const D = parseFloat(document.getElementById('wacc_debt').value);
+            const rf = parseFloat(document.getElementById('wacc_rf').value) / 100;
+            const beta = parseFloat(document.getElementById('wacc_beta').value);
+            const mrp = parseFloat(document.getElementById('wacc_mrp').value) / 100;
+            const rd = parseFloat(document.getElementById('wacc_rd').value) / 100;
+            const tc = parseFloat(document.getElementById('wacc_tc').value) / 100;
+
+            const V = E + D;
+            const eRatio = E / V;
+            const dRatio = D / V;
+
+            const rE = rf + beta * mrp;
+            const wacc = (eRatio * rE) + (dRatio * rd * (1 - tc));
+
+            document.getElementById('wacc_re').textContent = (rE * 100).toFixed(2) + '%';
+            document.getElementById('wacc_v').textContent = V.toFixed(0) + ' 百萬元';
+            document.getElementById('wacc_ev').textContent = (eRatio * 100).toFixed(1) + '%';
+            document.getElementById('wacc_dv').textContent = (dRatio * 100).toFixed(1) + '%';
+            document.getElementById('wacc_final').textContent = (wacc * 100).toFixed(2) + '%';
+
+            document.getElementById('wacc_result').classList.add('show');
+        }
+
+        function addCashFlowYear() {
+            cashFlows.push(300);
+            cashFlowYears++;
+            renderCashFlows();
+        }
+
+        function clearCashFlows() {
+            cashFlows = [];
+            cashFlowYears = 0;
+            renderCashFlows();
+        }
+
+        function renderCashFlows() {
+            const container = document.getElementById('cash_flows_container');
+            container.innerHTML = '';
+
+            for (let i = 0; i < cashFlows.length; i++) {
+                const div = document.createElement('div');
+                div.className = 'form-group';
+                div.innerHTML = `
+                    <label>第 ${i + 1} 年現金流 - 百萬元</label>
+                    <input type="number" id="cf_${i}" value="${cashFlows[i]}" min="0" onchange="updateCashFlow(${i}, this.value)">
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        function updateCashFlow(index, value) {
+            cashFlows[index] = parseFloat(value);
+        }
+
+        function calculateNPV() {
+            const initial = parseFloat(document.getElementById('npv_initial').value);
+            const wacc = parseFloat(document.getElementById('npv_wacc').value) / 100;
+
+            if (cashFlows.length === 0) {
+                alert('請先新增現金流年份');
+                return;
+            }
+
+            let pv = 0;
+            for (let i = 0; i < cashFlows.length; i++) {
+                pv += cashFlows[i] / Math.pow(1 + wacc, i + 1);
+            }
+
+            const npv = pv - initial;
+
+            // Simple IRR approximation
+            let irr = 0.1;
+            for (let iter = 0; iter < 100; iter++) {
+                let f = -initial;
+                let fp = 0;
+                for (let i = 0; i < cashFlows.length; i++) {
+                    f += cashFlows[i] / Math.pow(1 + irr, i + 1);
+                    fp -= (i + 1) * cashFlows[i] / Math.pow(1 + irr, i + 2);
+                }
+                if (Math.abs(f) < 0.1) break;
+                irr = irr - f / fp;
+            }
+
+            const decision = npv > 0 ? '<span class="success">應接受</span>' : '<span style="color: #d32f2f;">應拒絕</span>';
+
+            document.getElementById('npv_value').textContent = npv.toFixed(2) + ' 百萬元';
+            document.getElementById('irr_value').textContent = (irr * 100).toFixed(2) + '%';
+            document.getElementById('investment_decision').innerHTML = decision;
+
+            document.getElementById('npv_result').classList.add('show');
+        }
+
+        function updateCapitalStructure() {
+            const leverage = document.getElementById('cs_leverage').value;
+            document.getElementById('debt_ratio').textContent = leverage + '%';
+        }
+
+        function simulateCapitalStructure() {
+            const ebit = parseFloat(document.getElementById('cs_ebit').value);
+            const tc = parseFloat(document.getElementById('cs_tc').value) / 100;
+            const rate = parseFloat(document.getElementById('cs_rate').value) / 100;
+            const debtRatio = parseFloat(document.getElementById('cs_leverage').value) / 100;
+
+            // Assume total value, then back-calculate equity and debt
+            const totalValue = ebit / 0.08; // Assume 8% WACC baseline
+            const debt = totalValue * debtRatio;
+            const equity = totalValue * (1 - debtRatio);
+
+            const interest = debt * rate;
+            const taxShield = interest * tc;
+            const netValue = ebit + taxShield; // Simplified tax shield benefit
+
+            // WACC approximation
+            const wacc = (equity / totalValue) * 0.10 + (debt / totalValue) * rate * (1 - tc);
+
+            document.getElementById('cs_shield').textContent = taxShield.toFixed(2) + ' 百萬元';
+            document.getElementById('cs_value').textContent = netValue.toFixed(2) + ' 百萬元';
+            document.getElementById('cs_wacc').textContent = (wacc * 100).toFixed(2) + '%';
+
+            document.getElementById('cs_result').classList.add('show');
+        }
+
+        function compareDividendPolicies() {
+            const profit = parseFloat(document.getElementById('div_profit').value);
+            const shares = parseFloat(document.getElementById('div_shares').value);
+            const price = parseFloat(document.getElementById('div_price').value);
+            const payout = parseFloat(document.getElementById('div_payout').value) / 100;
+
+            const totalCapital = profit * payout;
+            const dividend = totalCapital;
+            const buybackShares = totalCapital / price;
+
+            const eps = profit / shares;
+
+            // Policy A: All dividend
+            document.getElementById('policy_a_div').textContent = dividend.toFixed(2) + ' 百萬元';
+            document.getElementById('policy_a_shares').textContent = shares.toFixed(0) + ' 股';
+            document.getElementById('policy_a_eps').textContent = '$ ' + eps.toFixed(2);
+
+            // Policy B: Buyback
+            const remainingShares = shares - buybackShares;
+            const epsAfterBuyback = profit / remainingShares;
+            document.getElementById('policy_b_buyback').textContent = buybackShares.toFixed(2) + ' 萬股';
+            document.getElementById('policy_b_shares').textContent = remainingShares.toFixed(0) + ' 股';
+            document.getElementById('policy_b_eps').textContent = '$ ' + epsAfterBuyback.toFixed(2);
+
+            // Policy C: Retain
+            document.getElementById('policy_c_shares').textContent = shares.toFixed(0) + ' 股';
+            document.getElementById('policy_c_eps').textContent = '$ ' + eps.toFixed(2);
+
+            document.getElementById('dividend_result').classList.add('show');
+        }
+
+        function analyzeMergerSynergies() {
+            const ebitda = parseFloat(document.getElementById('merger_ebitda').value);
+            const multiple = parseFloat(document.getElementById('merger_multiple').value);
+            const costSaving = parseFloat(document.getElementById('merger_cost_saving').value);
+            const revenueSynergy = parseFloat(document.getElementById('merger_revenue_synergy').value);
+            const wacc = parseFloat(document.getElementById('merger_wacc').value) / 100;
+            const costs = parseFloat(document.getElementById('merger_costs').value);
+
+            const baseValue = ebitda * multiple;
+            const totalSynergy = costSaving + revenueSynergy;
+
+            // NPV of synergies over 5 years
+            let synergyPV = 0;
+            for (let i = 1; i <= 5; i++) {
+                synergyPV += totalSynergy / Math.pow(1 + wacc, i);
+            }
+
+            const netSynergy = synergyPV - costs;
+            const fairValue = baseValue + netSynergy;
+
+            document.getElementById('merger_base_value').textContent = baseValue.toFixed(2) + ' 百萬元';
+            document.getElementById('merger_total_synergy').textContent = totalSynergy.toFixed(2) + ' 百萬元/年';
+            document.getElementById('merger_synergy_pv').textContent = synergyPV.toFixed(2) + ' 百萬元';
+            document.getElementById('merger_integration_cost').textContent = costs.toFixed(2) + ' 百萬元';
+            document.getElementById('merger_fair_value').textContent = (baseValue).toFixed(0) + ' - ' + fairValue.toFixed(0) + ' 百萬元';
+
+            document.getElementById('merger_result').classList.add('show');
+        }
+
+        // Initialize
+        renderCashFlows();
+    </script>
+</body>
+</html>
