@@ -143,10 +143,28 @@
 
     /* Reader */
     .reader { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .tabs-wrapper {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    .tabs-wrapper::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 32px;
+      background: linear-gradient(to right, transparent, var(--card-bg));
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .tabs-wrapper.can-scroll-right::after {
+      opacity: 1;
+    }
     .tabs {
       display: flex;
       gap: .25rem;
-      margin-bottom: 1.5rem;
       border-bottom: 2px solid var(--border);
     }
     .tab {
@@ -411,7 +429,8 @@
       .card { padding: 1.15rem; }
       .card h2 { font-size: 1.05rem; }
       .reader { padding: .75rem; }
-      .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; gap: 0; }
+      .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; gap: 0; scrollbar-width: none; -ms-overflow-style: none; }
+      .tabs::-webkit-scrollbar { display: none; }
       .tab { padding: .5rem .9rem; font-size: .88rem; flex-shrink: 0; }
       .content-box { padding: 1rem; border-radius: 8px; }
       .content-box h1 { font-size: 1.35rem; }
@@ -1007,7 +1026,7 @@
           ${searchBarHTML()}
         </header>
         <main class="reader">
-          ${topic.links.length > 1 ? `<div class="tabs">${tabs}</div>` : ''}
+          ${topic.links.length > 1 ? `<div class="tabs-wrapper"><div class="tabs">${tabs}</div></div>` : ''}
           <div class="content-box loading" id="md-content">載入中…</div>
         </main>
         <footer>
@@ -1025,9 +1044,29 @@
           currentTabIdx = parseInt(btn.dataset.idx);
           document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
+          btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
           loadContent(topic.links[currentTabIdx]);
         });
       });
+
+      /* Scroll indicator for tabs */
+      const tabsEl = document.querySelector('.tabs');
+      const tabsWrapper = document.querySelector('.tabs-wrapper');
+      if (tabsEl && tabsWrapper) {
+        const updateScrollIndicator = () => {
+          const canScrollRight = tabsEl.scrollWidth - tabsEl.scrollLeft - tabsEl.clientWidth > 1;
+          tabsWrapper.classList.toggle('can-scroll-right', canScrollRight);
+        };
+        tabsEl.addEventListener('scroll', updateScrollIndicator, { passive: true });
+        updateScrollIndicator();
+        /* Scroll active tab into view on load */
+        const activeTab = tabsEl.querySelector('.tab.active');
+        if (activeTab) {
+          activeTab.scrollIntoView({ inline: 'center', block: 'nearest' });
+          /* Re-check indicator after scrollIntoView */
+          requestAnimationFrame(updateScrollIndicator);
+        }
+      }
 
       bindSearchEvents();
 
