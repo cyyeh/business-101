@@ -171,7 +171,28 @@
       box-shadow: var(--shadow);
       border: 1px solid var(--border);
       min-height: 300px;
+      position: relative;
     }
+    .copy-md-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      font-size: .82rem;
+      font-family: inherit;
+      color: var(--text-light);
+      background: #edf2f7;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+      z-index: 2;
+    }
+    .copy-md-btn:hover { background: var(--primary); color: #fff; }
+    .copy-md-btn.copied { background: #48bb78; color: #fff; border-color: #48bb78; }
     .content-box.loading { display: flex; align-items: center; justify-content: center; color: var(--text-light); }
 
     .content-box iframe { width: 100%; height: 80vh; border: none; border-radius: 8px; }
@@ -440,6 +461,27 @@
     let activeHomeTab = 'roadmap'; // 'roadmap', 'topics', 'cross', or 'glossary'
 
     marked.setOptions({ breaks: true, gfm: true });
+
+    /* ---- Copy Markdown Button helper ---- */
+    function createCopyMdBtn(rawMarkdown) {
+      const btn = document.createElement('button');
+      btn.className = 'copy-md-btn';
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>複製 Markdown';
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(rawMarkdown);
+          btn.classList.add('copied');
+          btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>已複製！';
+          setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>複製 Markdown';
+          }, 2000);
+        } catch (e) {
+          btn.textContent = '複製失敗';
+        }
+      });
+      return btn;
+    }
 
     /* ---- Parse README.md into two groups ---- */
     function parseReadme(md) {
@@ -952,6 +994,7 @@
         const md = await res.text();
         el.className = 'content-box';
         el.innerHTML = marked.parse(md);
+        el.prepend(createCopyMdBtn(md));
         // Make topic links in roadmap clickable
         el.querySelectorAll('strong').forEach(strong => {
           const text = strong.textContent.trim();
@@ -983,6 +1026,7 @@
         const md = await res.text();
         el.className = 'content-box';
         el.innerHTML = marked.parse(md);
+        el.prepend(createCopyMdBtn(md));
         convertInternalLinks(el);
       } catch (e) {
         el.className = 'content-box error';
@@ -1053,6 +1097,7 @@
         el.className = 'content-box';
         el.innerHTML = marked.parse(md);
         convertInternalLinks(el);
+        el.prepend(createCopyMdBtn(md));
       } catch (e) {
         el.className = 'content-box error';
         el.textContent = '載入失敗，請重新整理頁面。';
