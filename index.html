@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business 101 — 商業與金融基礎知識</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    :root {
+      --primary: #1e3a5f;
+      --primary-light: #2c5282;
+      --accent: #ed8936;
+      --bg: #f7fafc;
+      --card-bg: #fff;
+      --text: #2d3748;
+      --text-light: #718096;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: #fff;
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+    header h1 { font-size: 2rem; font-weight: 700; margin-bottom: .25rem; }
+    header .subtitle { opacity: .85; font-size: 1.1rem; }
+    header .back {
+      display: inline-block;
+      color: rgba(255,255,255,.8);
+      text-decoration: none;
+      margin-bottom: .75rem;
+      font-size: .95rem;
+      transition: color .2s;
+    }
+    header .back:hover { color: #fff; }
+
+    /* Home grid */
+    .home { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-decoration: none;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: transform .2s, box-shadow .2s;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .card h2 { font-size: 1.15rem; color: var(--primary); margin-bottom: .5rem; }
+    .card p { font-size: .9rem; color: var(--text-light); line-height: 1.6; flex: 1; }
+    .card .badge-row { margin-top: .75rem; display: flex; gap: .4rem; flex-wrap: wrap; }
+    .badge {
+      font-size: .75rem;
+      padding: .15rem .55rem;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
+      color: var(--text-light);
+    }
+
+    /* Reader */
+    .reader { max-width: 900px; margin: 0 auto; padding: 2rem; }
+    .tabs {
+      display: flex;
+      gap: .25rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--border);
+    }
+    .tab {
+      padding: .6rem 1.25rem;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: .95rem;
+      color: var(--text-light);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color .2s, border-color .2s;
+      font-family: inherit;
+    }
+    .tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+    .tab:hover { color: var(--primary-light); }
+
+    .content-box {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      min-height: 300px;
+    }
+    .content-box.loading { display: flex; align-items: center; justify-content: center; color: var(--text-light); }
+
+    .content-box iframe { width: 100%; height: 80vh; border: none; border-radius: 8px; }
+
+    /* Markdown styles */
+    .content-box h1 { font-size: 1.7rem; margin: 1.5rem 0 .75rem; color: var(--primary); }
+    .content-box h2 { font-size: 1.35rem; margin: 2rem 0 .6rem; padding-bottom: .4rem; border-bottom: 1px solid var(--border); }
+    .content-box h3 { font-size: 1.15rem; margin: 1.5rem 0 .5rem; }
+    .content-box h4 { font-size: 1.05rem; margin: 1rem 0 .4rem; }
+    .content-box p { margin: .6rem 0; }
+    .content-box ul, .content-box ol { margin: .6rem 0; padding-left: 1.5rem; }
+    .content-box li { margin: .2rem 0; }
+    .content-box blockquote {
+      border-left: 4px solid var(--accent);
+      padding: .5rem 1rem;
+      margin: 1rem 0;
+      color: var(--text-light);
+      background: #fffaf0;
+      border-radius: 0 8px 8px 0;
+    }
+    .content-box code {
+      background: #edf2f7;
+      padding: .1rem .35rem;
+      border-radius: 4px;
+      font-size: .88em;
+    }
+    .content-box pre {
+      background: #1a202c;
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    .content-box pre code { background: none; padding: 0; color: inherit; font-size: .9em; }
+    .content-box table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: .95rem; }
+    .content-box th, .content-box td { border: 1px solid var(--border); padding: .5rem .75rem; text-align: left; }
+    .content-box th { background: #edf2f7; font-weight: 600; }
+    .content-box tr:nth-child(even) { background: #f7fafc; }
+    .content-box strong { color: var(--primary); }
+    .content-box hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+    .content-box a { color: var(--primary-light); text-decoration: underline; }
+    .content-box a:hover { color: var(--primary); }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-light);
+      font-size: .85rem;
+    }
+    footer a { color: var(--primary-light); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* Error */
+    .error { text-align: center; color: #e53e3e; padding: 2rem; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      header { padding: 1.5rem 1rem; }
+      header h1 { font-size: 1.5rem; }
+      .home { padding: 1rem; }
+      .grid { grid-template-columns: 1fr; }
+      .reader { padding: 1rem; }
+      .content-box { padding: 1.25rem; }
+      .tabs { overflow-x: auto; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    let topics = [];
+    let currentTabIdx = 0;
+
+    marked.setOptions({ breaks: true, gfm: true });
+
+    /* ---- Parse README.md into topics ---- */
+    function parseReadme(md) {
+      const sections = [];
+      let cur = null;
+
+      for (const line of md.split('\n')) {
+        const hdr = line.match(/^###\s+(.+)/);
+        if (hdr) {
+          cur = { title: hdr[1].trim(), links: [] };
+          sections.push(cur);
+          continue;
+        }
+        if (!cur) continue;
+
+        const lnk = line.match(/^-\s+\[(.+?)\]\((.+?)\)\s*[—–\-]\s*(.+)/);
+        if (lnk) {
+          const [, text, url, desc] = lnk;
+          let type = 'professional';
+          if (text.includes('白話') || url.includes('白話')) type = 'plain';
+          if (url.endsWith('.html')) type = 'interactive';
+          cur.links.push({ text: text.trim(), url: url.trim(), description: desc.trim(), type });
+        }
+      }
+      return sections;
+    }
+
+    /* ---- Tab label ---- */
+    function tabLabel(link) {
+      if (link.type === 'plain') return '白話版';
+      if (link.type === 'interactive') return '互動圖表';
+      return '專業版';
+    }
+
+    /* ---- Render home ---- */
+    function renderHome() {
+      currentTabIdx = 0;
+      const cards = topics.map(t => {
+        const pro = t.links.find(l => l.type === 'professional');
+        const desc = pro ? pro.description.replace(/^專業版[，,]\s*/, '') : t.links[0]?.description || '';
+        const badges = t.links.map(l => `<span class="badge">${tabLabel(l)}</span>`).join('');
+        return `<a class="card" href="#${encodeURIComponent(t.title)}">
+          <h2>${t.title}</h2>
+          <p>${desc}</p>
+          <div class="badge-row">${badges}</div>
+        </a>`;
+      }).join('');
+
+      document.getElementById('app').innerHTML = `
+        <header>
+          <h1>Business 101</h1>
+          <p class="subtitle">商業與金融基礎知識學習筆記</p>
+        </header>
+        <main class="home"><div class="grid">${cards}</div></main>
+        <footer>
+          <a href="https://github.com/cyyeh/business-101" target="_blank" rel="noopener">GitHub</a>
+        </footer>`;
+    }
+
+    /* ---- Render topic ---- */
+    async function renderTopic(topic) {
+      if (currentTabIdx >= topic.links.length) currentTabIdx = 0;
+
+      const tabs = topic.links.map((l, i) =>
+        `<button class="tab${i === currentTabIdx ? ' active' : ''}" data-idx="${i}">${tabLabel(l)}</button>`
+      ).join('');
+
+      document.getElementById('app').innerHTML = `
+        <header>
+          <a class="back" href="#">← 返回首頁</a>
+          <h1>${topic.title}</h1>
+        </header>
+        <main class="reader">
+          <div class="tabs">${tabs}</div>
+          <div class="content-box loading" id="md-content">載入中…</div>
+        </main>
+        <footer>
+          <a href="https://github.com/cyyeh/business-101" target="_blank" rel="noopener">GitHub</a>
+        </footer>`;
+
+      document.querySelectorAll('.tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentTabIdx = parseInt(btn.dataset.idx);
+          document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          loadContent(topic.links[currentTabIdx]);
+        });
+      });
+
+      await loadContent(topic.links[currentTabIdx]);
+    }
+
+    /* ---- Load markdown or iframe ---- */
+    async function loadContent(link) {
+      const el = document.getElementById('md-content');
+      el.className = 'content-box loading';
+      el.textContent = '載入中…';
+
+      if (link.type === 'interactive') {
+        el.className = 'content-box';
+        el.innerHTML = `<iframe src="${encodeURI(link.url)}"></iframe>`;
+        return;
+      }
+
+      try {
+        const res = await fetch(encodeURI(link.url));
+        if (!res.ok) throw new Error(res.status);
+        const md = await res.text();
+        el.className = 'content-box';
+        el.innerHTML = marked.parse(md);
+      } catch (e) {
+        el.className = 'content-box error';
+        el.textContent = '載入失敗，請重新整理頁面。';
+      }
+    }
+
+    /* ---- Router ---- */
+    function route() {
+      const hash = decodeURIComponent(location.hash.slice(1));
+      if (!hash) { renderHome(); return; }
+
+      const topic = topics.find(t => t.title === hash);
+      if (topic) { renderTopic(topic); }
+      else { renderHome(); }
+    }
+
+    /* ---- Init ---- */
+    async function init() {
+      try {
+        const res = await fetch('README.md');
+        const md = await res.text();
+        topics = parseReadme(md);
+        window.addEventListener('hashchange', route);
+        route();
+      } catch (e) {
+        document.getElementById('app').innerHTML =
+          '<div class="error" style="padding:4rem">無法載入內容，請確認 README.md 存在。</div>';
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
