@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投資與企業估值 - 互動圖表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #0f172a;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        /* Tabs Navigation */
+        .tabs-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background-color: #e2e8f0;
+            color: #475569;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+        }
+
+        .tab-btn:hover {
+            background-color: #cbd5e1;
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Tab Content */
+        .tabs-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tab 1: 投資工具比較 */
+        .tools-header {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .sort-btn {
+            padding: 8px 16px;
+            border: 2px solid #cbd5e1;
+            background: white;
+            color: #475569;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .sort-btn.active {
+            border-color: #3b82f6;
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tool-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .tool-card.expanded {
+            grid-column: 1 / -1;
+            padding: 30px;
+        }
+
+        .tool-card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 15px;
+        }
+
+        .risk-indicator {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .risk-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 600;
+            min-width: 50px;
+        }
+
+        .star {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .star.filled {
+            background: #ef4444;
+        }
+
+        .tool-detail {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+            color: #475569;
+        }
+
+        .tool-detail:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .detail-value {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .tool-card.expanded .expanded-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #cbd5e1;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .pros, .cons {
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .pros-title, .cons-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .pros-title {
+            color: #16a34a;
+        }
+
+        .cons-title {
+            color: #dc2626;
+        }
+
+        .pros ul, .cons ul {
+            list-style-position: inside;
+            color: #475569;
+        }
+
+        /* Tab 2: 估值計算機 */
+        .calculator-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #334155;
+            font-size: 0.95rem;
+        }
+
+        .input-group input {
+            padding: 10px 12px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+            border: 2px solid #3b82f6;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .result-card.cheap {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-color: #16a34a;
+        }
+
+        .result-card.fair {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-color: #f59e0b;
+        }
+
+        .result-card.expensive {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-color: #dc2626;
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .result-interpretation {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            color: white;
+            margin-top: 8px;
+        }
+
+        .interpretation-cheap {
+            background: #16a34a;
+        }
+
+        .interpretation-fair {
+            background: #f59e0b;
+        }
+
+        .interpretation-expensive {
+            background: #dc2626;
+        }
+
+        .dcf-formula {
+            background: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #1e293b;
+            line-height: 1.8;
+        }
+
+        .chart-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 10px;
+        }
+
+        .chart-title {
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #0f172a;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            height: 250px;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .bar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .bar {
+            width: 100%;
+            background: linear-gradient(180deg, #3b82f6 0%, #1e40af 100%);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            min-height: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .bar:hover {
+            filter: brightness(1.1);
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #0f172a;
+            white-space: nowrap;
+        }
+
+        .bar-label {
+            margin-top: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        /* Tab 3: 資產配置模擬器 */
+        .allocation-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .allocation-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sliders-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .slider-value {
+            color: #3b82f6;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #cbd5e1;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
+        }
+
+        .pie-chart-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        svg.pie-chart {
+            width: 100%;
+            max-width: 350px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        .pie-legend {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .legend-text {
+            flex: 1;
+        }
+
+        .legend-percentage {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .metrics-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            border: 2px solid #3b82f6;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .metric-name {
+            font-size: 0.85rem;
+            color: #475569;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .preset-portfolios {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #cbd5e1;
+        }
+
+        .preset-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #0f172a;
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
+        .preset-btn {
+            padding: 12px 16px;
+            border: 2px solid #cbd5e1;
+            background: white;
+            color: #475569;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+        }
+
+        .preset-btn:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+            background: #f0f9ff;
+        }
+
+        .preset-btn.active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+
+        /* Tab 4: 投資心理偏誤 */
+        .biases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .bias-card {
+            perspective: 1000px;
+            height: 350px;
+            cursor: pointer;
+        }
+
+        .bias-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .bias-card.flipped .bias-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .bias-card-front, .bias-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .bias-card-front {
+            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+            border: 2px solid #f59e0b;
+            color: #92400e;
+        }
+
+        .bias-card-back {
+            background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+            border: 2px solid #f59e0b;
+            transform: rotateY(180deg);
+            color: #78350f;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-y: auto;
+        }
+
+        .bias-emoji {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .bias-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .bias-hint {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        .bias-definition {
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #92400e;
+        }
+
+        .bias-example {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+        }
+
+        .bias-example-title {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .bias-solution {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .bias-solution-title {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .tabs-nav {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                width: 100%;
+            }
+
+            .tabs-container {
+                padding: 20px;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+
+            .allocation-container {
+                grid-template-columns: 1fr;
+            }
+
+            .biases-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 投資與企業估值</h1>
+            <p class="subtitle">互動式學習工具</p>
+        </header>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab('tools')">投資工具比較</button>
+            <button class="tab-btn" onclick="switchTab('valuation')">估值計算機</button>
+            <button class="tab-btn" onclick="switchTab('allocation')">資產配置模擬器</button>
+            <button class="tab-btn" onclick="switchTab('biases')">投資心理偏誤</button>
+        </div>
+
+        <!-- Tabs Container -->
+        <div class="tabs-container">
+            <!-- Tab 1: 投資工具比較 -->
+            <div id="tools" class="tab-content active">
+                <div class="tools-header">
+                    <button class="sort-btn active" onclick="sortTools('default')">預設排序</button>
+                    <button class="sort-btn" onclick="sortTools('risk')">按風險排序</button>
+                    <button class="sort-btn" onclick="sortTools('return')">按預期報酬排序</button>
+                </div>
+                <div class="tools-grid" id="toolsGrid"></div>
+            </div>
+
+            <!-- Tab 2: 估值計算機 -->
+            <div id="valuation" class="tab-content">
+                <!-- Section A: 相對估值法 -->
+                <div class="calculator-section">
+                    <h2 class="section-title">相對估值法</h2>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>每股盈餘 (EPS) - 元</label>
+                            <input type="number" id="eps" value="5.2" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>股價 - 元</label>
+                            <input type="number" id="stockPrice" value="520" step="1">
+                        </div>
+                        <div class="input-group">
+                            <label>每股淨值 (BPS) - 元</label>
+                            <input type="number" id="bps" value="45" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>EBITDA - 百萬元</label>
+                            <input type="number" id="ebitda" value="1200" step="10">
+                        </div>
+                        <div class="input-group">
+                            <label>企業價值 (EV) - 百萬元</label>
+                            <input type="number" id="ev" value="8000" step="10">
+                        </div>
+                        <div class="input-group">
+                            <label>盈餘成長率 (%) - 預期5年平均</label>
+                            <input type="number" id="growthRate" value="12" step="0.5">
+                        </div>
+                    </div>
+
+                    <button class="sort-btn active" onclick="calculateRelativeValuation()" style="width: auto; margin-top: 10px;">計算估值指標</button>
+
+                    <div class="results-grid" id="relativeResults" style="margin-top: 30px; display: none;">
+                        <div class="result-card" id="peCard">
+                            <div class="result-label">本益比 (PE)</div>
+                            <div class="result-value" id="peValue">0.00</div>
+                            <div class="result-interpretation" id="peInterpretation"></div>
+                        </div>
+                        <div class="result-card" id="pbCard">
+                            <div class="result-label">股價淨值比 (PB)</div>
+                            <div class="result-value" id="pbValue">0.00</div>
+                            <div class="result-interpretation" id="pbInterpretation"></div>
+                        </div>
+                        <div class="result-card" id="evEbitdaCard">
+                            <div class="result-label">EV/EBITDA</div>
+                            <div class="result-value" id="evEbitdaValue">0.00</div>
+                            <div class="result-interpretation" id="evEbitdaInterpretation"></div>
+                        </div>
+                        <div class="result-card" id="pegCard">
+                            <div class="result-label">PEG 比率</div>
+                            <div class="result-value" id="pegValue">0.00</div>
+                            <div class="result-interpretation" id="pegInterpretation"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section B: DCF 簡易計算 -->
+                <div class="calculator-section">
+                    <h2 class="section-title">DCF 折現現金流量估值法</h2>
+
+                    <div class="dcf-formula">
+                        <strong>企業價值 = Σ(FCF_t / (1+r)^t) + 終端價值 / (1+r)^n</strong><br>
+                        <br>
+                        其中：FCF = 自由現金流 | r = 折現率 | t = 年份 | 終端價值 = FCF_5 × (1+g) / (r-g)
+                    </div>
+
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>第1年 FCF (百萬元)</label>
+                            <input type="number" id="fcf1" value="500" step="10">
+                        </div>
+                        <div class="input-group">
+                            <label>第2年 FCF (百萬元)</label>
+                            <input type="number" id="fcf2" value="550" step="10">
+                        </div>
+                        <div class="input-group">
+                            <label>第3年 FCF (百萬元)</label>
+                            <input type="number" id="fcf3" value="605" step="10">
+                        </div>
+                        <div class="input-group">
+                            <label>第4年 FCF (百萬元)</label>
+                            <input type="number" id="fcf4" value="665" step="10">
+                        </div>
+                        <div class="input-group">
+                            <label>第5年 FCF (百萬元)</label>
+                            <input type="number" id="fcf5" value="732" step="10">
+                        </div>
+                        <div class="input-group">
+                            <label>折現率 (%) - WACC</label>
+                            <input type="number" id="discountRate" value="8" step="0.5">
+                        </div>
+                        <div class="input-group">
+                            <label>永續成長率 (%)</label>
+                            <input type="number" id="perpetualGrowth" value="2.5" step="0.5">
+                        </div>
+                        <div class="input-group">
+                            <label>流通股數 (百萬股)</label>
+                            <input type="number" id="sharesOutstanding" value="100" step="1">
+                        </div>
+                    </div>
+
+                    <button class="sort-btn active" onclick="calculateDCF()" style="width: auto; margin-top: 10px;">計算DCF估值</button>
+
+                    <div class="results-grid" id="dcfResults" style="margin-top: 30px; display: none;">
+                        <div class="result-card">
+                            <div class="result-label">企業內在價值</div>
+                            <div class="result-value" id="enterpriseValue">0.00</div>
+                            <div style="font-size: 0.8rem; color: #475569; margin-top: 5px;">百萬元</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-label">每股內在價值</div>
+                            <div class="result-value" id="intrinsicPerShare">0.00</div>
+                            <div style="font-size: 0.8rem; color: #475569; margin-top: 5px;">元</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-title">各年現金流折現值貢獻</div>
+                        <div class="bar-chart" id="dcfChart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: 資產配置模擬器 -->
+            <div id="allocation" class="tab-content">
+                <div class="allocation-container">
+                    <div class="sliders-section">
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>股票 (Stock)</span>
+                                <span class="slider-value" id="stockPercent">50%</span>
+                            </div>
+                            <input type="range" id="stockSlider" min="0" max="100" value="50" oninput="updateAllocation()">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>債券 (Bond)</span>
+                                <span class="slider-value" id="bondPercent">30%</span>
+                            </div>
+                            <input type="range" id="bondSlider" min="0" max="100" value="30" oninput="updateAllocation()">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>不動產 (Real Estate)</span>
+                                <span class="slider-value" id="rePercent">10%</span>
+                            </div>
+                            <input type="range" id="reSlider" min="0" max="100" value="10" oninput="updateAllocation()">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>現金 (Cash)</span>
+                                <span class="slider-value" id="cashPercent">10%</span>
+                            </div>
+                            <input type="range" id="cashSlider" min="0" max="100" value="10" oninput="updateAllocation()" disabled>
+                        </div>
+                    </div>
+
+                    <div class="pie-chart-container">
+                        <svg class="pie-chart" id="pieChart" viewBox="0 0 200 200"></svg>
+                        <div class="pie-legend" id="pieLegend"></div>
+                    </div>
+                </div>
+
+                <div class="metrics-cards">
+                    <div class="metric-card">
+                        <div class="metric-name">預期年報酬率</div>
+                        <div class="metric-value" id="expectedReturn">7.5%</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-name">預期波動度 (風險)</div>
+                        <div class="metric-value" id="volatility">8.2%</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-name">夏普比率</div>
+                        <div class="metric-value" id="sharpeRatio">0.68</div>
+                    </div>
+                </div>
+
+                <div class="preset-portfolios">
+                    <div class="preset-title">快速選擇預設投資組合</div>
+                    <div class="preset-buttons">
+                        <button class="preset-btn" onclick="loadPreset('aggressive')">積極型 (80/10/5/5)</button>
+                        <button class="preset-btn active" onclick="loadPreset('balanced')">穩健型 (50/30/10/10)</button>
+                        <button class="preset-btn" onclick="loadPreset('conservative')">保守型 (20/50/10/20)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: 投資心理偏誤 -->
+            <div id="biases" class="tab-content">
+                <div class="biases-grid" id="biasesGrid"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>此互動工具僅供教育用途。投資決策應諮詢專業人士。© 2026</p>
+        </footer>
+    </div>
+
+    <script>
+        // ============ Tab Switching ============
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked button
+            event.target.classList.add('active');
+
+            // Initialize specific tab functionality
+            if (tabName === 'allocation') {
+                updateAllocation();
+            } else if (tabName === 'biases') {
+                initBiases();
+            }
+        }
+
+        // ============ Tab 1: Investment Tools ============
+        const investmentTools = [
+            {
+                name: '股票',
+                risk: 4,
+                returnRange: '5-15%',
+                liquidity: '高',
+                minimum: '100元',
+                bestFor: '長期成長型投資者',
+                pros: ['高成長潛力', '流動性高', '可獲得股息'],
+                cons: ['波動性大', '風險較高', '需時間研究']
+            },
+            {
+                name: '債券',
+                risk: 2,
+                returnRange: '2-5%',
+                liquidity: '中',
+                minimum: '1,000元',
+                bestFor: '保守型、年長投資者',
+                pros: ['報酬穩定', '風險低', '可預測收入'],
+                cons: ['報酬率低', '面臨利率風險', '流動性相對低']
+            },
+            {
+                name: '共同基金/ETF',
+                risk: 3,
+                returnRange: '4-10%',
+                liquidity: '高',
+                minimum: '500元',
+                bestFor: '分散投資者',
+                pros: ['分散風險', '專業管理', '易於投資'],
+                cons: ['費用較高', '報酬不確定', '透明度變化']
+            },
+            {
+                name: '不動產',
+                risk: 3,
+                returnRange: '3-8%',
+                liquidity: '低',
+                minimum: '50萬元以上',
+                bestFor: '長期投資者',
+                pros: ['實物資產', '穩定現金流', '槓桿投資'],
+                cons: ['高初始投資', '流動性差', '維護成本高']
+            },
+            {
+                name: '衍生性商品',
+                risk: 5,
+                returnRange: '10-50%',
+                liquidity: '高',
+                minimum: '1,000元',
+                bestFor: '有經驗的交易者',
+                pros: ['高報酬潛力', '靈活策略', '對沖工具'],
+                cons: ['極高風險', '複雜性高', '可能全損']
+            },
+            {
+                name: '定存',
+                risk: 1,
+                returnRange: '0.5-2%',
+                liquidity: '低',
+                minimum: '1元',
+                bestFor: '保守型、短期儲蓄',
+                pros: ['安全穩定', '利息保障', '易於操作'],
+                cons: ['報酬極低', '不抗通膨', '資金被綁定']
+            }
+        ];
+
+        function renderToolsCards(sortBy = 'default') {
+            const toolsGrid = document.getElementById('toolsGrid');
+            toolsGrid.innerHTML = '';
+
+            let sortedTools = [...investmentTools];
+
+            if (sortBy === 'risk') {
+                sortedTools.sort((a, b) => a.risk - b.risk);
+            } else if (sortBy === 'return') {
+                sortedTools.sort((a, b) => {
+                    const aReturn = parseInt(a.returnRange.split('-')[1]);
+                    const bReturn = parseInt(b.returnRange.split('-')[1]);
+                    return bReturn - aReturn;
+                });
+            }
+
+            sortedTools.forEach((tool, index) => {
+                const card = document.createElement('div');
+                card.className = 'tool-card';
+                card.id = 'tool-' + index;
+                card.onclick = () => toggleToolCard(index);
+
+                const riskStars = Array.from({length: 5}, (_, i) =>
+                    `<div class="star ${i < tool.risk ? 'filled' : ''}"></div>`
+                ).join('');
+
+                card.innerHTML = `
+                    <div class="tool-card-title">${tool.name}</div>
+                    <div class="risk-indicator">
+                        <div class="risk-label">風險</div>
+                        ${riskStars}
+                    </div>
+                    <div class="tool-detail">
+                        <span class="detail-label">預期報酬</span>
+                        <span class="detail-value">${tool.returnRange}</span>
+                    </div>
+                    <div class="tool-detail">
+                        <span class="detail-label">流動性</span>
+                        <span class="detail-value">${tool.liquidity}</span>
+                    </div>
+                    <div class="tool-detail">
+                        <span class="detail-label">最低投資</span>
+                        <span class="detail-value">${tool.minimum}</span>
+                    </div>
+                    <div class="tool-detail">
+                        <span class="detail-label">最適投資者</span>
+                        <span class="detail-value">${tool.bestFor}</span>
+                    </div>
+                `;
+
+                toolsGrid.appendChild(card);
+            });
+        }
+
+        function toggleToolCard(index) {
+            const card = document.getElementById('tool-' + index);
+            card.classList.toggle('expanded');
+
+            if (card.classList.contains('expanded')) {
+                const tool = investmentTools[index];
+                const prosList = tool.pros.map(p => `<li>${p}</li>`).join('');
+                const consList = tool.cons.map(c => `<li>${c}</li>`).join('');
+
+                const expandedContent = document.createElement('div');
+                expandedContent.className = 'expanded-section';
+                expandedContent.innerHTML = `
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <div class="pros-title">✓ 優點</div>
+                            <ul>${prosList}</ul>
+                        </div>
+                        <div class="cons">
+                            <div class="cons-title">✗ 缺點</div>
+                            <ul>${consList}</ul>
+                        </div>
+                    </div>
+                `;
+
+                card.appendChild(expandedContent);
+            } else {
+                const expanded = card.querySelector('.expanded-section');
+                if (expanded) expanded.remove();
+            }
+        }
+
+        function sortTools(sortBy) {
+            document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderToolsCards(sortBy);
+        }
+
+        // ============ Tab 2: Valuation Calculator ============
+        function calculateRelativeValuation() {
+            const eps = parseFloat(document.getElementById('eps').value) || 0;
+            const stockPrice = parseFloat(document.getElementById('stockPrice').value) || 0;
+            const bps = parseFloat(document.getElementById('bps').value) || 0;
+            const ebitda = parseFloat(document.getElementById('ebitda').value) || 0;
+            const ev = parseFloat(document.getElementById('ev').value) || 0;
+            const growthRate = parseFloat(document.getElementById('growthRate').value) || 0;
+
+            const pe = eps > 0 ? (stockPrice / eps).toFixed(2) : '-';
+            const pb = bps > 0 ? (stockPrice / bps).toFixed(2) : '-';
+            const evEbitda = ebitda > 0 ? (ev / ebitda).toFixed(2) : '-';
+            const peg = pe > 0 && growthRate > 0 ? (pe / growthRate).toFixed(2) : '-';
+
+            function getInterpretation(value, type) {
+                if (!value || value === '-') return '';
+                const numValue = parseFloat(value);
+
+                if (type === 'pe') {
+                    if (numValue < 15) return { text: '便宜', class: 'cheap' };
+                    if (numValue < 25) return { text: '合理', class: 'fair' };
+                    return { text: '昂貴', class: 'expensive' };
+                } else if (type === 'pb') {
+                    if (numValue < 1.5) return { text: '便宜', class: 'cheap' };
+                    if (numValue < 3) return { text: '合理', class: 'fair' };
+                    return { text: '昂貴', class: 'expensive' };
+                } else if (type === 'evEbitda') {
+                    if (numValue < 8) return { text: '便宜', class: 'cheap' };
+                    if (numValue < 12) return { text: '合理', class: 'fair' };
+                    return { text: '昂貴', class: 'expensive' };
+                } else if (type === 'peg') {
+                    if (numValue < 1) return { text: '便宜', class: 'cheap' };
+                    if (numValue < 2) return { text: '合理', class: 'fair' };
+                    return { text: '昂貴', class: 'expensive' };
+                }
+                return '';
+            }
+
+            const peInterpretation = getInterpretation(pe, 'pe');
+            const pbInterpretation = getInterpretation(pb, 'pb');
+            const evEbitdaInterpretation = getInterpretation(evEbitda, 'evEbitda');
+            const pegInterpretation = getInterpretation(peg, 'peg');
+
+            document.getElementById('peValue').textContent = pe;
+            document.getElementById('pbValue').textContent = pb;
+            document.getElementById('evEbitdaValue').textContent = evEbitda;
+            document.getElementById('pegValue').textContent = peg;
+
+            document.getElementById('peCard').className = 'result-card ' + (peInterpretation.class || '');
+            document.getElementById('pbCard').className = 'result-card ' + (pbInterpretation.class || '');
+            document.getElementById('evEbitdaCard').className = 'result-card ' + (evEbitdaInterpretation.class || '');
+            document.getElementById('pegCard').className = 'result-card ' + (pegInterpretation.class || '');
+
+            if (peInterpretation) {
+                document.getElementById('peInterpretation').className = 'result-interpretation interpretation-' + peInterpretation.class;
+                document.getElementById('peInterpretation').textContent = peInterpretation.text;
+            }
+            if (pbInterpretation) {
+                document.getElementById('pbInterpretation').className = 'result-interpretation interpretation-' + pbInterpretation.class;
+                document.getElementById('pbInterpretation').textContent = pbInterpretation.text;
+            }
+            if (evEbitdaInterpretation) {
+                document.getElementById('evEbitdaInterpretation').className = 'result-interpretation interpretation-' + evEbitdaInterpretation.class;
+                document.getElementById('evEbitdaInterpretation').textContent = evEbitdaInterpretation.text;
+            }
+            if (pegInterpretation) {
+                document.getElementById('pegInterpretation').className = 'result-interpretation interpretation-' + pegInterpretation.class;
+                document.getElementById('pegInterpretation').textContent = pegInterpretation.text;
+            }
+
+            document.getElementById('relativeResults').style.display = 'grid';
+        }
+
+        function calculateDCF() {
+            const fcf1 = parseFloat(document.getElementById('fcf1').value) || 0;
+            const fcf2 = parseFloat(document.getElementById('fcf2').value) || 0;
+            const fcf3 = parseFloat(document.getElementById('fcf3').value) || 0;
+            const fcf4 = parseFloat(document.getElementById('fcf4').value) || 0;
+            const fcf5 = parseFloat(document.getElementById('fcf5').value) || 0;
+            const discountRate = parseFloat(document.getElementById('discountRate').value) / 100 || 0;
+            const perpetualGrowth = parseFloat(document.getElementById('perpetualGrowth').value) / 100 || 0;
+            const sharesOutstanding = parseFloat(document.getElementById('sharesOutstanding').value) || 0;
+
+            const fcfs = [fcf1, fcf2, fcf3, fcf4, fcf5];
+            let pv = 0;
+            let pvChart = [];
+
+            // Calculate PV of each year's FCF
+            fcfs.forEach((fcf, i) => {
+                const year = i + 1;
+                const pvFcf = fcf / Math.pow(1 + discountRate, year);
+                pv += pvFcf;
+                pvChart.push({ year, value: pvFcf });
+            });
+
+            // Calculate terminal value
+            const terminalValue = (fcf5 * (1 + perpetualGrowth)) / (discountRate - perpetualGrowth);
+            const pvTerminal = terminalValue / Math.pow(1 + discountRate, 5);
+            pv += pvTerminal;
+
+            const intrinsicPerShare = sharesOutstanding > 0 ? (pv / sharesOutstanding).toFixed(2) : '-';
+
+            document.getElementById('enterpriseValue').textContent = pv.toFixed(0);
+            document.getElementById('intrinsicPerShare').textContent = intrinsicPerShare;
+            document.getElementById('dcfResults').style.display = 'grid';
+
+            // Draw bar chart
+            renderDCFChart(pvChart, pvTerminal);
+        }
+
+        function renderDCFChart(pvChart, pvTerminal) {
+            const chart = document.getElementById('dcfChart');
+            chart.innerHTML = '';
+
+            const maxValue = Math.max(...pvChart.map(d => d.value), pvTerminal);
+            const chartHeight = 200;
+
+            pvChart.forEach(item => {
+                const barHeight = (item.value / maxValue) * chartHeight;
+                const barItem = document.createElement('div');
+                barItem.className = 'bar-item';
+                barItem.innerHTML = `
+                    <div class="bar" style="height: ${barHeight}px;">
+                        <div class="bar-value">${item.value.toFixed(0)}</div>
+                    </div>
+                    <div class="bar-label">第${item.year}年</div>
+                `;
+                chart.appendChild(barItem);
+            });
+
+            // Terminal value bar
+            const terminalBarHeight = (pvTerminal / maxValue) * chartHeight;
+            const terminalItem = document.createElement('div');
+            terminalItem.className = 'bar-item';
+            terminalItem.innerHTML = `
+                <div class="bar" style="height: ${terminalBarHeight}px; background: linear-gradient(180deg, #8b5cf6 0%, #6d28d9 100%);">
+                    <div class="bar-value">${pvTerminal.toFixed(0)}</div>
+                </div>
+                <div class="bar-label">終端價值</div>
+            `;
+            chart.appendChild(terminalItem);
+        }
+
+        // ============ Tab 3: Asset Allocation ============
+        function updateAllocation() {
+            let stock = parseInt(document.getElementById('stockSlider').value) || 0;
+            let bond = parseInt(document.getElementById('bondSlider').value) || 0;
+            let re = parseInt(document.getElementById('reSlider').value) || 0;
+
+            let total = stock + bond + re;
+
+            // Auto-adjust to sum to 100%
+            if (total > 100) {
+                const excess = total - 100;
+                if (document.activeElement.id === 'stockSlider') {
+                    bond = Math.max(0, bond - excess);
+                    if (bond + stock + re > 100) {
+                        re = Math.max(0, re - (bond + stock + re - 100));
+                    }
+                } else if (document.activeElement.id === 'bondSlider') {
+                    stock = Math.max(0, stock - excess);
+                    if (bond + stock + re > 100) {
+                        re = Math.max(0, re - (bond + stock + re - 100));
+                    }
+                } else {
+                    stock = Math.max(0, stock - excess);
+                    if (bond + stock + re > 100) {
+                        bond = Math.max(0, bond - (bond + stock + re - 100));
+                    }
+                }
+            }
+
+            total = stock + bond + re;
+            const cash = 100 - total;
+
+            document.getElementById('stockSlider').value = stock;
+            document.getElementById('bondSlider').value = bond;
+            document.getElementById('reSlider').value = re;
+            document.getElementById('cashSlider').value = cash;
+
+            document.getElementById('stockPercent').textContent = stock + '%';
+            document.getElementById('bondPercent').textContent = bond + '%';
+            document.getElementById('rePercent').textContent = re + '%';
+            document.getElementById('cashPercent').textContent = cash + '%';
+
+            drawPieChart(stock, bond, re, cash);
+            calculateMetrics(stock, bond, re, cash);
+        }
+
+        function drawPieChart(stock, bond, re, cash) {
+            const svg = document.getElementById('pieChart');
+            svg.innerHTML = '';
+
+            const colors = ['#3b82f6', '#ef4444', '#f59e0b', '#10b981'];
+            const labels = ['股票', '債券', '不動產', '現金'];
+            const values = [stock, bond, re, cash];
+
+            let currentAngle = -90;
+
+            values.forEach((value, index) => {
+                if (value === 0) return;
+
+                const sliceAngle = (value / 100) * 360;
+                const startAngle = (currentAngle * Math.PI) / 180;
+                const endAngle = ((currentAngle + sliceAngle) * Math.PI) / 180;
+
+                const x1 = 100 + 80 * Math.cos(startAngle);
+                const y1 = 100 + 80 * Math.sin(startAngle);
+                const x2 = 100 + 80 * Math.cos(endAngle);
+                const y2 = 100 + 80 * Math.sin(endAngle);
+
+                const largeArc = sliceAngle > 180 ? 1 : 0;
+                const path = `M 100 100 L ${x1} ${y1} A 80 80 0 ${largeArc} 1 ${x2} ${y2} Z`;
+
+                const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                pathEl.setAttribute('d', path);
+                pathEl.setAttribute('fill', colors[index]);
+                pathEl.setAttribute('stroke', 'white');
+                pathEl.setAttribute('stroke-width', '2');
+                pathEl.style.cursor = 'pointer';
+
+                svg.appendChild(pathEl);
+                currentAngle += sliceAngle;
+            });
+
+            // Update legend
+            const legend = document.getElementById('pieLegend');
+            legend.innerHTML = '';
+            values.forEach((value, index) => {
+                if (value === 0) return;
+                const item = document.createElement('div');
+                item.className = 'legend-item';
+                item.innerHTML = `
+                    <div class="legend-color" style="background-color: ${colors[index]};"></div>
+                    <div class="legend-text">
+                        <span>${labels[index]}</span><br>
+                        <span class="legend-percentage">${value}%</span>
+                    </div>
+                `;
+                legend.appendChild(item);
+            });
+        }
+
+        function calculateMetrics(stock, bond, re, cash) {
+            const stockReturn = 0.09;
+            const bondReturn = 0.035;
+            const reReturn = 0.05;
+            const cashReturn = 0.015;
+
+            const expectedReturn = (stock * stockReturn + bond * bondReturn + re * reReturn + cash * cashReturn) / 100;
+
+            const stockRisk = 0.16;
+            const bondRisk = 0.04;
+            const reRisk = 0.08;
+            const cashRisk = 0;
+
+            const variance = Math.pow(stock/100 * stockRisk, 2) +
+                           Math.pow(bond/100 * bondRisk, 2) +
+                           Math.pow(re/100 * reRisk, 2) +
+                           Math.pow(cash/100 * cashRisk, 2) +
+                           2 * (stock/100) * (bond/100) * stockRisk * bondRisk * (-0.3) +
+                           2 * (stock/100) * (re/100) * stockRisk * reRisk * 0.5 +
+                           2 * (bond/100) * (re/100) * bondRisk * reRisk * 0.2;
+
+            const volatility = Math.sqrt(Math.abs(variance));
+            const riskFreeRate = 0.015;
+            const sharpeRatio = volatility > 0 ? (expectedReturn - riskFreeRate) / volatility : 0;
+
+            document.getElementById('expectedReturn').textContent = (expectedReturn * 100).toFixed(1) + '%';
+            document.getElementById('volatility').textContent = (volatility * 100).toFixed(1) + '%';
+            document.getElementById('sharpeRatio').textContent = sharpeRatio.toFixed(2);
+        }
+
+        function loadPreset(type) {
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const presets = {
+                aggressive: { stock: 80, bond: 10, re: 5 },
+                balanced: { stock: 50, bond: 30, re: 10 },
+                conservative: { stock: 20, bond: 50, re: 10 }
+            };
+
+            const preset = presets[type];
+            document.getElementById('stockSlider').value = preset.stock;
+            document.getElementById('bondSlider').value = preset.bond;
+            document.getElementById('reSlider').value = preset.re;
+
+            updateAllocation();
+        }
+
+        // ============ Tab 4: Investment Biases ============
+        const biases = [
+            {
+                name: '過度自信',
+                emoji: '😎',
+                definition: '高估自己的知識和預測能力',
+                example: '散戶認為自己能打敗市場，頻繁交易導致績效不佳',
+                solution: '定期檢視績效，採用被動投資，相信市場效率'
+            },
+            {
+                name: '損失趨避',
+                emoji: '😰',
+                definition: '害怕損失的心理強於獲利的喜悅',
+                example: '股票下跌時恐慌賣出，錯過後續反彈',
+                solution: '建立投資計畫，堅守長期目標，控制情緒反應'
+            },
+            {
+                name: '從眾效應',
+                emoji: '🐑',
+                definition: '跟隨大眾決策而非獨立判斷',
+                example: '看到朋友賺錢就盲目跟風買股，形成泡沫',
+                solution: '進行充分研究，設定個人標準，獨立思考'
+            },
+            {
+                name: '定錨效應',
+                emoji: '⚓',
+                definition: '過度依賴第一個數字資訊做決策',
+                example: '股票曾經跌到100元，現在200元就認為便宜',
+                solution: '使用基本面分析，不依賴歷史價位參考'
+            },
+            {
+                name: '近因偏誤',
+                emoji: '📺',
+                definition: '過度重視最近發生的事件',
+                example: '因最近一次虧損就放棄長期投資計畫',
+                solution: '回顧長期績效，忽略短期波動，保持耐心'
+            },
+            {
+                name: '處分效應',
+                emoji: '📈',
+                definition: '急著賣出賺錢的部位，持有虧損部位',
+                example: '股票漲到賺50%就賣，虧損股則一直持有',
+                solution: '基於基本面決策，使用止損機制，平衡獲利/虧損'
+            }
+        ];
+
+        function initBiases() {
+            const biasesGrid = document.getElementById('biasesGrid');
+            biasesGrid.innerHTML = '';
+
+            biases.forEach((bias, index) => {
+                const card = document.createElement('div');
+                card.className = 'bias-card';
+                card.id = 'bias-' + index;
+                card.onclick = () => toggleBiasCard(index);
+
+                card.innerHTML = `
+                    <div class="bias-card-inner">
+                        <div class="bias-card-front">
+                            <div class="bias-emoji">${bias.emoji}</div>
+                            <div class="bias-name">${bias.name}</div>
+                            <div class="bias-hint">點擊以查看詳細</div>
+                        </div>
+                        <div class="bias-card-back">
+                            <div class="bias-definition"><strong>定義：</strong> ${bias.definition}</div>
+                            <div class="bias-example">
+                                <div class="bias-example-title">💡 實例</div>
+                                ${bias.example}
+                            </div>
+                            <div class="bias-solution">
+                                <div class="bias-solution-title">✓ 克服方法</div>
+                                ${bias.solution}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                biasesGrid.appendChild(card);
+            });
+        }
+
+        function toggleBiasCard(index) {
+            const card = document.getElementById('bias-' + index);
+            card.classList.toggle('flipped');
+        }
+
+        // ============ Initialize ============
+        document.addEventListener('DOMContentLoaded', function() {
+            renderToolsCards();
+            loadPreset('balanced');
+            initBiases();
+        });
+    </script>
+</body>
+</html>

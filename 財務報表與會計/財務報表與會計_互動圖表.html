@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>財務報表與會計 - 互動圖表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background-color: #f1f5f9;
+            color: #2c3e50;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #1a5490;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #7f8c8d;
+        }
+
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background-color: #e8eef7;
+            color: #2c3e50;
+            font-size: 1rem;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .tab-btn:hover {
+            background-color: #d4dce9;
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #1a5490 0%, #2980b9 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(26, 84, 144, 0.3);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Tab 1: Financial Statements Diagram */
+        .statements-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .statement-card {
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .statement-card.income {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        }
+
+        .statement-card.balance {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+
+        .statement-card.cash {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .statement-card {
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .statement-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .statement-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .statement-card .subtitle-card {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .statement-card.expanded {
+            grid-column: 1 / -1;
+            background: white;
+            color: #2c3e50;
+        }
+
+        .statement-card.expanded h3 {
+            color: #1a5490;
+        }
+
+        .statement-details {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .statement-card.expanded .statement-details {
+            display: block;
+        }
+
+        .statement-details h4 {
+            color: #1a5490;
+            margin-top: 16px;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+
+        .flow-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 0.95rem;
+        }
+
+        .flow-arrow {
+            margin: 0 12px;
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .balance-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 16px;
+        }
+
+        .balance-item {
+            background: #ecf0f1;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .balance-item strong {
+            color: #1a5490;
+        }
+
+        .connection-info {
+            background: #e3f2fd;
+            border-left: 4px solid #1a5490;
+            padding: 16px;
+            margin-top: 20px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+
+        .connection-info strong {
+            color: #1a5490;
+        }
+
+        /* Tab 2: Financial Ratios */
+        .ratio-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .input-section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .input-section h3 {
+            color: #1a5490;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #1a5490;
+            box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
+        }
+
+        .results-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .ratio-card {
+            background: white;
+            padding: 16px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .ratio-name {
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .ratio-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .ratio-value.good {
+            color: #27ae60;
+        }
+
+        .ratio-value.warning {
+            color: #f39c12;
+        }
+
+        .ratio-value.bad {
+            color: #e74c3c;
+        }
+
+        .ratio-description {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            line-height: 1.4;
+        }
+
+        .health-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .health-indicator.good {
+            background-color: #27ae60;
+        }
+
+        .health-indicator.warning {
+            background-color: #f39c12;
+        }
+
+        .health-indicator.bad {
+            background-color: #e74c3c;
+        }
+
+        @media (max-width: 768px) {
+            .ratio-container {
+                grid-template-columns: 1fr;
+            }
+
+            .results-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Tab 3: Break-Even Analysis */
+        .breakeven-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .slider-section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .slider-section h3 {
+            color: #1a5490;
+            margin-bottom: 24px;
+            font-size: 1.3rem;
+        }
+
+        .slider-group {
+            margin-bottom: 24px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e8eef7;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #1a5490;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #1a5490;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider-value {
+            color: #1a5490;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .chart-section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .chart-section h3 {
+            color: #1a5490;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 24px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .breakeven-results {
+            background: #ecf0f1;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #bdc3c7;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .result-value {
+            color: #1a5490;
+            font-weight: 700;
+        }
+
+        .formula-section {
+            background: #e3f2fd;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            font-size: 0.9rem;
+            color: #1a5490;
+            font-family: 'Courier New', monospace;
+            line-height: 1.8;
+        }
+
+        .formula-section strong {
+            color: #0d47a1;
+        }
+
+        @media (max-width: 768px) {
+            .breakeven-container {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .statements-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>財務報表與會計</h1>
+            <p class="subtitle">互動式學習工具</p>
+        </header>
+
+        <div class="tab-navigation">
+            <button class="tab-btn active" data-tab="tab1">三大報表關聯圖</button>
+            <button class="tab-btn" data-tab="tab2">財務比率計算機</button>
+            <button class="tab-btn" data-tab="tab3">損益兩平分析</button>
+        </div>
+
+        <!-- Tab 1: Financial Statements Diagram -->
+        <div id="tab1" class="tab-content active">
+            <div class="statements-container">
+                <div class="statement-card income" data-statement="income">
+                    <h3>損益表</h3>
+                    <p class="subtitle-card">Income Statement</p>
+                    <div class="statement-details">
+                        <h4>經營流程</h4>
+                        <div class="flow-item">
+                            <span>營收</span>
+                            <span class="flow-arrow">→</span>
+                            <span>營業成本</span>
+                        </div>
+                        <div class="flow-item">
+                            <span>毛利 (營收 - 營業成本)</span>
+                            <span class="flow-arrow">→</span>
+                            <span>營業費用</span>
+                        </div>
+                        <div class="flow-item">
+                            <span>營業利益 (毛利 - 營業費用)</span>
+                            <span class="flow-arrow">→</span>
+                            <span>其他收入/支出</span>
+                        </div>
+                        <div class="flow-item">
+                            <span>稅前淨利</span>
+                            <span class="flow-arrow">→</span>
+                            <span>所得稅</span>
+                        </div>
+                        <div class="flow-item">
+                            <strong>淨利 (稅後淨利)</strong>
+                        </div>
+                        <div class="connection-info">
+                            <strong>關鍵連結：</strong><br>
+                            淨利流入資產負債表的保留盈餘，也影響現金流量表的營業活動。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="statement-card balance" data-statement="balance">
+                    <h3>資產負債表</h3>
+                    <p class="subtitle-card">Balance Sheet</p>
+                    <div class="statement-details">
+                        <h4>資產端</h4>
+                        <div class="balance-item">
+                            <strong>流動資產</strong><br>
+                            現金、應收帳款、存貨等(1年內轉換)
+                        </div>
+                        <div class="balance-item">
+                            <strong>非流動資產</strong><br>
+                            機器設備、房地產、無形資產等
+                        </div>
+
+                        <h4 style="margin-top: 20px;">負債及股東權益端</h4>
+                        <div class="balance-item">
+                            <strong>流動負債</strong><br>
+                            應付帳款、短期借款等(1年內償還)
+                        </div>
+                        <div class="balance-item">
+                            <strong>非流動負債</strong><br>
+                            長期借款、退休金負債等
+                        </div>
+                        <div class="balance-item">
+                            <strong>股東權益</strong><br>
+                            股本、保留盈餘(含本期淨利)
+                        </div>
+
+                        <div class="connection-info">
+                            <strong>基本等式：</strong><br>
+                            資產 = 負債 + 股東權益
+                        </div>
+                    </div>
+                </div>
+
+                <div class="statement-card cash" data-statement="cash">
+                    <h3>現金流量表</h3>
+                    <p class="subtitle-card">Cash Flow Statement</p>
+                    <div class="statement-details">
+                        <h4>營業活動</h4>
+                        <div class="balance-item">
+                            淨利 + 折舊 - 應收帳款增加 - 存貨增加
+                        </div>
+
+                        <h4>投資活動</h4>
+                        <div class="balance-item">
+                            購買固定資產、出售投資等
+                        </div>
+
+                        <h4>籌資活動</h4>
+                        <div class="balance-item">
+                            舉借貸款、發行股票、支付股利等
+                        </div>
+
+                        <div class="connection-info">
+                            <strong>現金變化：</strong><br>
+                            期初現金 + 營業活動 + 投資活動 + 籌資活動 = 期末現金
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="color: #1a5490; margin-bottom: 16px;">三大報表的整合關係</h3>
+                <p style="margin-bottom: 12px;"><strong>損益表 → 資產負債表：</strong> 損益表的淨利會累積到資產負債表的保留盈餘科目。</p>
+                <p style="margin-bottom: 12px;"><strong>損益表/資產負債表 → 現金流量表：</strong> 現金流量表以間接法編製時，從損益表的淨利開始，並調整資產負債表項目的變化。</p>
+                <p><strong>現金流量表：</strong> 反映企業實際的現金進出，比淨利更能反映企業的財務健全度。</p>
+            </div>
+        </div>
+
+        <!-- Tab 2: Financial Ratios Calculator -->
+        <div id="tab2" class="tab-content">
+            <div class="ratio-container">
+                <div class="input-section">
+                    <h3>輸入財務數據</h3>
+
+                    <div class="input-group">
+                        <label for="revenue">營收 (元)</label>
+                        <input type="number" id="revenue" placeholder="例: 1000000" value="1000000">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="cogs">營業成本 (元)</label>
+                        <input type="number" id="cogs" placeholder="例: 600000" value="600000">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="operating_expense">營業費用 (元)</label>
+                        <input type="number" id="operating_expense" placeholder="例: 200000" value="200000">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="net_income">淨利 (元)</label>
+                        <input type="number" id="net_income" placeholder="例: 100000" value="100000">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="total_assets">總資產 (元)</label>
+                        <input type="number" id="total_assets" placeholder="例: 2000000" value="2000000">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="total_liabilities">總負債 (元)</label>
+                        <input type="number" id="total_liabilities" placeholder="例: 1000000" value="1000000">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="equity">股東權益 (元)</label>
+                        <input type="number" id="equity" placeholder="例: 1000000" value="1000000">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="current_assets">流動資產 (元)</label>
+                        <input type="number" id="current_assets" placeholder="例: 800000" value="800000">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="current_liabilities">流動負債 (元)</label>
+                        <input type="number" id="current_liabilities" placeholder="例: 500000" value="500000">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="inventory">存貨 (元)</label>
+                        <input type="number" id="inventory" placeholder="例: 300000" value="300000">
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="color: #1a5490; margin-bottom: 20px;">計算結果</h3>
+                    <div class="results-section">
+                        <div class="ratio-card">
+                            <div class="ratio-name"><span class="health-indicator good"></span>毛利率</div>
+                            <div class="ratio-value" id="gross_margin">40.0%</div>
+                            <div class="ratio-description">毛利 ÷ 營收。越高越好，反映產品競爭力。</div>
+                        </div>
+
+                        <div class="ratio-card">
+                            <div class="ratio-name"><span class="health-indicator good"></span>營業利益率</div>
+                            <div class="ratio-value" id="operating_margin">20.0%</div>
+                            <div class="ratio-description">營業利益 ÷ 營收。衡量經營效率。</div>
+                        </div>
+
+                        <div class="ratio-card">
+                            <div class="ratio-name"><span class="health-indicator good"></span>淨利率</div>
+                            <div class="ratio-value" id="net_margin">10.0%</div>
+                            <div class="ratio-description">淨利 ÷ 營收。反映整體獲利能力。</div>
+                        </div>
+
+                        <div class="ratio-card">
+                            <div class="ratio-name"><span class="health-indicator good"></span>ROE</div>
+                            <div class="ratio-value" id="roe">10.0%</div>
+                            <div class="ratio-description">淨利 ÷ 股東權益。股東投資報酬率。目標 > 15%。</div>
+                        </div>
+
+                        <div class="ratio-card">
+                            <div class="ratio-name"><span class="health-indicator good"></span>ROA</div>
+                            <div class="ratio-value" id="roa">5.0%</div>
+                            <div class="ratio-description">淨利 ÷ 總資產。資產利用效率。越高越好。</div>
+                        </div>
+
+                        <div class="ratio-card">
+                            <div class="ratio-name"><span class="health-indicator good"></span>流動比率</div>
+                            <div class="ratio-value" id="current_ratio">1.60</div>
+                            <div class="ratio-description">流動資產 ÷ 流動負債。短期償債能力。目標 1-2。</div>
+                        </div>
+
+                        <div class="ratio-card">
+                            <div class="ratio-name"><span class="health-indicator good"></span>速動比率</div>
+                            <div class="ratio-value" id="quick_ratio">1.00</div>
+                            <div class="ratio-description">(流動資產-存貨) ÷ 流動負債。更嚴格的短期償債能力。</div>
+                        </div>
+
+                        <div class="ratio-card">
+                            <div class="ratio-name"><span class="health-indicator warning"></span>負債比率</div>
+                            <div class="ratio-value" id="debt_ratio">50.0%</div>
+                            <div class="ratio-description">總負債 ÷ 總資產。財務槓桿程度。越低越安全。</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Break-Even Analysis -->
+        <div id="tab3" class="tab-content">
+            <div class="breakeven-container">
+                <div class="slider-section">
+                    <h3>調整參數</h3>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>固定成本</span>
+                            <span class="slider-value" id="fc_display">100,000 元</span>
+                        </div>
+                        <input type="range" id="fixed_cost" min="10000" max="500000" step="10000" value="100000">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>單位售價</span>
+                            <span class="slider-value" id="price_display">100 元</span>
+                        </div>
+                        <input type="range" id="unit_price" min="10" max="500" step="10" value="100">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>單位變動成本</span>
+                            <span class="slider-value" id="vc_display">60 元</span>
+                        </div>
+                        <input type="range" id="unit_variable_cost" min="5" max="400" step="5" value="60">
+                    </div>
+
+                    <div class="breakeven-results">
+                        <div class="result-row">
+                            <span class="result-label">單位邊際貢獻</span>
+                            <span class="result-value" id="contribution">40 元/單位</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">邊際貢獻率</span>
+                            <span class="result-value" id="contribution_ratio">40.0%</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">損益兩平銷售量</span>
+                            <span class="result-value" id="breakeven_units">2,500 單位</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">損益兩平營收</span>
+                            <span class="result-value" id="breakeven_revenue">250,000 元</span>
+                        </div>
+                    </div>
+
+                    <div class="formula-section">
+                        <strong>公式：</strong><br>
+                        邊際貢獻 = 單位售價 - 單位變動成本<br>
+                        損益兩平點(量) = 固定成本 ÷ 邊際貢獻<br>
+                        損益兩平點(額) = 固定成本 ÷ 邊際貢獻率
+                    </div>
+                </div>
+
+                <div class="chart-section">
+                    <h3>損益兩平點圖表</h3>
+                    <svg id="breakeven_chart" width="100%" height="300" viewBox="0 0 500 300" style="background: white; border-radius: 8px; border: 1px solid #e8eef7;">
+                        <!-- Chart will be drawn here by JavaScript -->
+                    </svg>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #3498db;"></div>
+                            <span>總收入</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #e74c3c;"></div>
+                            <span>總成本</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #27ae60;"></div>
+                            <span>損益兩平點</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== Tab Navigation ====================
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.dataset.tab;
+
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+
+                btn.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // ==================== Tab 1: Statement Cards ====================
+        const statementCards = document.querySelectorAll('.statement-card');
+
+        statementCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const isExpanded = card.classList.contains('expanded');
+
+                statementCards.forEach(c => c.classList.remove('expanded'));
+
+                if (!isExpanded) {
+                    card.classList.add('expanded');
+                }
+            });
+        });
+
+        // ==================== Tab 2: Financial Ratios ====================
+        const inputIds = ['revenue', 'cogs', 'operating_expense', 'net_income', 'total_assets', 'total_liabilities', 'equity', 'current_assets', 'current_liabilities', 'inventory'];
+
+        inputIds.forEach(id => {
+            document.getElementById(id).addEventListener('input', calculateRatios);
+        });
+
+        function calculateRatios() {
+            const revenue = parseFloat(document.getElementById('revenue').value) || 0;
+            const cogs = parseFloat(document.getElementById('cogs').value) || 0;
+            const operating_exp = parseFloat(document.getElementById('operating_expense').value) || 0;
+            const net_income = parseFloat(document.getElementById('net_income').value) || 0;
+            const total_assets = parseFloat(document.getElementById('total_assets').value) || 0;
+            const total_liabilities = parseFloat(document.getElementById('total_liabilities').value) || 0;
+            const equity = parseFloat(document.getElementById('equity').value) || 0;
+            const current_assets = parseFloat(document.getElementById('current_assets').value) || 0;
+            const current_liabilities = parseFloat(document.getElementById('current_liabilities').value) || 0;
+            const inventory = parseFloat(document.getElementById('inventory').value) || 0;
+
+            // Calculate ratios
+            const gross_profit = revenue - cogs;
+            const operating_profit = gross_profit - operating_exp;
+
+            const gross_margin_pct = revenue > 0 ? (gross_profit / revenue * 100) : 0;
+            const operating_margin_pct = revenue > 0 ? (operating_profit / revenue * 100) : 0;
+            const net_margin_pct = revenue > 0 ? (net_income / revenue * 100) : 0;
+            const roe = equity > 0 ? (net_income / equity * 100) : 0;
+            const roa = total_assets > 0 ? (net_income / total_assets * 100) : 0;
+            const current_ratio = current_liabilities > 0 ? (current_assets / current_liabilities) : 0;
+            const quick_assets = current_assets - inventory;
+            const quick_ratio = current_liabilities > 0 ? (quick_assets / current_liabilities) : 0;
+            const debt_ratio = total_assets > 0 ? (total_liabilities / total_assets * 100) : 0;
+
+            // Update display
+            updateRatioDisplay('gross_margin', gross_margin_pct, '%', gross_margin_pct >= 40);
+            updateRatioDisplay('operating_margin', operating_margin_pct, '%', operating_margin_pct >= 15);
+            updateRatioDisplay('net_margin', net_margin_pct, '%', net_margin_pct >= 10);
+            updateRatioDisplay('roe', roe, '%', roe >= 15);
+            updateRatioDisplay('roa', roa, '%', roa >= 5);
+            updateRatioDisplay('current_ratio', current_ratio.toFixed(2), '', current_ratio >= 1 && current_ratio <= 2);
+            updateRatioDisplay('quick_ratio', quick_ratio.toFixed(2), '', quick_ratio >= 0.8);
+            updateRatioDisplay('debt_ratio', debt_ratio, '%', debt_ratio <= 60);
+        }
+
+        function updateRatioDisplay(elementId, value, unit, isGood) {
+            const element = document.getElementById(elementId);
+            const numValue = parseFloat(value);
+
+            element.textContent = value + unit;
+            element.classList.remove('good', 'warning', 'bad');
+
+            if (isGood || (unit === '%' && numValue > 50) || numValue > 1) {
+                element.classList.add('good');
+            } else if (unit === '%' && numValue > 30) {
+                element.classList.add('warning');
+            } else if (unit !== '%' && numValue > 0.5) {
+                element.classList.add('warning');
+            } else {
+                element.classList.add('bad');
+            }
+
+            // Update indicator color in the card
+            const card = element.closest('.ratio-card');
+            const indicator = card.querySelector('.health-indicator');
+            if (indicator) {
+                indicator.classList.remove('good', 'warning', 'bad');
+                if (element.classList.contains('good')) {
+                    indicator.classList.add('good');
+                } else if (element.classList.contains('warning')) {
+                    indicator.classList.add('warning');
+                } else {
+                    indicator.classList.add('bad');
+                }
+            }
+        }
+
+        // Initial calculation
+        calculateRatios();
+
+        // ==================== Tab 3: Break-Even Analysis ====================
+        const sliders = {
+            fixed_cost: document.getElementById('fixed_cost'),
+            unit_price: document.getElementById('unit_price'),
+            unit_variable_cost: document.getElementById('unit_variable_cost')
+        };
+
+        Object.values(sliders).forEach(slider => {
+            slider.addEventListener('input', updateBreakevenChart);
+        });
+
+        function updateBreakevenChart() {
+            const fixed_cost = parseFloat(sliders.fixed_cost.value);
+            const unit_price = parseFloat(sliders.unit_price.value);
+            const unit_variable_cost = parseFloat(sliders.unit_variable_cost.value);
+
+            // Format display values
+            document.getElementById('fc_display').textContent = fixed_cost.toLocaleString('zh-TW') + ' 元';
+            document.getElementById('price_display').textContent = unit_price + ' 元';
+            document.getElementById('vc_display').textContent = unit_variable_cost + ' 元';
+
+            // Calculate break-even point
+            const contribution = unit_price - unit_variable_cost;
+            const contribution_ratio = unit_price > 0 ? (contribution / unit_price * 100) : 0;
+            const breakeven_units = contribution > 0 ? Math.ceil(fixed_cost / contribution) : 0;
+            const breakeven_revenue = breakeven_units * unit_price;
+
+            // Update results
+            document.getElementById('contribution').textContent = contribution.toFixed(0) + ' 元/單位';
+            document.getElementById('contribution_ratio').textContent = contribution_ratio.toFixed(1) + '%';
+            document.getElementById('breakeven_units').textContent = breakeven_units.toLocaleString('zh-TW') + ' 單位';
+            document.getElementById('breakeven_revenue').textContent = breakeven_revenue.toLocaleString('zh-TW') + ' 元';
+
+            // Draw chart
+            drawBreakevenChart(fixed_cost, unit_price, unit_variable_cost, breakeven_units);
+        }
+
+        function drawBreakevenChart(fixed_cost, unit_price, unit_variable_cost, breakeven_units) {
+            const svg = document.getElementById('breakeven_chart');
+
+            // Clear previous chart
+            while (svg.firstChild) {
+                svg.removeChild(svg.firstChild);
+            }
+
+            const width = svg.clientWidth || 500;
+            const height = 300;
+            const padding = 40;
+            const plotWidth = width - padding * 2;
+            const plotHeight = height - padding * 2;
+
+            // Calculate max quantity for x-axis
+            const maxQuantity = Math.max(breakeven_units * 1.5, 100);
+
+            // Calculate scale
+            const xScale = plotWidth / maxQuantity;
+            const maxRevenue = maxQuantity * unit_price;
+            const yScale = plotHeight / maxRevenue;
+
+            // Draw axes
+            const axisColor = '#bdc3c7';
+            const line = (x1, y1, x2, y2, stroke = axisColor, strokeWidth = 1) => {
+                const el = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                el.setAttribute('x1', x1);
+                el.setAttribute('y1', y1);
+                el.setAttribute('x2', x2);
+                el.setAttribute('y2', y2);
+                el.setAttribute('stroke', stroke);
+                el.setAttribute('stroke-width', strokeWidth);
+                svg.appendChild(el);
+            };
+
+            // X and Y axes
+            line(padding, height - padding, width - padding, height - padding);
+            line(padding, padding, padding, height - padding);
+
+            // Grid lines
+            for (let i = 0; i <= maxQuantity; i += Math.ceil(maxQuantity / 5)) {
+                const x = padding + i * xScale;
+                line(x, height - padding, x, height - padding + 5, axisColor, 1);
+            }
+
+            for (let i = 0; i <= maxRevenue; i += Math.ceil(maxRevenue / 5)) {
+                const y = height - padding - i * yScale;
+                line(padding - 5, y, padding, y, axisColor, 1);
+            }
+
+            // Total Revenue Line (Revenue = Unit Price × Quantity)
+            const revenuePath = (quantity) => {
+                const y = height - padding - (quantity * unit_price) * yScale;
+                const x = padding + quantity * xScale;
+                return `${x},${y}`;
+            };
+
+            const revenuePoints = [
+                `${padding},${height - padding}`,
+                revenuePath(maxQuantity)
+            ];
+
+            const revenuePoly = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            revenuePoly.setAttribute('points', revenuePoints.join(' '));
+            revenuePoly.setAttribute('fill', 'none');
+            revenuePoly.setAttribute('stroke', '#3498db');
+            revenuePoly.setAttribute('stroke-width', 2);
+            svg.appendChild(revenuePoly);
+
+            // Total Cost Line (Cost = Fixed Cost + Unit Variable Cost × Quantity)
+            const costPath = (quantity) => {
+                const totalCost = fixed_cost + quantity * unit_variable_cost;
+                const y = height - padding - totalCost * yScale;
+                const x = padding + quantity * xScale;
+                return `${x},${y}`;
+            };
+
+            const costPoints = [
+                `${padding},${height - padding - fixed_cost * yScale}`,
+                costPath(maxQuantity)
+            ];
+
+            const costPoly = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            costPoly.setAttribute('points', costPoints.join(' '));
+            costPoly.setAttribute('fill', 'none');
+            costPoly.setAttribute('stroke', '#e74c3c');
+            costPoly.setAttribute('stroke-width', 2);
+            svg.appendChild(costPoly);
+
+            // Break-even point
+            if (breakeven_units > 0) {
+                const be_revenue = breakeven_units * unit_price;
+                const be_x = padding + breakeven_units * xScale;
+                const be_y = height - padding - be_revenue * yScale;
+
+                // Circle at break-even point
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', be_x);
+                circle.setAttribute('cy', be_y);
+                circle.setAttribute('r', 5);
+                circle.setAttribute('fill', '#27ae60');
+                circle.setAttribute('stroke', 'white');
+                circle.setAttribute('stroke-width', 2);
+                svg.appendChild(circle);
+
+                // Label
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', be_x + 10);
+                text.setAttribute('y', be_y - 10);
+                text.setAttribute('font-size', '12');
+                text.setAttribute('font-weight', 'bold');
+                text.setAttribute('fill', '#27ae60');
+                text.setAttribute('font-family', 'Noto Sans TC, Microsoft JhengHei, sans-serif');
+                text.textContent = `損益兩平點`;
+                svg.appendChild(text);
+
+                const coordText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                coordText.setAttribute('x', be_x + 10);
+                coordText.setAttribute('y', be_y + 10);
+                coordText.setAttribute('font-size', '11');
+                coordText.setAttribute('fill', '#27ae60');
+                coordText.setAttribute('font-family', 'Noto Sans TC, Microsoft JhengHei, sans-serif');
+                coordText.textContent = `${breakeven_units} 單位`;
+                svg.appendChild(coordText);
+            }
+
+            // Axis labels
+            const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            xLabel.setAttribute('x', width / 2);
+            xLabel.setAttribute('y', height - 10);
+            xLabel.setAttribute('text-anchor', 'middle');
+            xLabel.setAttribute('font-size', '12');
+            xLabel.setAttribute('fill', '#2c3e50');
+            xLabel.setAttribute('font-family', 'Noto Sans TC, Microsoft JhengHei, sans-serif');
+            xLabel.textContent = '銷售量 (單位)';
+            svg.appendChild(xLabel);
+
+            const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            yLabel.setAttribute('x', 15);
+            yLabel.setAttribute('y', 20);
+            yLabel.setAttribute('font-size', '12');
+            yLabel.setAttribute('fill', '#2c3e50');
+            yLabel.setAttribute('font-family', 'Noto Sans TC, Microsoft JhengHei, sans-serif');
+            yLabel.textContent = '金額 (元)';
+            svg.appendChild(yLabel);
+        }
+
+        // Initial chart draw
+        updateBreakevenChart();
+    </script>
+</body>
+</html>

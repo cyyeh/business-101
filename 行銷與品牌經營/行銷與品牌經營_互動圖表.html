@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行銷與品牌經營 - 互動圖表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background-color: #f1f5f9;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+            background-color: #f8fafc;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            border: none;
+            background-color: white;
+            color: #667eea;
+            cursor: pointer;
+            border-radius: 20px;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid #e2e8f0;
+        }
+
+        .tab-button:hover {
+            background-color: #f0f4ff;
+            border-color: #667eea;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .content-area {
+            padding: 40px;
+            min-height: 600px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* AIDA Funnel Styles */
+        .funnel-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .funnel-stage {
+            width: 100%;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .funnel-stage::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .funnel-stage:nth-child(1) {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea15 0%, #667eea05 100%);
+            border-left: 4px solid #667eea;
+        }
+
+        .funnel-stage:nth-child(2) {
+            width: 95%;
+            background: linear-gradient(135deg, #6ba3ff15 0%, #6ba3ff05 100%);
+            border-left: 4px solid #6ba3ff;
+        }
+
+        .funnel-stage:nth-child(3) {
+            width: 85%;
+            background: linear-gradient(135deg, #f59e0b15 0%, #f59e0b05 100%);
+            border-left: 4px solid #f59e0b;
+        }
+
+        .funnel-stage:nth-child(4) {
+            width: 70%;
+            background: linear-gradient(135deg, #ec4899 15%, #ec489905 100%);
+            border-left: 4px solid #ec4899;
+        }
+
+        .funnel-stage:nth-child(5) {
+            width: 55%;
+            background: linear-gradient(135deg, #10b98115 0%, #10b98105 100%);
+            border-left: 4px solid #10b981;
+        }
+
+        .funnel-stage:hover {
+            transform: translateX(10px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .stage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .stage-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .conversion-rate {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .stage-details {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .stage-details.show {
+            display: block;
+        }
+
+        .detail-row {
+            margin-bottom: 12px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 0.95em;
+        }
+
+        .detail-content {
+            color: #555;
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+
+        /* STP Strategy Styles */
+        .stp-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .stp-card {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stp-card:nth-child(1) {
+            border-top: 4px solid #667eea;
+            background: linear-gradient(135deg, #667eea08 0%, transparent 100%);
+        }
+
+        .stp-card:nth-child(2) {
+            border-top: 4px solid #f59e0b;
+            background: linear-gradient(135deg, #f59e0b08 0%, transparent 100%);
+        }
+
+        .stp-card:nth-child(3) {
+            border-top: 4px solid #10b981;
+            background: linear-gradient(135deg, #10b98108 0%, transparent 100%);
+        }
+
+        .stp-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .stp-card h3 {
+            font-size: 1.4em;
+            margin-bottom: 16px;
+        }
+
+        .stp-card:nth-child(1) h3 {
+            color: #667eea;
+        }
+
+        .stp-card:nth-child(2) h3 {
+            color: #f59e0b;
+        }
+
+        .stp-card:nth-child(3) h3 {
+            color: #10b981;
+        }
+
+        .stp-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .method-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            font-size: 0.95em;
+        }
+
+        .stp-card:nth-child(2) .method-item {
+            border-left-color: #f59e0b;
+        }
+
+        .stp-card:nth-child(3) .method-item {
+            border-left-color: #10b981;
+        }
+
+        .method-item strong {
+            display: block;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .method-item em {
+            font-style: normal;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .positioning-map {
+            margin-top: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        /* 4P/7P Styles */
+        .grid-4p {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .p-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .p-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, currentColor, currentColor);
+        }
+
+        .p-card:nth-child(1) {
+            color: #667eea;
+            background: linear-gradient(135deg, #667eea08 0%, transparent 100%);
+        }
+
+        .p-card:nth-child(2) {
+            color: #f59e0b;
+            background: linear-gradient(135deg, #f59e0b08 0%, transparent 100%);
+        }
+
+        .p-card:nth-child(3) {
+            color: #10b981;
+            background: linear-gradient(135deg, #10b98108 0%, transparent 100%);
+        }
+
+        .p-card:nth-child(4) {
+            color: #ec4899;
+            background: linear-gradient(135deg, #ec489908 0%, transparent 100%);
+        }
+
+        .p-card:nth-child(5) {
+            color: #8b5cf6;
+            background: linear-gradient(135deg, #8b5cf608 0%, transparent 100%);
+        }
+
+        .p-card:nth-child(6) {
+            color: #14b8a6;
+            background: linear-gradient(135deg, #14b8a608 0%, transparent 100%);
+        }
+
+        .p-card:nth-child(7) {
+            color: #06b6d4;
+            background: linear-gradient(135deg, #06b6d408 0%, transparent 100%);
+        }
+
+        .p-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .p-icon {
+            font-size: 2.5em;
+            margin-bottom: 12px;
+        }
+
+        .p-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 12px;
+            color: currentColor;
+        }
+
+        .p-card-details {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .p-card-details.show {
+            display: block;
+        }
+
+        .toggle-7p-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-7p-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .toggle-7p-btn.active {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        /* Pricing Strategy Styles */
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card:nth-child(1) {
+            border-top: 4px solid #667eea;
+        }
+
+        .pricing-card:nth-child(2) {
+            border-top: 4px solid #f59e0b;
+        }
+
+        .pricing-card:nth-child(3) {
+            border-top: 4px solid #10b981;
+        }
+
+        .pricing-card:nth-child(4) {
+            border-top: 4px solid #ec4899;
+        }
+
+        .pricing-card:nth-child(5) {
+            border-top: 4px solid #8b5cf6;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .pricing-card h3 {
+            font-size: 1.2em;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .pricing-definition {
+            font-size: 0.95em;
+            color: #666;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+
+        .pricing-details {
+            display: none;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .pricing-details.show {
+            display: block;
+        }
+
+        .pricing-row {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .pricing-row strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .pricing-comparison-chart {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 2px solid #e2e8f0;
+            margin-top: 20px;
+        }
+
+        .price-curve-container {
+            margin-top: 24px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .responsive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+
+            .tabs-container {
+                padding: 15px;
+                gap: 8px;
+            }
+
+            .tab-button {
+                padding: 10px 16px;
+                font-size: 0.9em;
+            }
+
+            .stp-container, .grid-4p, .pricing-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .stage-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+
+        /* Utility Classes */
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>行銷與品牌經營</h1>
+            <p>互動式行銷策略與工具</p>
+        </div>
+
+        <div class="tabs-container">
+            <button class="tab-button active" data-tab="tab1">顧客旅程漏斗</button>
+            <button class="tab-button" data-tab="tab2">STP 策略流程</button>
+            <button class="tab-button" data-tab="tab3">行銷 4P/7P</button>
+            <button class="tab-button" data-tab="tab4">定價策略比較</button>
+        </div>
+
+        <div class="content-area">
+            <!-- TAB 1: AIDA Funnel -->
+            <div id="tab1" class="tab-content active">
+                <h2 class="section-title">顧客旅程漏斗 (AIDA 模型)</h2>
+                <p style="margin-bottom: 24px; color: #666;">點擊每個階段了解詳細資訊、行銷策略與關鍵指標</p>
+
+                <div class="funnel-container">
+                    <!-- Attention -->
+                    <div class="funnel-stage" onclick="toggleStageDetails(this)">
+                        <div class="stage-header">
+                            <span class="stage-title">1️⃣ 注意 (Attention)</span>
+                            <span class="conversion-rate">100%</span>
+                        </div>
+                        <div class="stage-details">
+                            <div class="detail-row">
+                                <div class="detail-label">顧客想法：</div>
+                                <div class="detail-content">「我沒有聽過這個品牌」 → 「這個品牌存在」</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">行銷策略：</div>
+                                <div class="detail-content">廣告投放、社群媒體行銷、公關活動、網紅合作、內容行銷、SEO</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">關鍵指標：</div>
+                                <div class="detail-content">曝光率 (Impressions)、到達人數 (Reach)、品牌知名度</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interest -->
+                    <div class="funnel-stage" onclick="toggleStageDetails(this)">
+                        <div class="stage-header">
+                            <span class="stage-title">2️⃣ 興趣 (Interest)</span>
+                            <span class="conversion-rate">70%</span>
+                        </div>
+                        <div class="stage-details">
+                            <div class="detail-row">
+                                <div class="detail-label">顧客想法：</div>
+                                <div class="detail-content">「這個品牌可能很有趣」 → 「我想了解更多」</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">行銷策略：</div>
+                                <div class="detail-content">教育性內容、部落格文章、影片教程、客戶見證、產品比較資訊</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">關鍵指標：</div>
+                                <div class="detail-content">點擊率 (CTR)、頁面停留時間、影片觀看率、內容互動</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Desire -->
+                    <div class="funnel-stage" onclick="toggleStageDetails(this)">
+                        <div class="stage-header">
+                            <span class="stage-title">3️⃣ 慾望 (Desire)</span>
+                            <span class="conversion-rate">50%</span>
+                        </div>
+                        <div class="stage-details">
+                            <div class="detail-row">
+                                <div class="detail-label">顧客想法：</div>
+                                <div class="detail-content">「我想要這個產品」 → 「這個產品是否真的適合我？」</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">行銷策略：</div>
+                                <div class="detail-content">產品詳細說明、用戶評論、案例研究、限時優惠、免費試用、個人化推薦</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">關鍵指標：</div>
+                                <div class="detail-content">轉換率前期 (Pre-conversion Rate)、購物車加入率、產品頁面觀看</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action -->
+                    <div class="funnel-stage" onclick="toggleStageDetails(this)">
+                        <div class="stage-header">
+                            <span class="stage-title">4️⃣ 行動 (Action)</span>
+                            <span class="conversion-rate">30%</span>
+                        </div>
+                        <div class="stage-details">
+                            <div class="detail-row">
+                                <div class="detail-label">顧客想法：</div>
+                                <div class="detail-content">「我現在要購買」 → 「交易完成」</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">行銷策略：</div>
+                                <div class="detail-content">簡化購買流程、多元支付方式、購買保障、折扣碼、緊急感營造</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">關鍵指標：</div>
+                                <div class="detail-content">轉換率 (Conversion Rate)、購買金額 (AOV)、購物車放棄率</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loyalty -->
+                    <div class="funnel-stage" onclick="toggleStageDetails(this)">
+                        <div class="stage-header">
+                            <span class="stage-title">5️⃣ 忠誠 (Loyalty)</span>
+                            <span class="conversion-rate">20%</span>
+                        </div>
+                        <div class="stage-details">
+                            <div class="detail-row">
+                                <div class="detail-label">顧客想法：</div>
+                                <div class="detail-content">「我滿意這個購買」 → 「我會推薦給朋友」</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">行銷策略：</div>
+                                <div class="detail-content">忠誠計畫、VIP 優惠、跟進客服、推薦計畫、社群互動、內容訂閱</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">關鍵指標：</div>
+                                <div class="detail-content">回購率 (Repeat Purchase)、客戶終身價值 (LTV)、淨推薦值 (NPS)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: STP Strategy -->
+            <div id="tab2" class="tab-content">
+                <h2 class="section-title">STP 策略流程</h2>
+                <p style="margin-bottom: 24px; color: #666;">Segmentation → Targeting → Positioning 的完整行銷策略框架</p>
+
+                <div class="stp-container">
+                    <!-- Segmentation -->
+                    <div class="stp-card" onclick="toggleSTPDetails(this)">
+                        <h3>1️⃣ 市場區隔 (Segmentation)</h3>
+                        <p style="color: #666; margin-bottom: 16px;">將整體市場分解成具有相似需求的群體</p>
+                        <div class="stp-methods">
+                            <div class="method-item">
+                                <strong>地理區隔 (Geographic)</strong>
+                                <em>依地區、城市、氣候區分。例如：北台灣消費者 vs 南台灣消費者</em>
+                            </div>
+                            <div class="method-item">
+                                <strong>人口統計 (Demographic)</strong>
+                                <em>依年齡、性別、收入、教育、家庭狀況區分。例如：25-35歲上班族女性</em>
+                            </div>
+                            <div class="method-item">
+                                <strong>心理區隔 (Psychographic)</strong>
+                                <em>依生活風格、價值觀、個性區分。例如：環保意識強、追求品質生活</em>
+                            </div>
+                            <div class="method-item">
+                                <strong>行為區隔 (Behavioral)</strong>
+                                <em>依購買行為、使用量、忠誠度區分。例如：重度使用者、季節性購買</em>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Targeting -->
+                    <div class="stp-card" onclick="toggleSTPDetails(this)">
+                        <h3>2️⃣ 目標市場 (Targeting)</h3>
+                        <p style="color: #666; margin-bottom: 16px;">選擇最有價值、最適合的市場區隔作為目標</p>
+                        <div class="stp-methods">
+                            <div class="method-item">
+                                <strong>無差異行銷 (Undifferentiated)</strong>
+                                <em>用同一個策略吸引所有消費者。適合：大眾商品、生活必需品</em>
+                            </div>
+                            <div class="method-item">
+                                <strong>差異化行銷 (Differentiated)</strong>
+                                <em>針對不同區隔設計不同策略。適合：中大型企業、多樣化產品</em>
+                            </div>
+                            <div class="method-item">
+                                <strong>集中化行銷 (Concentrated)</strong>
+                                <em>專注於單一特定區隔。適合：新創公司、利基產品</em>
+                            </div>
+                            <div class="method-item">
+                                <strong>微型行銷 (Micro-targeting)</strong>
+                                <em>使用大數據精準鎖定個別消費者。適合：科技公司、電商平台</em>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Positioning -->
+                    <div class="stp-card" onclick="toggleSTPDetails(this)">
+                        <h3>3️⃣ 市場定位 (Positioning)</h3>
+                        <p style="color: #666; margin-bottom: 16px;">在消費者心目中建立獨特的品牌形象</p>
+                        <div class="stp-methods">
+                            <div class="method-item">
+                                <strong>價格定位</strong>
+                                <em>高端奢侈 vs 中端實用 vs 低端經濟。例如：LV (高端) vs Uniqlo (中端)</em>
+                            </div>
+                            <div class="method-item">
+                                <strong>品質定位</strong>
+                                <em>頂級品質 vs 普通品質。例如：精品手錶 vs 平價手錶</em>
+                            </div>
+                            <div class="method-item">
+                                <strong>創新定位</strong>
+                                <em>科技創新 vs 傳統穩定。例如：Tesla (創新) vs Toyota (穩定)</em>
+                            </div>
+                            <div class="method-item">
+                                <strong>形象定位</strong>
+                                <em>年輕時尚 vs 成熟專業 vs 環保永續。例如：Nike (年輕) vs Gucci (時尚)</em>
+                            </div>
+                        </div>
+                        <div class="positioning-map">
+                            <p style="font-size: 0.9em; color: #666; text-align: center; margin-bottom: 12px;">定位地圖示例</p>
+                            <svg viewBox="0 0 400 300" style="width: 100%; max-width: 400px; margin: 0 auto; display: block;">
+                                <!-- 軸線 -->
+                                <line x1="50" y1="250" x2="350" y2="250" stroke="#ccc" stroke-width="2"/>
+                                <line x1="50" y1="50" x2="50" y2="250" stroke="#ccc" stroke-width="2"/>
+
+                                <!-- 軸標籤 -->
+                                <text x="360" y="260" font-size="12" fill="#666">高品質</text>
+                                <text x="20" y="30" font-size="12" fill="#666">低價</text>
+                                <text x="360" y="30" font-size="12" fill="#666">高價</text>
+                                <text x="10" y="260" font-size="12" fill="#666">低品質</text>
+
+                                <!-- 品牌點位 -->
+                                <circle cx="120" cy="180" r="6" fill="#667eea"/>
+                                <text x="100" y="200" font-size="11" fill="#333">小米</text>
+
+                                <circle cx="280" cy="100" r="6" fill="#f59e0b"/>
+                                <text x="260" y="120" font-size="11" fill="#333">Apple</text>
+
+                                <circle cx="320" cy="60" r="6" fill="#ec4899"/>
+                                <text x="300" y="80" font-size="11" fill="#333">LVMH</text>
+
+                                <circle cx="100" cy="220" r="6" fill="#10b981"/>
+                                <text x="70" y="240" font-size="11" fill="#333">屈臣氏</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: 4P/7P -->
+            <div id="tab3" class="tab-content">
+                <h2 class="section-title">行銷組合 (Marketing Mix)</h2>
+                <p style="margin-bottom: 24px; color: #666;">點擊卡片查看詳細內容 •
+                    <button class="toggle-7p-btn" onclick="toggle7P()">顯示 7P</button>
+                </p>
+
+                <div class="grid-4p" id="pGrid">
+                    <!-- Product -->
+                    <div class="p-card" onclick="togglePCardDetails(this)">
+                        <div class="p-icon">📦</div>
+                        <h3>產品 (Product)</h3>
+                        <p style="color: #666; font-size: 0.95em;">提供給消費者的核心商品或服務</p>
+                        <div class="p-card-details">
+                            <div class="detail-row">
+                                <div class="detail-label">核心要素：</div>
+                                <div class="detail-content">功能、品質、設計、品牌、包裝、保固</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">策略範例：</div>
+                                <div class="detail-content">推出新品、升級功能、擴展產品線</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">實例：</div>
+                                <div class="detail-content">iPhone 新增相機功能、Tesla 推出新電池技術</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="p-card" onclick="togglePCardDetails(this)">
+                        <div class="p-icon">💰</div>
+                        <h3>價格 (Price)</h3>
+                        <p style="color: #666; font-size: 0.95em;">消費者購買產品或服務時支付的金額</p>
+                        <div class="p-card-details">
+                            <div class="detail-row">
+                                <div class="detail-label">核心要素：</div>
+                                <div class="detail-content">定價策略、折扣、優惠、支付方式、分期付款</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">策略範例：</div>
+                                <div class="detail-content">成本加成法、心理定價、撇脂定價、滲透定價</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">實例：</div>
+                                <div class="detail-content">新遊戲機首發高價、Netflix 分級訂閱價格</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Place -->
+                    <div class="p-card" onclick="togglePCardDetails(this)">
+                        <div class="p-icon">🏪</div>
+                        <h3>通路 (Place)</h3>
+                        <p style="color: #666; font-size: 0.95em;">消費者購買產品的地點與方式</p>
+                        <div class="p-card-details">
+                            <div class="detail-row">
+                                <div class="detail-label">核心要素：</div>
+                                <div class="detail-content">直銷、代理商、零售店、電商、物流配送</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">策略範例：</div>
+                                <div class="detail-content">多通路販售、線上線下整合、擴展實體店鋪</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">實例：</div>
+                                <div class="detail-content">Apple 在官網和授權經銷商販售、Amazon 多國配送</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Promotion -->
+                    <div class="p-card" onclick="togglePCardDetails(this)">
+                        <div class="p-icon">📢</div>
+                        <h3>推廣 (Promotion)</h3>
+                        <p style="color: #666; font-size: 0.95em;">與消費者溝通產品優勢的方式</p>
+                        <div class="p-card-details">
+                            <div class="detail-row">
+                                <div class="detail-label">核心要素：</div>
+                                <div class="detail-content">廣告、銷售推廣、公關、直銷、口碑行銷</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">策略範例：</div>
+                                <div class="detail-content">電視廣告、社群媒體、網紅合作、促銷活動</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">實例：</div>
+                                <div class="detail-content">可口可樂全球廣告、Spotify 免費試用推廣</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- People (7P) -->
+                    <div class="p-card" onclick="togglePCardDetails(this)" style="display: none;">
+                        <div class="p-icon">👥</div>
+                        <h3>人力 (People)</h3>
+                        <p style="color: #666; font-size: 0.95em;">提供服務的員工與人力資源</p>
+                        <div class="p-card-details">
+                            <div class="detail-row">
+                                <div class="detail-label">核心要素：</div>
+                                <div class="detail-content">員工培訓、服務品質、客服、團隊文化</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">策略範例：</div>
+                                <div class="detail-content">提升員工技能、改善客戶服務、建立品牌大使</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">實例：</div>
+                                <div class="detail-content">Ritz-Carlton 的五星級客服文化、Disney 員工的親切態度</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Process (7P) -->
+                    <div class="p-card" onclick="togglePCardDetails(this)" style="display: none;">
+                        <div class="p-icon">⚙️</div>
+                        <h3>流程 (Process)</h3>
+                        <p style="color: #666; font-size: 0.95em;">產品或服務的交付流程與系統</p>
+                        <div class="p-card-details">
+                            <div class="detail-row">
+                                <div class="detail-label">核心要素：</div>
+                                <div class="detail-content">服務流程、購買體驗、簽約程序、物流系統</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">策略範例：</div>
+                                <div class="detail-content">簡化購買步驟、自動化服務、改善等候時間</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">實例：</div>
+                                <div class="detail-content">Amazon 一鍵購買、銀行 APP 快速轉帳、餐廳外送系統</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Physical Evidence (7P) -->
+                    <div class="p-card" onclick="togglePCardDetails(this)" style="display: none;">
+                        <div class="p-icon">🏢</div>
+                        <h3>實體環境 (Physical Evidence)</h3>
+                        <p style="color: #666; font-size: 0.95em;">營造消費者體驗的物理環境與視覺</p>
+                        <div class="p-card-details">
+                            <div class="detail-row">
+                                <div class="detail-label">核心要素：</div>
+                                <div class="detail-content">店面設計、品牌視覺、包裝、設施、環境氛圍</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">策略範例：</div>
+                                <div class="detail-content">優化店面裝潢、提升品牌視覺、改善客戶設施</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">實例：</div>
+                                <div class="detail-content">星巴克 的舒適環境、蘋果店 的簡約設計、五星酒店的奢華布置</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: Pricing Strategies -->
+            <div id="tab4" class="tab-content">
+                <h2 class="section-title">定價策略比較</h2>
+                <p style="margin-bottom: 24px; color: #666;">5種常見的定價策略特點、應用情境與實例</p>
+
+                <div class="pricing-cards">
+                    <!-- Cost Plus Pricing -->
+                    <div class="pricing-card" onclick="togglePricingDetails(this)">
+                        <h3>成本加成定價</h3>
+                        <div class="pricing-definition">「成本 + 預設利潤率」</div>
+                        <div class="pricing-details">
+                            <div class="pricing-row">
+                                <strong>定義：</strong>
+                                根據生產成本加上固定比例利潤來定價。
+                            </div>
+                            <div class="pricing-row">
+                                <strong>何時使用：</strong>
+                                成本結構明確的產品 (B2B、製造業)
+                            </div>
+                            <div class="pricing-row">
+                                <strong>實例：</strong>
+                                餐廳食材成本 $50，加成 100% = 售價 $100
+                            </div>
+                            <div class="pricing-row">
+                                <strong>優點：</strong>
+                                計算簡單、利潤穩定、易於管理
+                            </div>
+                            <div class="pricing-row">
+                                <strong>缺點：</strong>
+                                忽視市場需求、不適應市場變化、可能無法競爭
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Value-Based Pricing -->
+                    <div class="pricing-card" onclick="togglePricingDetails(this)">
+                        <h3>價值定價</h3>
+                        <div class="pricing-definition">「根據消費者感知價值定價」</div>
+                        <div class="pricing-details">
+                            <div class="pricing-row">
+                                <strong>定義：</strong>
+                                根據消費者認為的產品價值來定價，而非成本。
+                            </div>
+                            <div class="pricing-row">
+                                <strong>何時使用：</strong>
+                                差異化產品、高端品牌、創新產品
+                            </div>
+                            <div class="pricing-row">
+                                <strong>實例：</strong>
+                                精品名牌包成本 $200，但消費者願付 $2000 (品牌+地位)
+                            </div>
+                            <div class="pricing-row">
+                                <strong>優點：</strong>
+                                最大化利潤、反映品牌價值、消費者願意付款
+                            </div>
+                            <div class="pricing-row">
+                                <strong>缺點：</strong>
+                                難以準確衡量感知價值、市場調查成本高
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Penetration Pricing -->
+                    <div class="pricing-card" onclick="togglePricingDetails(this)">
+                        <h3>滲透定價</h3>
+                        <div class="pricing-definition">「低價快速佔領市場份額」</div>
+                        <div class="pricing-details">
+                            <div class="pricing-row">
+                                <strong>定義：</strong>
+                                以低於競爭對手的價格進入市場，快速積累客戶。
+                            </div>
+                            <div class="pricing-row">
+                                <strong>何時使用：</strong>
+                                新進入者、要搶奪市場份額、高彈性需求產品
+                            </div>
+                            <div class="pricing-row">
+                                <strong>實例：</strong>
+                                Netflix 進入市場時首月 $9.99；小米手機低價進入市場
+                            </div>
+                            <div class="pricing-row">
+                                <strong>優點：</strong>
+                                快速獲得客戶、建立市場份額、提高品牌認知
+                            </div>
+                            <div class="pricing-row">
+                                <strong>缺點：</strong>
+                                短期利潤低、難以後期提價、容易陷入價格戰
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skimming Pricing -->
+                    <div class="pricing-card" onclick="togglePricingDetails(this)">
+                        <h3>撇脂定價</h3>
+                        <div class="pricing-definition">「高價先賺早期採用者」</div>
+                        <div class="pricing-details">
+                            <div class="pricing-row">
+                                <strong>定義：</strong>
+                                新產品上市時設定高價，之後逐步降價。
+                            </div>
+                            <div class="pricing-row">
+                                <strong>何時使用：</strong>
+                                創新產品、獨特優勢、高端市場、有專利保護
+                            </div>
+                            <div class="pricing-row">
+                                <strong>實例：</strong>
+                                新 iPhone 首發 $999，半年後降至 $849；電子產品首發高價
+                            </div>
+                            <div class="pricing-row">
+                                <strong>優點：</strong>
+                                最大化利潤、吸引高端客戶、回收研發成本快
+                            </div>
+                            <div class="pricing-row">
+                                <strong>缺點：</strong>
+                                市場規模較小、易被競爭者進入、市場滲透率低
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Psychological Pricing -->
+                    <div class="pricing-card" onclick="togglePricingDetails(this)">
+                        <h3>心理定價</h3>
+                        <div class="pricing-definition">「利用消費者心理影響購買決策」</div>
+                        <div class="pricing-details">
+                            <div class="pricing-row">
+                                <strong>定義：</strong>
+                                利用消費者的心理偏好來設定價格，如 $9.99 而非 $10。
+                            </div>
+                            <div class="pricing-row">
+                                <strong>何時使用：</strong>
+                                消費品、零售業、任何 B2C 產品
+                            </div>
+                            <div class="pricing-row">
+                                <strong>實例：</strong>
+                                商品定價 $2.99 (而非 $3)、限時特價 $99 (原價 $199)
+                            </div>
+                            <div class="pricing-row">
+                                <strong>優點：</strong>
+                                提高購買率、感知更優惠、容易記憶、創造緊急感
+                            </div>
+                            <div class="pricing-row">
+                                <strong>缺點：</strong>
+                                易被消費者識穿、不適合理性採購、長期效果遞減
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pricing-comparison-chart">
+                    <h3 style="margin-bottom: 20px;">滲透 vs 撇脂 定價曲線</h3>
+                    <svg viewBox="0 0 500 300" style="width: 100%; max-width: 500px;">
+                        <!-- 軸線 -->
+                        <line x1="50" y1="250" x2="480" y2="250" stroke="#ccc" stroke-width="2"/>
+                        <line x1="50" y1="20" x2="50" y2="250" stroke="#ccc" stroke-width="2"/>
+
+                        <!-- 網格線 -->
+                        <line x1="50" y1="100" x2="480" y2="100" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+                        <line x1="50" y1="150" x2="480" y2="150" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+                        <line x1="50" y1="200" x2="480" y2="200" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+
+                        <!-- 軸標籤 -->
+                        <text x="490" y="260" font-size="12" fill="#666">時間</text>
+                        <text x="20" y="130" font-size="12" fill="#666">價格</text>
+
+                        <!-- 撇脂定價曲線 (高價下降) -->
+                        <path d="M 80 80 Q 200 120 350 180" stroke="#ec4899" stroke-width="3" fill="none"/>
+                        <circle cx="80" cy="80" r="5" fill="#ec4899"/>
+                        <text x="70" y="70" font-size="12" fill="#ec4899" font-weight="600">撇脂</text>
+
+                        <!-- 滲透定價曲線 (低價提升) -->
+                        <path d="M 80 200 Q 200 150 350 110" stroke="#10b981" stroke-width="3" fill="none"/>
+                        <circle cx="80" cy="200" r="5" fill="#10b981"/>
+                        <text x="70" y="220" font-size="12" fill="#10b981" font-weight="600">滲透</text>
+
+                        <!-- 說明文字 -->
+                        <text x="360" y="100" font-size="11" fill="#666">高利潤</text>
+                        <text x="360" y="200" font-size="11" fill="#666">低利潤高量</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            const allTabs = document.querySelectorAll('.tab-content');
+            allTabs.forEach(tab => tab.classList.remove('active'));
+
+            // Remove active class from all buttons
+            const allButtons = document.querySelectorAll('.tab-button');
+            allButtons.forEach(btn => btn.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        // Tab button event listeners
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                switchTab(this.dataset.tab);
+            });
+        });
+
+        // Toggle AIDA stage details
+        function toggleStageDetails(element) {
+            const details = element.querySelector('.stage-details');
+            details.classList.toggle('show');
+        }
+
+        // Toggle STP card details
+        function toggleSTPDetails(element) {
+            element.style.boxShadow = '0 12px 24px rgba(0, 0, 0, 0.15)';
+        }
+
+        // Toggle P Card details
+        function togglePCardDetails(element) {
+            const details = element.querySelector('.p-card-details');
+            details.classList.toggle('show');
+        }
+
+        // Toggle 7P display
+        function toggle7P() {
+            const btn = event.target;
+            const allCards = document.querySelectorAll('.p-card');
+            const hiddenCards = document.querySelectorAll('.p-card[style*="display: none"]');
+
+            if (hiddenCards.length > 0) {
+                // Show 7P
+                allCards.forEach(card => card.style.display = '');
+                btn.classList.add('active');
+                btn.textContent = '隱藏 7P';
+            } else {
+                // Hide 7P (show only 4P)
+                const cardsToHide = Array.from(allCards).slice(4);
+                cardsToHide.forEach(card => card.style.display = 'none');
+                btn.classList.remove('active');
+                btn.textContent = '顯示 7P';
+            }
+        }
+
+        // Toggle pricing card details
+        function togglePricingDetails(element) {
+            const details = element.querySelector('.pricing-details');
+            details.classList.toggle('show');
+        }
+
+        // Add initial state - hide 7P by default
+        window.addEventListener('DOMContentLoaded', function() {
+            const pCards = document.querySelectorAll('.p-card');
+            const cardsToHide = Array.from(pCards).slice(4);
+            cardsToHide.forEach(card => card.style.display = 'none');
+        });
+    </script>
+</body>
+</html>

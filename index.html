@@ -226,6 +226,7 @@
           let type = 'professional';
           if (text.includes('白話') || url.includes('白話')) type = 'plain';
           if (url.endsWith('.html')) type = 'interactive';
+          if (text.includes('案例') || url.includes('案例')) type = 'casestudy';
           cur.links.push({ text: text.trim(), url: url.trim(), description: desc.trim(), type });
         }
       }
@@ -236,6 +237,7 @@
     function tabLabel(link) {
       if (link.type === 'plain') return '白話版';
       if (link.type === 'interactive') return '互動圖表';
+      if (link.type === 'casestudy') return '案例分析';
       return '專業版';
     }
 

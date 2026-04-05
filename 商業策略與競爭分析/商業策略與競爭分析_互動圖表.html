@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商業策略與競爭分析 - 互動圖表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background-color: #f1f5f9;
+            color: #2d3748;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 12px;
+            padding: 20px 30px;
+            background-color: #fafbfc;
+            border-bottom: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            border: none;
+            background: white;
+            color: #4a5568;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab-button:hover {
+            background: #f7fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .content {
+            padding: 40px 30px;
+            min-height: 600px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* SWOT 分析工具 */
+        .swot-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .swot-quadrant {
+            padding: 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .swot-quadrant:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .swot-quadrant.strength {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .swot-quadrant.weakness {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .swot-quadrant.opportunity {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+
+        .swot-quadrant.threat {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .swot-header {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .swot-content {
+            flex: 1;
+            font-size: 0.95em;
+            font-weight: 400;
+            opacity: 0.95;
+        }
+
+        .swot-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .swot-content li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .swot-content li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+        }
+
+        .swot-strategies {
+            margin-top: 30px;
+            padding: 30px;
+            background: #f0f4f8;
+            border-radius: 12px;
+        }
+
+        .swot-strategies h3 {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+
+        .strategies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .strategy-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .strategy-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .strategy-card p {
+            font-size: 0.95em;
+            color: #4a5568;
+        }
+
+        /* Porter五力模型 */
+        .porter-container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            padding: 40px 20px;
+        }
+
+        .porter-diagram {
+            display: grid;
+            grid-template-columns: 1fr 250px 1fr;
+            grid-template-rows: auto auto auto;
+            gap: 20px;
+            align-items: center;
+            justify-items: center;
+            margin-bottom: 40px;
+        }
+
+        .force-card {
+            width: 180px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            border: 3px solid;
+        }
+
+        .force-card:hover {
+            transform: scale(1.05);
+        }
+
+        .force-card.threat-new-entrants {
+            grid-column: 2;
+            grid-row: 1;
+            border-color: #ef4444;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+            color: #7f1d1d;
+        }
+
+        .force-card.bargaining-suppliers {
+            grid-column: 1;
+            grid-row: 2;
+            border-color: #f59e0b;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%);
+            color: #7c2d12;
+        }
+
+        .force-card.competitive-rivalry {
+            grid-column: 2;
+            grid-row: 2;
+            width: 200px;
+            padding: 25px;
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+            color: #4c1d95;
+            font-size: 0.95em;
+        }
+
+        .force-card.bargaining-buyers {
+            grid-column: 3;
+            grid-row: 2;
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(29, 78, 216, 0.1) 100%);
+            color: #1e3a8a;
+        }
+
+        .force-card.threat-substitutes {
+            grid-column: 2;
+            grid-row: 3;
+            border-color: #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+            color: #065f46;
+        }
+
+        .porter-detail {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .porter-detail.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .porter-detail h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .detail-section {
+            margin-bottom: 20px;
+        }
+
+        .detail-section h4 {
+            color: #4a5568;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .detail-section p {
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        /* Business Model Canvas */
+        .bmc-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1.2fr 1fr 1.2fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .bmc-block {
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bmc-block:hover {
+            border-color: #667eea;
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .bmc-block.partners {
+            grid-column: 1;
+            grid-row: 1 / 3;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(29, 78, 216, 0.05) 100%);
+            border-color: #3b82f6;
+        }
+
+        .bmc-block.activities {
+            grid-column: 2;
+            grid-row: 1 / 3;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(217, 119, 6, 0.05) 100%);
+            border-color: #f59e0b;
+        }
+
+        .bmc-block.resources {
+            grid-column: 1;
+            grid-row: 2;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(109, 40, 217, 0.05) 100%);
+            border-color: #8b5cf6;
+        }
+
+        .bmc-block.proposition {
+            grid-column: 3;
+            grid-row: 1 / 3;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.05) 100%);
+            border-color: #10b981;
+            font-weight: 600;
+            font-size: 1.05em;
+        }
+
+        .bmc-block.relationships {
+            grid-column: 4;
+            grid-row: 1 / 3;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(220, 38, 38, 0.05) 100%);
+            border-color: #ef4444;
+        }
+
+        .bmc-block.channels {
+            grid-column: 5;
+            grid-row: 1 / 3;
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.05) 0%, rgba(219, 39, 119, 0.05) 100%);
+            border-color: #ec4899;
+        }
+
+        .bmc-block.segment {
+            grid-column: 5;
+            grid-row: 1 / 3;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.05) 0%, rgba(147, 51, 234, 0.05) 100%);
+            border-color: #a855f7;
+        }
+
+        .bmc-block.costs {
+            grid-column: 1 / 3;
+            grid-row: 3;
+            background: linear-gradient(135deg, rgba(107, 114, 128, 0.05) 0%, rgba(75, 85, 99, 0.05) 100%);
+            border-color: #6b7280;
+        }
+
+        .bmc-block.revenue {
+            grid-column: 4 / 6;
+            grid-row: 3;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.05) 100%);
+            border-color: #10b981;
+        }
+
+        .bmc-title {
+            font-weight: 700;
+            font-size: 0.95em;
+            margin-bottom: 12px;
+            color: #2d3748;
+        }
+
+        .bmc-content {
+            font-size: 0.9em;
+            color: #4a5568;
+            flex: 1;
+        }
+
+        .bmc-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .bmc-content li {
+            padding: 5px 0;
+            padding-left: 15px;
+            position: relative;
+            font-size: 0.9em;
+        }
+
+        .bmc-content li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* 策略比較 */
+        .strategy-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .strategy-type-card {
+            padding: 30px;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .strategy-type-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .strategy-type-card.cost-leadership {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+
+        .strategy-type-card.differentiation {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .strategy-type-card.focus {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .strategy-type-card h3 {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .strategy-type-card.active {
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+            transform: scale(1.02) translateY(-8px);
+        }
+
+        .strategy-feature {
+            font-size: 0.95em;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .strategy-feature:before {
+            content: "✓ ";
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .ocean-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .ocean-section {
+            padding: 30px;
+            border-radius: 12px;
+            color: white;
+        }
+
+        .ocean-section.blue {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        }
+
+        .ocean-section.red {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .ocean-section h3 {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .ocean-feature {
+            margin: 12px 0;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .ocean-feature:before {
+            content: "→ ";
+            margin-right: 8px;
+            font-weight: bold;
+        }
+
+        .ocean-example {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            font-size: 1.6em;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .modal-body {
+            color: #2d3748;
+            line-height: 1.8;
+        }
+
+        .modal-body h4 {
+            color: #4a5568;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .modal-body ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 10px 0;
+        }
+
+        .modal-body li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .modal-body li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+
+        .close-btn {
+            float: right;
+            font-size: 1.8em;
+            cursor: pointer;
+            color: #a0aec0;
+            transition: color 0.2s;
+            border: none;
+            background: none;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: #667eea;
+        }
+
+        @media (max-width: 1024px) {
+            .swot-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bmc-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+
+            .bmc-block {
+                grid-column: 1 !important;
+                grid-row: auto !important;
+            }
+
+            .ocean-comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .porter-detail {
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .tabs-container {
+                flex-direction: column;
+            }
+
+            .tab-button {
+                width: 100%;
+            }
+
+            .content {
+                padding: 25px 15px;
+            }
+
+            .strategy-types {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 20px;
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>商業策略與競爭分析</h1>
+            <p>互動式學習工具</p>
+        </div>
+
+        <div class="tabs-container">
+            <button class="tab-button active" onclick="switchTab(0)">SWOT 分析工具</button>
+            <button class="tab-button" onclick="switchTab(1)">波特五力模型</button>
+            <button class="tab-button" onclick="switchTab(2)">商業模式畫布</button>
+            <button class="tab-button" onclick="switchTab(3)">策略比較</button>
+        </div>
+
+        <div class="content">
+            <!-- Tab 1: SWOT 分析 -->
+            <div class="tab-content active" id="tab0">
+                <h2 style="margin-bottom: 30px; color: #667eea;">SWOT 分析工具</h2>
+                <p style="margin-bottom: 20px; color: #4a5568;">點擊每個象限了解更多詳細信息。例：珍珠奶茶連鎖店</p>
+
+                <div class="swot-grid">
+                    <div class="swot-quadrant strength" onclick="showSwotDetail('strength')">
+                        <div class="swot-header">優勢 (Strengths)</div>
+                        <div class="swot-content">
+                            <ul>
+                                <li>獨特的配方</li>
+                                <li>強大的品牌識別</li>
+                                <li>快速的服務流程</li>
+                                <li>年輕客群忠誠度高</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="swot-quadrant weakness" onclick="showSwotDetail('weakness')">
+                        <div class="swot-header">劣勢 (Weaknesses)</div>
+                        <div class="swot-content">
+                            <ul>
+                                <li>初期投資成本高</li>
+                                <li>人員流動率高</li>
+                                <li>質量控制困難</li>
+                                <li>供應鏈管理複雜</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="swot-quadrant opportunity" onclick="showSwotDetail('opportunity')">
+                        <div class="swot-header">機會 (Opportunities)</div>
+                        <div class="swot-content">
+                            <ul>
+                                <li>國際市場擴展</li>
+                                <li>新產品開發</li>
+                                <li>線上配送服務</li>
+                                <li>新興市場增長</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="swot-quadrant threat" onclick="showSwotDetail('threat')">
+                        <div class="swot-header">威脅 (Threats)</div>
+                        <div class="swot-content">
+                            <ul>
+                                <li>競爭對手增加</li>
+                                <li>原料成本上升</li>
+                                <li>食品安全風險</li>
+                                <li>消費偏好轉變</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="swot-strategies">
+                    <h3>交叉策略矩陣</h3>
+                    <div class="strategies-grid">
+                        <div class="strategy-card">
+                            <h4>SO 策略</h4>
+                            <p>利用優勢抓住機會：利用獨特配方在國際市場推出新產品</p>
+                        </div>
+                        <div class="strategy-card">
+                            <h4>WO 策略</h4>
+                            <p>克服劣勢把握機會：改進供應鏈管理以支持線上配送</p>
+                        </div>
+                        <div class="strategy-card">
+                            <h4>ST 策略</h4>
+                            <p>利用優勢應對威脅：強化品牌優勢對抗新競爭對手</p>
+                        </div>
+                        <div class="strategy-card">
+                            <h4>WT 策略</h4>
+                            <p>縮小劣勢減輕威脅：提高質量控制標準應對食品安全風險</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Porter's 五力模型 -->
+            <div class="tab-content" id="tab1">
+                <h2 style="margin-bottom: 30px; color: #667eea;">波特五力模型</h2>
+                <p style="margin-bottom: 30px; color: #4a5568;">點擊每個力量了解詳細分析</p>
+
+                <div class="porter-container">
+                    <div class="porter-diagram">
+                        <div class="force-card threat-new-entrants" onclick="showPorterDetail('新進入者威脅')">
+                            新進入者威脅<br><small style="font-size: 0.8em;">Threat of New Entrants</small>
+                        </div>
+
+                        <div class="force-card bargaining-suppliers" onclick="showPorterDetail('供應商議價力')">
+                            供應商<br>議價力<br><small style="font-size: 0.8em;">Supplier Power</small>
+                        </div>
+
+                        <div class="force-card competitive-rivalry" onclick="showPorterDetail('現有競爭者')">
+                            現有競爭者威脅
+                        </div>
+
+                        <div class="force-card bargaining-buyers" onclick="showPorterDetail('買方議價力')">
+                            買方<br>議價力<br><small style="font-size: 0.8em;">Buyer Power</small>
+                        </div>
+
+                        <div class="force-card threat-substitutes" onclick="showPorterDetail('替代品威脅')">
+                            替代品威脅<br><small style="font-size: 0.8em;">Threat of Substitutes</small>
+                        </div>
+                    </div>
+
+                    <div class="porter-detail" id="porterDetail">
+                        <button class="close-btn" onclick="closePorterDetail()">×</button>
+                        <h3 id="porterTitle"></h3>
+                        <div class="detail-section">
+                            <h4>定義</h4>
+                            <p id="porterDefinition"></p>
+                        </div>
+                        <div class="detail-section">
+                            <h4>強度因素</h4>
+                            <p id="porterStrong"></p>
+                        </div>
+                        <div class="detail-section">
+                            <h4>弱度因素</h4>
+                            <p id="porterWeak"></p>
+                        </div>
+                        <div class="detail-section">
+                            <h4>現實例子</h4>
+                            <p id="porterExample"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: 商業模式畫布 -->
+            <div class="tab-content" id="tab2">
+                <h2 style="margin-bottom: 30px; color: #667eea;">商業模式畫布 (Business Model Canvas)</h2>
+                <p style="margin-bottom: 20px; color: #4a5568;">點擊每個模塊了解詳細內容。例：串流視頻平台 (Netflix型)</p>
+
+                <div class="bmc-grid">
+                    <div class="bmc-block partners" onclick="showBmcDetail('關鍵夥伴')">
+                        <div class="bmc-title">關鍵夥伴</div>
+                        <div class="bmc-content">
+                            <ul>
+                                <li>內容製作商</li>
+                                <li>影視公司</li>
+                                <li>電信運營商</li>
+                                <li>廣告商</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bmc-block activities" onclick="showBmcDetail('關鍵活動')">
+                        <div class="bmc-title">關鍵活動</div>
+                        <div class="bmc-content">
+                            <ul>
+                                <li>內容獲取</li>
+                                <li>技術開發</li>
+                                <li>用戶維護</li>
+                                <li>內容推薦</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bmc-block resources" onclick="showBmcDetail('關鍵資源')">
+                        <div class="bmc-title">關鍵資源</div>
+                        <div class="bmc-content">
+                            <ul>
+                                <li>內容庫</li>
+                                <li>技術平台</li>
+                                <li>人才團隊</li>
+                                <li>資金</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bmc-block proposition" onclick="showBmcDetail('價值主張')">
+                        <div class="bmc-title">價值主張</div>
+                        <div class="bmc-content">
+                            <ul>
+                                <li>豐富的內容選擇</li>
+                                <li>隨時隨地觀看</li>
+                                <li>個性化推薦</li>
+                                <li>無廣告體驗</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bmc-block relationships" onclick="showBmcDetail('顧客關係')">
+                        <div class="bmc-title">顧客關係</div>
+                        <div class="bmc-content">
+                            <ul>
+                                <li>訂閱制</li>
+                                <li>個性化推薦</li>
+                                <li>24/7客服</li>
+                                <li>社區互動</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bmc-block channels" onclick="showBmcDetail('通路')">
+                        <div class="bmc-title">通路</div>
+                        <div class="bmc-content">
+                            <ul>
+                                <li>Web應用</li>
+                                <li>移動應用</li>
+                                <li>智能電視</li>
+                                <li>遊戲機</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bmc-block segment" onclick="showBmcDetail('目標客層')">
+                        <div class="bmc-title">目標客層</div>
+                        <div class="bmc-content">
+                            <ul>
+                                <li>16-45歲用戶</li>
+                                <li>高收入群體</li>
+                                <li>追劇愛好者</li>
+                                <li>全球用戶</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bmc-block costs" onclick="showBmcDetail('成本結構')">
+                        <div class="bmc-title">成本結構</div>
+                        <div class="bmc-content">
+                            <ul>
+                                <li>內容採購費用</li>
+                                <li>技術基礎設施</li>
+                                <li>人員薪資</li>
+                                <li>市場推廣</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bmc-block revenue" onclick="showBmcDetail('收益流')">
+                        <div class="bmc-title">收益流</div>
+                        <div class="bmc-content">
+                            <ul>
+                                <li>訂閱費用</li>
+                                <li>廣告收入</li>
+                                <li>內容授權</li>
+                                <li>衍生產品</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: 策略比較 -->
+            <div class="tab-content" id="tab3">
+                <h2 style="margin-bottom: 30px; color: #667eea;">通用策略與藍海紅海</h2>
+
+                <div style="margin-bottom: 40px;">
+                    <h3 style="margin-bottom: 20px; color: #4a5568; font-size: 1.3em;">通用競爭策略</h3>
+                    <div class="strategy-types">
+                        <div class="strategy-type-card cost-leadership" onclick="highlightStrategy('cost')">
+                            <h3>成本領導</h3>
+                            <div class="strategy-feature">降低成本，提供低價</div>
+                            <div class="strategy-feature">規模經濟優勢</div>
+                            <div class="strategy-feature">高效運營流程</div>
+                            <div class="strategy-feature">例：沃爾瑪、IKEA</div>
+                        </div>
+
+                        <div class="strategy-type-card differentiation" onclick="highlightStrategy('diff')">
+                            <h3>差異化</h3>
+                            <div class="strategy-feature">獨特產品特性</div>
+                            <div class="strategy-feature">品牌溢價</div>
+                            <div class="strategy-feature">創新技術或設計</div>
+                            <div class="strategy-feature">例：蘋果、勞斯萊斯</div>
+                        </div>
+
+                        <div class="strategy-type-card focus" onclick="highlightStrategy('focus')">
+                            <h3>專注化</h3>
+                            <div class="strategy-feature">針對特定細分市場</div>
+                            <div class="strategy-feature">深度服務特定客群</div>
+                            <div class="strategy-feature">高度客製化</div>
+                            <div class="strategy-feature">例：路易威登、特斯拉</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="border-top: 2px solid #e2e8f0; padding-top: 40px;">
+                    <h3 style="margin-bottom: 30px; color: #4a5568; font-size: 1.3em;">藍海策略 vs 紅海策略</h3>
+                    <div class="ocean-comparison">
+                        <div class="ocean-section blue">
+                            <h3>藍海策略</h3>
+                            <div class="ocean-feature">創造全新市場空間</div>
+                            <div class="ocean-feature">無競爭或很少競爭</div>
+                            <div class="ocean-feature">價值創新</div>
+                            <div class="ocean-feature">長期利潤增長</div>
+                            <div class="ocean-example">
+                                <strong>案例：</strong><br>
+                                任天堂 Wii - 創造體感遊戲新類別<br>
+                                Netflix - 創造線上串流新模式<br>
+                                Uber - 重新定義計程車服務
+                            </div>
+                        </div>
+
+                        <div class="ocean-section red">
+                            <h3>紅海策略</h3>
+                            <div class="ocean-feature">現有市場內競爭激烈</div>
+                            <div class="ocean-feature">競爭者眾多</div>
+                            <div class="ocean-feature">價格戰、成本競爭</div>
+                            <div class="ocean-feature">利潤空間被壓縮</div>
+                            <div class="ocean-example">
+                                <strong>案例：</strong><br>
+                                傳統計程車行業<br>
+                                傳統零售商場<br>
+                                傳統家電製造商
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="swotModal" onclick="closeSwotModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closeSwotModal()">×</button>
+            <div class="modal-header" id="swotModalTitle"></div>
+            <div class="modal-body" id="swotModalBody"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="bmcModal" onclick="closeBmcModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closeBmcModal()">×</button>
+            <div class="modal-header" id="bmcModalTitle"></div>
+            <div class="modal-body" id="bmcModalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tabIndex) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(`tab${tabIndex}`).classList.add('active');
+            buttons[tabIndex].classList.add('active');
+        }
+
+        // SWOT Details
+        const swotDetails = {
+            strength: {
+                title: '優勢 (Strengths)',
+                content: `
+                    <h4>定義</h4>
+                    <p>優勢是指公司相對於競爭對手的內部優勢。</p>
+                    <h4>關鍵特性</h4>
+                    <ul>
+                        <li>獨特的產品配方或技術</li>
+                        <li>強大的品牌認知度</li>
+                        <li>優秀的人才團隊</li>
+                        <li>有效的成本控制</li>
+                        <li>優越的供應鏈管理</li>
+                    </ul>
+                    <h4>戰略應用</h4>
+                    <p>應當透過投資與擴展來充分利用優勢，進入新市場，推出新產品。</p>
+                `
+            },
+            weakness: {
+                title: '劣勢 (Weaknesses)',
+                content: `
+                    <h4>定義</h4>
+                    <p>劣勢是指相對於競爭對手的內部不足之處。</p>
+                    <h4>常見領域</h4>
+                    <ul>
+                        <li>高成本結構</li>
+                        <li>人員流動率高</li>
+                        <li>品牌知名度低</li>
+                        <li>技術落後</li>
+                        <li>資金短缺</li>
+                    </ul>
+                    <h4>改進策略</h4>
+                    <p>應識別關鍵劣勢，制定改進計劃，通過投資、招聘或戰略聯盟來消除這些劣勢。</p>
+                `
+            },
+            opportunity: {
+                title: '機會 (Opportunities)',
+                content: `
+                    <h4>定義</h4>
+                    <p>機會是指外部環境中可被利用的有利因素。</p>
+                    <h4>常見機會</h4>
+                    <ul>
+                        <li>市場增長趨勢</li>
+                        <li>新興技術應用</li>
+                        <li>地理擴展可能性</li>
+                        <li>客戶需求變化</li>
+                        <li>行業整合機會</li>
+                    </ul>
+                    <h4>把握方式</h4>
+                    <p>主動分析市場趨勢，準備充分資源，及時進入新市場或開發新產品。</p>
+                `
+            },
+            threat: {
+                title: '威脅 (Threats)',
+                content: `
+                    <h4>定義</h4>
+                    <p>威脅是指可能對公司造成負面影響的外部因素。</p>
+                    <h4>常見威脅</h4>
+                    <ul>
+                        <li>競爭加劇</li>
+                        <li>成本上升</li>
+                        <li>監管變化</li>
+                        <li>技術替代</li>
+                        <li>客戶偏好轉變</li>
+                    </ul>
+                    <h4>應對措施</h4>
+                    <p>建立預警機制，制定應急預案，加強競爭力，降低依賴度。</p>
+                `
+            }
+        };
+
+        function showSwotDetail(type) {
+            const detail = swotDetails[type];
+            document.getElementById('swotModalTitle').textContent = detail.title;
+            document.getElementById('swotModalBody').innerHTML = detail.content;
+            document.getElementById('swotModal').classList.add('show');
+        }
+
+        function closeSwotModal(event) {
+            if (event && event.target.id !== 'swotModal') return;
+            document.getElementById('swotModal').classList.remove('show');
+        }
+
+        // Porter's Five Forces Details
+        const porterDetails = {
+            '新進入者威脅': {
+                定義: '新進入者對現有企業造成的競爭壓力。',
+                強度因素: '低進入壁壘、資本需求少、沒有專利保護、易於複製商業模式、缺乏品牌忠誠度。',
+                弱度因素: '高進入成本、強品牌效應、規模經濟、建立分銷渠道困難、政府政策保護。',
+                例子: '餐飲業容易進入，但高端品牌餐廳難以被複製；科技行業專利壁壘高，新進入困難。'
+            },
+            '供應商議價力': {
+                定義: '供應商對購買方價格和條件的影響力。',
+                強度因素: '供應商數量少、產品專業化程度高、客戶替代成本高、供應商向下整合威脅。',
+                弱度因素: '供應商數量眾多、標準化產品、客戶可輕易轉換、客戶向上整合威脅。',
+                例子: 'Intel在晶片市場的供應商地位強；農業原料供應商地位弱，競爭者眾多。'
+            },
+            '現有競爭者': {
+                定義: '同行業中存在的競爭對手帶來的競爭壓力。',
+                強度因素: '競爭者眾多、產業增長緩慢、固定成本高、產品同質化、競爭成本高。',
+                弱度因素: '競爭者少、行業增長快、產品差異化、低固定成本、轉換成本高。',
+                例子: '智能手機市場競爭激烈；飛機製造業競爭者少，競爭溫和。'
+            },
+            '買方議價力': {
+                定義: '購買方對供應商價格和條件的影響力。',
+                強度因素: '買方集中度高、購買量大、產品標準化、易於轉換供應商、客戶可向上整合。',
+                弱度因素: '買方分散、購買量小、專業化產品、轉換成本高、賣方可向下整合。',
+                例子: '大型零售商對供應商議價力強；高端奢侈品買方議價力弱。'
+            },
+            '替代品威脅': {
+                定義: '替代產品或服務對原有產品市場的威脅。',
+                強度因素: '替代品性能提高、成本更低、消費者轉換成本低、替代品供應充足。',
+                弱度因素: '替代品性能差、成本高、轉換成本高、替代品供應有限。',
+                例子: '電子郵件對傳真機的威脅；新能源車對燃油車的威脅；串流視頻對DVD的威脅。'
+            }
+        };
+
+        function showPorterDetail(force) {
+            const detail = porterDetails[force];
+            document.getElementById('porterTitle').textContent = force;
+            document.getElementById('porterDefinition').textContent = detail.定義;
+            document.getElementById('porterStrong').textContent = detail.強度因素;
+            document.getElementById('porterWeak').textContent = detail.弱度因素;
+            document.getElementById('porterExample').textContent = detail.例子;
+            document.getElementById('porterDetail').classList.add('show');
+        }
+
+        function closePorterDetail() {
+            document.getElementById('porterDetail').classList.remove('show');
+        }
+
+        // BMC Details
+        const bmcDetails = {
+            '關鍵夥伴': {
+                title: '關鍵夥伴 (Key Partners)',
+                content: `
+                    <h4>定義</h4>
+                    <p>幫助企業實現商業模式的外部組織和個人。</p>
+                    <h4>類型</h4>
+                    <ul>
+                        <li>戰略聯盟：同業或異業的合作夥伴</li>
+                        <li>合作關係：為了共同利益的合作</li>
+                        <li>供應商：提供所需的資源</li>
+                        <li>分銷商：幫助銷售產品的渠道</li>
+                    </ul>
+                    <h4>重要性</h4>
+                    <p>通過夥伴關係可以降低風險、獲取資源、拓展能力和市場。</p>
+                `
+            },
+            '關鍵活動': {
+                title: '關鍵活動 (Key Activities)',
+                content: `
+                    <h4>定義</h4>
+                    <p>企業為實現其價值主張和運營所必須進行的最重要活動。</p>
+                    <h4>四大類型</h4>
+                    <ul>
+                        <li>生產：製造或創造產品</li>
+                        <li>問題解決：提供解決方案和諮詢</li>
+                        <li>平台運營：管理平台和生態</li>
+                        <li>網絡運營：連接使用者和參與者</li>
+                    </ul>
+                    <h4>優化方向</h4>
+                    <p>識別核心活動，外包非核心業務，建立核心競爭力。</p>
+                `
+            },
+            '關鍵資源': {
+                title: '關鍵資源 (Key Resources)',
+                content: `
+                    <h4>定義</h4>
+                    <p>企業為實現商業模式所需的物質、智力、人力和金融資源。</p>
+                    <h4>資源類型</h4>
+                    <ul>
+                        <li>物質資源：廠房、設備、基礎設施</li>
+                        <li>智力資源：專利、品牌、數據、聲譽</li>
+                        <li>人力資源：員工、專家、團隊</li>
+                        <li>金融資源：現金、信用線、股權投資</li>
+                    </ul>
+                    <h4>管理策略</h4>
+                    <p>集中投資於關鍵資源，優化資源配置，建立防護壁壘。</p>
+                `
+            },
+            '價值主張': {
+                title: '價值主張 (Value Proposition)',
+                content: `
+                    <h4>定義</h4>
+                    <p>企業向客戶承諾提供的核心價值和解決的問題。</p>
+                    <h4>價值來源</h4>
+                    <ul>
+                        <li>性能改進：更好、更快、更強</li>
+                        <li>成本削減：更低的價格</li>
+                        <li>設計和品牌：外觀和感覺</li>
+                        <li>便利性和可達性：容易獲取</li>
+                        <li>風險降低：安全可靠</li>
+                    </ul>
+                    <h4>策略</h4>
+                    <p>準確識別目標客戶的痛點，提供獨特的價值主張。</p>
+                `
+            },
+            '顧客關係': {
+                title: '顧客關係 (Customer Relationships)',
+                content: `
+                    <h4>定義</h4>
+                    <p>企業與客戶建立和維持的關係類型。</p>
+                    <h4>關係類型</h4>
+                    <ul>
+                        <li>個人協助：一對一的服務和互動</li>
+                        <li>自助服務：客戶自主獲取信息和服務</li>
+                        <li>自動化服務：系統化和標準化服務</li>
+                        <li>社區：建立客戶社區和互動平台</li>
+                        <li>共同創造：客戶參與產品開發</li>
+                    </ul>
+                    <h4>目標</h4>
+                    <p>建立長期客戶關係，提高客戶滿意度和忠誠度。</p>
+                `
+            },
+            '通路': {
+                title: '通路 (Channels)',
+                content: `
+                    <h4>定義</h4>
+                    <p>企業與客戶溝通、銷售和交付價值的途徑。</p>
+                    <h4>渠道組成</h4>
+                    <ul>
+                        <li>認知：如何讓客戶了解產品</li>
+                        <li>評估：如何幫助客戶評價產品</li>
+                        <li>購買：如何讓客戶購買</li>
+                        <li>交付：如何交付產品/服務</li>
+                        <li>售後：如何提供售後支持</li>
+                    </ul>
+                    <h4>優化</h4>
+                    <p>整合多種通路，創造無縫的客戶體驗，提高轉化率。</p>
+                `
+            },
+            '目標客層': {
+                title: '目標客層 (Customer Segments)',
+                content: `
+                    <h4>定義</h4>
+                    <p>企業希望服務和創造價值的客戶群體。</p>
+                    <h4>分類維度</h4>
+                    <ul>
+                        <li>人口統計：年齡、性別、收入等</li>
+                        <li>地理位置：地區、國家、氣候等</li>
+                        <li>心理特徵：價值觀、生活方式等</li>
+                        <li>行為特徵：購買習慣、使用頻率等</li>
+                    </ul>
+                    <h4>策略</h4>
+                    <p>明確界定目標客層，針對性地設計產品和服務，提高市場效率。</p>
+                `
+            },
+            '成本結構': {
+                title: '成本結構 (Cost Structure)',
+                content: `
+                    <h4>定義</h4>
+                    <p>為實現商業模式而產生的所有成本。</p>
+                    <h4>成本類型</h4>
+                    <ul>
+                        <li>固定成本：不隨產出變化的成本</li>
+                        <li>變動成本：隨產出變化的成本</li>
+                        <li>規模經濟：隨產量增加而降低的成本</li>
+                        <li>範疇經濟：多個產品共享成本</li>
+                    </ul>
+                    <h4>控制方向</h4>
+                    <p>降低成本、優化支出、實現規模經濟、提高效率。</p>
+                `
+            },
+            '收益流': {
+                title: '收益流 (Revenue Streams)',
+                content: `
+                    <h4>定義</h4>
+                    <p>企業為客戶提供價值而獲得的回報。</p>
+                    <h4>收益方式</h4>
+                    <ul>
+                        <li>銷售收入：直接銷售產品或服務</li>
+                        <li>訂閱費：定期收取費用</li>
+                        <li>許可費：授權使用知識產權</li>
+                        <li>廣告收入：向廣告商收費</li>
+                        <li>佣金：從交易中獲取百分比</li>
+                    </ul>
+                    <h4>優化策略</h4>
+                    <p>多元化收入來源，提高客戶終身價值，建立可持續的盈利模式。</p>
+                `
+            }
+        };
+
+        function showBmcDetail(block) {
+            const detail = bmcDetails[block];
+            document.getElementById('bmcModalTitle').textContent = detail.title;
+            document.getElementById('bmcModalBody').innerHTML = detail.content;
+            document.getElementById('bmcModal').classList.add('show');
+        }
+
+        function closeBmcModal(event) {
+            if (event && event.target.id !== 'bmcModal') return;
+            document.getElementById('bmcModal').classList.remove('show');
+        }
+
+        // Strategy highlighting
+        function highlightStrategy(strategy) {
+            const cards = document.querySelectorAll('.strategy-type-card');
+            cards.forEach(card => card.classList.remove('active'));
+
+            if (strategy === 'cost') {
+                document.querySelector('.cost-leadership').classList.add('active');
+            } else if (strategy === 'diff') {
+                document.querySelector('.differentiation').classList.add('active');
+            } else if (strategy === 'focus') {
+                document.querySelector('.focus').classList.add('active');
+            }
+        }
+
+        // Close modals on outside click
+        window.onclick = function(event) {
+            const swotModal = document.getElementById('swotModal');
+            const bmcModal = document.getElementById('bmcModal');
+
+            if (event.target === swotModal) {
+                swotModal.classList.remove('show');
+            }
+            if (event.target === bmcModal) {
+                bmcModal.classList.remove('show');
+            }
+        }
+    </script>
+</body>
+</html>

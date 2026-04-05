@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>創業與公司治理 - 互動圖表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background-color: #f1f5f9;
+            color: #1f2937;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .tab-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            background-color: #f9fafb;
+        }
+
+        .tab-button {
+            padding: 10px 24px;
+            border: none;
+            background-color: #e5e7eb;
+            color: #4b5563;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+        }
+
+        .tab-button:hover {
+            background-color: #d1d5db;
+            transform: translateY(-2px);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tab 1: Timeline Styles */
+        .timeline-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 40px 0;
+            position: relative;
+            padding: 0 20px;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            right: 5%;
+            height: 4px;
+            background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 25%, #ef4444 50%, #ec4899 75%, #a855f7 100%);
+            z-index: 0;
+            border-radius: 2px;
+        }
+
+        .timeline-stages {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .timeline-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            text-align: center;
+        }
+
+        .timeline-node:hover {
+            transform: scale(1.05);
+        }
+
+        .timeline-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            border: 4px solid #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-node:hover .timeline-dot {
+            border-color: #764ba2;
+            box-shadow: 0 4px 12px rgba(118, 75, 162, 0.3);
+        }
+
+        .timeline-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .timeline-size {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-bottom: 8px;
+        }
+
+        .timeline-details {
+            background: linear-gradient(135deg, #f0f4ff 0%, #f3e8ff 100%);
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 40px;
+            display: none;
+        }
+
+        .timeline-details.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 500px;
+            }
+        }
+
+        .timeline-details h3 {
+            color: #667eea;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .timeline-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .timeline-detail-item {
+            background-color: white;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .timeline-detail-item strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 4px;
+            font-size: 12px;
+        }
+
+        .timeline-detail-item span {
+            font-size: 13px;
+            color: #4b5563;
+        }
+
+        .timeline-examples {
+            margin-top: 20px;
+        }
+
+        .timeline-examples h4 {
+            color: #374151;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .example-items {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .example-badge {
+            background-color: #dbeafe;
+            color: #0369a1;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Tab 2: Company Types Styles */
+        .company-types-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .company-card {
+            background-color: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .company-card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+            border-color: #667eea;
+        }
+
+        .company-card.type-1 {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border-color: #10b981;
+        }
+
+        .company-card.type-2 {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-color: #3b82f6;
+        }
+
+        .company-card.type-3 {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-color: #f59e0b;
+        }
+
+        .company-card.type-4 {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            border-color: #ec4899;
+        }
+
+        .company-card.type-5 {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border-color: #a855f7;
+        }
+
+        .company-card-header {
+            padding: 20px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .company-card-content {
+            padding: 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .company-card.expanded .company-card-content {
+            max-height: 500px;
+        }
+
+        .company-card-row {
+            display: flex;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .company-card-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .company-card-label {
+            font-weight: 600;
+            color: #374151;
+            min-width: 70px;
+            font-size: 12px;
+        }
+
+        .company-card-value {
+            color: #4b5563;
+            font-size: 13px;
+        }
+
+        .expand-icon {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .company-card.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Tab 3: Governance Styles */
+        .governance-wrapper {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .governance-diagram {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .governance-legend {
+            flex: 0 1 250px;
+            background-color: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .governance-legend h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #374151;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 12px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .governance-box {
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            font-weight: 600;
+        }
+
+        .governance-box:hover {
+            transform: scale(1.05);
+        }
+
+        .governance-box.blue {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #0369a1;
+            border-color: #0284c7;
+        }
+
+        .governance-box.green {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            color: #166534;
+            border-color: #15803d;
+        }
+
+        .governance-box.orange {
+            background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+            color: #92400e;
+            border-color: #d97706;
+        }
+
+        .governance-box:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .governance-level {
+            margin-bottom: 40px;
+        }
+
+        .governance-level-title {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .governance-boxes {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .governance-boxes .governance-box {
+            flex: 1;
+            min-width: 100px;
+            margin-bottom: 0;
+        }
+
+        .governance-details {
+            background: linear-gradient(135deg, #f0f4ff 0%, #f3e8ff 100%);
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .governance-details.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        .governance-details h4 {
+            color: #667eea;
+            margin-bottom: 12px;
+        }
+
+        .governance-details p {
+            color: #4b5563;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .governance-details ul {
+            margin-left: 20px;
+            color: #4b5563;
+            font-size: 13px;
+        }
+
+        .governance-details li {
+            margin-bottom: 8px;
+        }
+
+        /* Tab 4: Ecosystem Styles */
+        .ecosystem-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            margin: 20px 0;
+        }
+
+        .ecosystem-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .ecosystem-node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ecosystem-node-circle {
+            transition: all 0.3s ease;
+        }
+
+        .ecosystem-node:hover .ecosystem-node-circle {
+            filter: brightness(0.9);
+        }
+
+        .ecosystem-node-text {
+            pointer-events: none;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .ecosystem-details {
+            background: linear-gradient(135deg, #f0f4ff 0%, #f3e8ff 100%);
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .ecosystem-details.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        .ecosystem-details h4 {
+            color: #667eea;
+            margin-bottom: 16px;
+            font-size: 16px;
+        }
+
+        .ecosystem-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .ecosystem-detail-section {
+            background-color: white;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .ecosystem-detail-section h5 {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .ecosystem-detail-section p {
+            font-size: 13px;
+            color: #4b5563;
+            margin-bottom: 6px;
+        }
+
+        .ecosystem-detail-section ul {
+            margin-left: 16px;
+            font-size: 12px;
+            color: #4b5563;
+        }
+
+        .ecosystem-detail-section li {
+            margin-bottom: 4px;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .pros {
+            background-color: #ecfdf5;
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #10b981;
+        }
+
+        .cons {
+            background-color: #fef2f2;
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #ef4444;
+        }
+
+        .pros strong,
+        .cons strong {
+            display: block;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .pros strong {
+            color: #166534;
+        }
+
+        .cons strong {
+            color: #991b1b;
+        }
+
+        .pros p,
+        .cons p {
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .pros p {
+            color: #166534;
+        }
+
+        .cons p {
+            color: #7f1d1d;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .timeline-wrapper {
+                padding: 0;
+            }
+
+            .timeline-line {
+                display: none;
+            }
+
+            .timeline-stages {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .timeline-node {
+                margin-bottom: 20px;
+                width: 100%;
+            }
+
+            .company-types-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .governance-wrapper {
+                flex-direction: column;
+            }
+
+            .governance-legend {
+                flex: 1;
+            }
+
+            .ecosystem-container {
+                height: 500px;
+            }
+
+            .tab-button {
+                flex: 1;
+                min-width: 100px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>創業與公司治理</h1>
+            <p>互動式學習平台 - 探索從初創到上市的完整路徑</p>
+        </div>
+
+        <div class="tab-container">
+            <button class="tab-button active" onclick="switchTab('timeline')">募資階段時間軸</button>
+            <button class="tab-button" onclick="switchTab('companies')">公司型態比較</button>
+            <button class="tab-button" onclick="switchTab('governance')">公司治理架構圖</button>
+            <button class="tab-button" onclick="switchTab('ecosystem')">創業生態系統</button>
+        </div>
+
+        <div class="content">
+            <!-- Tab 1: Timeline -->
+            <div id="timeline" class="tab-content active">
+                <h2 style="margin-bottom: 10px;">募資階段時間軸</h2>
+                <p style="color: #6b7280; margin-bottom: 30px;">點擊各階段了解詳細資訊、投資人類型、預期公司規模</p>
+
+                <div class="timeline-wrapper">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-stages" id="timelineStages"></div>
+                </div>
+
+                <div id="timelineDetailsContainer" class="timeline-details">
+                    <h3 id="detailsTitle"></h3>
+                    <div class="timeline-details-grid" id="detailsGrid"></div>
+                    <div class="timeline-examples">
+                        <h4>典型案例 (台灣/國際)</h4>
+                        <div class="example-items" id="exampleItems"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Company Types -->
+            <div id="companies" class="tab-content">
+                <h2 style="margin-bottom: 10px;">公司型態比較</h2>
+                <p style="color: #6b7280; margin-bottom: 30px;">點擊卡片展開詳細資訊，比較各類型公司的特性</p>
+                <div class="company-types-grid" id="companyTypesGrid"></div>
+            </div>
+
+            <!-- Tab 3: Governance -->
+            <div id="governance" class="tab-content">
+                <h2 style="margin-bottom: 10px;">公司治理架構圖</h2>
+                <p style="color: #6b7280; margin-bottom: 30px;">點擊各階層了解權責與運作方式</p>
+                <div class="governance-wrapper">
+                    <div class="governance-diagram" id="governanceDiagram"></div>
+                    <div class="governance-legend">
+                        <h4>角色說明</h4>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);"></div>
+                            <span>治理層級</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);"></div>
+                            <span>管理層級</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);"></div>
+                            <span>監督層級</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="governanceDetailsContainer" class="governance-details">
+                    <h4 id="governanceTitle"></h4>
+                    <p id="governanceDesc"></p>
+                    <ul id="governanceResp"></ul>
+                </div>
+            </div>
+
+            <!-- Tab 4: Ecosystem -->
+            <div id="ecosystem" class="tab-content">
+                <h2 style="margin-bottom: 10px;">創業生態系統</h2>
+                <p style="color: #6b7280; margin-bottom: 20px;">點擊各個生態參與者，了解他們的角色和貢獻</p>
+                <div class="ecosystem-container">
+                    <svg class="ecosystem-svg" id="ecosystemSvg"></svg>
+                </div>
+                <div id="ecosystemDetailsContainer" class="ecosystem-details">
+                    <h4 id="ecosystemTitle"></h4>
+                    <div class="ecosystem-details-grid" id="ecosystemDetailsGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'ecosystem') {
+                drawEcosystem();
+            }
+        }
+
+        // Timeline Data
+        const timelineData = [
+            {
+                id: 'angel',
+                name: '天使輪',
+                emoji: '👼',
+                valuation: '$50K - $500K',
+                funding: '$10K - $100K',
+                investors: '天使投資人、創業家',
+                milestones: '產品概念驗證、MVP完成',
+                description: '初期創業階段，核心團隊剛成立',
+                employees: '1-10人',
+                examples: ['Uber早期', 'Airbnb早期', '91App早期']
+            },
+            {
+                id: 'seed',
+                name: '種子輪',
+                emoji: '🌱',
+                valuation: '$500K - $2M',
+                funding: '$50K - $500K',
+                investors: '種子基金、天使團',
+                milestones: '產品市場驗證、初期客戶',
+                description: '驗證商業模式的關鍵階段',
+                employees: '5-20人',
+                examples: ['新創團隊初期融資', '本土種子基金投資案例']
+            },
+            {
+                id: 'seriesA',
+                name: 'A輪',
+                emoji: '🔵',
+                valuation: '$2M - $10M',
+                funding: '$500K - $3M',
+                investors: '創投基金(VC)、機構投資人',
+                milestones: '商業模式確認、市場擴展',
+                description: '快速成長階段，開始規模化',
+                employees: '20-50人',
+                examples: ['Appworks投資案例', '早期新創融資']
+            },
+            {
+                id: 'seriesB',
+                name: 'B輪',
+                emoji: '🟡',
+                valuation: '$10M - $50M',
+                funding: '$3M - $10M',
+                investors: '頂級VC、成長基金',
+                milestones: '進入新市場、產品線擴展',
+                description: '成長期公司，營收開始可觀',
+                employees: '50-200人',
+                examples: ['Grab B輪', '新興獨角獸企業']
+            },
+            {
+                id: 'seriesC',
+                name: 'C輪',
+                emoji: '🔴',
+                valuation: '$50M - $200M',
+                funding: '$10M - $50M',
+                investors: 'PE基金、策略投資人',
+                milestones: '全球擴張、並購整合',
+                description: '成熟期公司，追求國際化',
+                employees: '200-500人',
+                examples: ['ByteDance C輪', 'Didi C輪擴展']
+            },
+            {
+                id: 'preipo',
+                name: 'Pre-IPO',
+                emoji: '📈',
+                valuation: '$200M - $1B+',
+                funding: '$50M+',
+                investors: 'PE基金、共同基金',
+                milestones: '準備上市、財務合規',
+                description: '上市前最後融資輪次',
+                employees: '500-1000+人',
+                examples: ['Momo Pre-IPO', '台灣本土即將IPO企業']
+            },
+            {
+                id: 'ipo',
+                name: 'IPO',
+                emoji: '🏆',
+                valuation: '$1B+',
+                funding: '公開市場籌資',
+                investors: '公眾股東、機構投資人',
+                milestones: '股票上市交易、公眾公司',
+                description: '成為上市公司，進入公開市場',
+                employees: '1000+人',
+                examples: ['TSMC', '鴻海', '台灣大哥大']
+            }
+        ];
+
+        function initTimeline() {
+            const container = document.getElementById('timelineStages');
+            container.innerHTML = '';
+
+            timelineData.forEach(stage => {
+                const node = document.createElement('div');
+                node.className = 'timeline-node';
+                node.onclick = () => showTimelineDetails(stage);
+
+                node.innerHTML = `
+                    <div class="timeline-dot">${stage.emoji}</div>
+                    <div class="timeline-label">${stage.name}</div>
+                    <div class="timeline-size">${stage.employees}</div>
+                `;
+
+                container.appendChild(node);
+            });
+        }
+
+        function showTimelineDetails(stage) {
+            const container = document.getElementById('timelineDetailsContainer');
+            const detailsGrid = document.getElementById('detailsGrid');
+            const exampleItems = document.getElementById('exampleItems');
+
+            document.getElementById('detailsTitle').textContent = `${stage.emoji} ${stage.name}`;
+
+            detailsGrid.innerHTML = `
+                <div class="timeline-detail-item">
+                    <strong>公司估值</strong>
+                    <span>${stage.valuation}</span>
+                </div>
+                <div class="timeline-detail-item">
+                    <strong>融資金額</strong>
+                    <span>${stage.funding}</span>
+                </div>
+                <div class="timeline-detail-item">
+                    <strong>主要投資人</strong>
+                    <span>${stage.investors}</span>
+                </div>
+                <div class="timeline-detail-item">
+                    <strong>關鍵里程碑</strong>
+                    <span>${stage.milestones}</span>
+                </div>
+                <div class="timeline-detail-item">
+                    <strong>公司規模</strong>
+                    <span>${stage.employees}</span>
+                </div>
+                <div class="timeline-detail-item">
+                    <strong>階段描述</strong>
+                    <span>${stage.description}</span>
+                </div>
+            `;
+
+            exampleItems.innerHTML = stage.examples
+                .map(ex => `<div class="example-badge">${ex}</div>`)
+                .join('');
+
+            container.classList.add('show');
+        }
+
+        // Company Types Data
+        const companyData = [
+            {
+                id: 1,
+                name: '獨資',
+                threshold: '無門檻，一個人即可',
+                liability: '無限責任',
+                transfer: '無法轉讓',
+                scenario: '個人工作室、自由工作者',
+                example: '個人諮詢顧問',
+                details: {
+                    責任: '個人承擔所有債務和法律責任',
+                    稅務: '個人所得稅申報',
+                    設立: '向工商部門登記即可',
+                    股權: '無股權概念'
+                }
+            },
+            {
+                id: 2,
+                name: '合夥',
+                threshold: '2人以上',
+                liability: '無限連帶責任',
+                transfer: '需全體同意',
+                scenario: '律師事務所、會計師事務所',
+                example: '聯合律師事務所',
+                details: {
+                    責任: '合夥人對公司債務承擔無限連帶責任',
+                    稅務: '合夥收入按比例分配',
+                    設立: '簽署合夥協議並登記',
+                    股權: '以合夥份額體現'
+                }
+            },
+            {
+                id: 3,
+                name: '有限公司',
+                threshold: '股東出資即可',
+                liability: '有限責任（按出資額）',
+                transfer: '需經股東同意',
+                scenario: '中小型家族企業、貿易商',
+                example: '傳統製造業',
+                details: {
+                    責任: '股東責任限於出資額',
+                    稅務: '公司所得稅 + 股利稅',
+                    設立: '需公司章程、股東協議',
+                    股權: '股份可轉讓但受限制'
+                }
+            },
+            {
+                id: 4,
+                name: '股份有限公司',
+                threshold: '股東人數和資本額要求',
+                liability: '有限責任（按股份)',
+                transfer: '可自由轉讓',
+                scenario: '上市公司、中大型企業',
+                example: 'TSMC、鴻海、台積電',
+                details: {
+                    責任: '股東僅承擔出資責任',
+                    稅務: '公司所得稅 + 股利稅',
+                    設立: '需規範的章程、董事會',
+                    股權: '股份可自由買賣'
+                }
+            },
+            {
+                id: 5,
+                name: '閉鎖性公司',
+                threshold: '股東在50人以下',
+                liability: '有限責任',
+                transfer: '受限制，需章程同意',
+                scenario: '新創公司、家族企業',
+                example: '新創科技公司',
+                details: {
+                    責任: '股東按股份比例承擔',
+                    稅務: '同股份有限公司',
+                    設立: '更靈活的內部治理',
+                    股權: '限於少數股東'
+                }
+            }
+        ];
+
+        function initCompanyTypes() {
+            const container = document.getElementById('companyTypesGrid');
+            container.innerHTML = '';
+
+            companyData.forEach(company => {
+                const card = document.createElement('div');
+                card.className = `company-card type-${company.id}`;
+                card.onclick = () => toggleCard(card);
+
+                const headerColor = ['#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#a855f7'][company.id - 1];
+
+                card.innerHTML = `
+                    <div class="company-card-header" style="border-bottom-color: ${headerColor};">
+                        <span>${company.name}</span>
+                        <span class="expand-icon">▼</span>
+                    </div>
+                    <div class="company-card-content">
+                        <div class="company-card-row">
+                            <div class="company-card-label">設立門檻</div>
+                            <div class="company-card-value">${company.threshold}</div>
+                        </div>
+                        <div class="company-card-row">
+                            <div class="company-card-label">責任範圍</div>
+                            <div class="company-card-value">${company.liability}</div>
+                        </div>
+                        <div class="company-card-row">
+                            <div class="company-card-label">股權轉讓</div>
+                            <div class="company-card-value">${company.transfer}</div>
+                        </div>
+                        <div class="company-card-row">
+                            <div class="company-card-label">適合情境</div>
+                            <div class="company-card-value">${company.scenario}</div>
+                        </div>
+                        <div class="company-card-row">
+                            <div class="company-card-label">代表案例</div>
+                            <div class="company-card-value">${company.example}</div>
+                        </div>
+                        <div class="company-card-row" style="border-bottom: none;">
+                            <div class="company-card-label">詳細說明</div>
+                            <div class="company-card-value">
+                                ${Object.entries(company.details)
+                                    .map(([key, val]) => `<div><strong>${key}：</strong>${val}</div>`)
+                                    .join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function toggleCard(card) {
+            card.classList.toggle('expanded');
+        }
+
+        // Governance Data
+        const governanceData = {
+            levels: [
+                {
+                    title: '治理層級',
+                    items: [
+                        {
+                            id: 'shareholder',
+                            name: '股東會',
+                            color: 'blue',
+                            responsibilities: [
+                                '選舉董事和監察人',
+                                '批准財務報告和分紅',
+                                '修改公司章程',
+                                '決議重大資產交易',
+                                '監督董事會表現'
+                            ]
+                        },
+                        {
+                            id: 'board',
+                            name: '董事會',
+                            color: 'blue',
+                            responsibilities: [
+                                '制定公司策略方向',
+                                '監督管理層執行',
+                                '批准重大投資和合約',
+                                '任免總經理',
+                                '確保內部控制有效'
+                            ]
+                        }
+                    ]
+                },
+                {
+                    title: '執行層級',
+                    items: [
+                        {
+                            id: 'management',
+                            name: '經營團隊',
+                            color: 'green',
+                            responsibilities: [
+                                '日常營運管理',
+                                'CEO制定及執行戰略',
+                                'CFO管理財務資源',
+                                'CTO主導技術發展',
+                                '各部門主管執行決策'
+                            ]
+                        }
+                    ]
+                },
+                {
+                    title: '監督層級',
+                    items: [
+                        {
+                            id: 'audit',
+                            name: '監察人/審計委員會',
+                            color: 'orange',
+                            responsibilities: [
+                                '監督董事和經營層',
+                                '審查財務報告',
+                                '評估內部控制',
+                                '調查違法違紀行為',
+                                '向股東會報告'
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        function initGovernance() {
+            const diagram = document.getElementById('governanceDiagram');
+            diagram.innerHTML = '';
+
+            governanceData.levels.forEach(level => {
+                const levelDiv = document.createElement('div');
+                levelDiv.className = 'governance-level';
+
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'governance-level-title';
+                titleDiv.textContent = level.title;
+
+                const boxesDiv = document.createElement('div');
+                boxesDiv.className = 'governance-boxes';
+
+                level.items.forEach(item => {
+                    const box = document.createElement('div');
+                    box.className = `governance-box ${item.color}`;
+                    box.textContent = item.name;
+                    box.onclick = () => showGovernanceDetails(item);
+                    boxesDiv.appendChild(box);
+                });
+
+                levelDiv.appendChild(titleDiv);
+                levelDiv.appendChild(boxesDiv);
+                diagram.appendChild(levelDiv);
+            });
+
+            // Independent Directors section
+            const indepDiv = document.createElement('div');
+            indepDiv.style.marginTop = '30px';
+            indepDiv.style.padding = '20px';
+            indepDiv.style.backgroundColor = '#f0fdf4';
+            indepDiv.style.borderRadius = '12px';
+            indepDiv.style.borderLeft = '4px solid #10b981';
+
+            indepDiv.innerHTML = `
+                <h4 style="color: #166534; margin-bottom: 12px; font-size: 14px;">獨立董事 (Independent Directors)</h4>
+                <p style="font-size: 13px; color: #4b5563; line-height: 1.6; margin-bottom: 10px;">
+                    獨立董事是不在公司管理層、不持股或持股很少、與公司無重大利益關係的董事。他們的角色是提供客觀的監督和專業意見，保護所有股東利益，特別是中小股東。
+                </p>
+                <ul style="margin-left: 20px; font-size: 13px; color: #4b5563;">
+                    <li style="margin-bottom: 8px;">確保董事會決策的獨立性和客觀性</li>
+                    <li style="margin-bottom: 8px;">參與審計、薪酬等特殊委員會</li>
+                    <li style="margin-bottom: 8px;">代表股東利益進行監督</li>
+                    <li>上市公司通常要求至少1/3董事為獨立董事</li>
+                </ul>
+            `;
+
+            diagram.appendChild(indepDiv);
+        }
+
+        function showGovernanceDetails(item) {
+            const container = document.getElementById('governanceDetailsContainer');
+            document.getElementById('governanceTitle').textContent = item.name;
+            document.getElementById('governanceDesc').textContent = `${item.name}的主要職責和作用`;
+
+            const list = document.getElementById('governanceResp');
+            list.innerHTML = item.responsibilities
+                .map(resp => `<li>${resp}</li>`)
+                .join('');
+
+            container.classList.add('show');
+        }
+
+        // Ecosystem Data
+        const ecosystemData = {
+            center: {
+                name: '新創公司',
+                color: '#667eea',
+                icon: '🚀'
+            },
+            nodes: [
+                {
+                    id: 'angel',
+                    name: '天使投資人',
+                    icon: '👼',
+                    color: '#fbbf24',
+                    provides: [
+                        '資金投資 (通常$10K-$100K)',
+                        '經驗指導和導師'
+                    ],
+                    examples: ['李開復', '詹宏志', '個人天使投資人'],
+                    pros: '風險容忍度高、靈活快速、經驗豐富',
+                    cons: '資金量有限、投資範圍局限'
+                },
+                {
+                    id: 'vc',
+                    name: '創投(VC)',
+                    icon: '💰',
+                    color: '#f59e0b',
+                    provides: [
+                        '機構級資金 ($500K-$10M+)',
+                        '策略建議和產業聯繫',
+                        '人才招聘幫助'
+                    ],
+                    examples: ['Appworks', 'TigerGlobal', 'Sequoia'],
+                    pros: '大額資金、專業支持、國際聯繫',
+                    cons: '股份稀釋、投資審查嚴格、報告要求多'
+                },
+                {
+                    id: 'accelerator',
+                    name: '加速器',
+                    icon: '🏃',
+                    color: '#ef4444',
+                    provides: [
+                        '短期密集指導計畫',
+                        '小額種子資金',
+                        '投資人介紹和Demo Day',
+                        '辦公空間和資源'
+                    ],
+                    examples: ['Y Combinator', '500Global', '馬克棧'],
+                    pros: '快速成長、低門檻進入、同儕網絡',
+                    cons: '時間短暫、股份稀釋、競爭激烈'
+                },
+                {
+                    id: 'incubator',
+                    name: '孵化器',
+                    icon: '🐣',
+                    color: '#ec4899',
+                    provides: [
+                        '創意階段資金和支持',
+                        '業師指導',
+                        '基礎設施和服務',
+                        '法律和財務協助'
+                    ],
+                    examples: ['新竹科學園區', '國家發展委員會孵化器'],
+                    pros: '早期資金、政府支持、基礎設施',
+                    cons: '資金較小、發展時間長、選拔嚴格'
+                },
+                {
+                    id: 'crowdfunding',
+                    name: '群眾募資',
+                    icon: '👥',
+                    color: '#a855f7',
+                    provides: [
+                        '直接消費者資金',
+                        '產品市場驗證',
+                        '品牌曝光',
+                        '早期用戶反饋'
+                    ],
+                    examples: ['嘖嘖', 'Kickstarter', 'Indiegogo'],
+                    pros: '市場驗證、直接用戶聯繫、低中介費用',
+                    cons: '需要營銷努力、法規複雜、退款風險'
+                },
+                {
+                    id: 'subsidy',
+                    name: '政府補助',
+                    icon: '🏛️',
+                    color: '#06b6d4',
+                    provides: [
+                        '創新補助和獎勵',
+                        '租金補貼',
+                        '稅收優惠',
+                        '人才培訓資金'
+                    ],
+                    examples: ['科技部SBIR', '經濟部育成中心', '地方政府補助'],
+                    pros: '不稀釋股份、政策支持、穩定資金',
+                    cons: '申請複雜、撥款緩慢、有使用限制'
+                },
+                {
+                    id: 'research',
+                    name: '大學/研究機構',
+                    icon: '🏫',
+                    color: '#10b981',
+                    provides: [
+                        '技術和研究成果',
+                        '人才來源（學生和研究生）',
+                        '共同研究和合作',
+                        '實驗室設施使用'
+                    ],
+                    examples: ['國立台灣大學', '清華大學 AI研究所', '中央研究院'],
+                    pros: '尖端技術、人才庫、科技驗證',
+                    cons: '商業化時間長、IP複雜、官僚程序'
+                },
+                {
+                    id: 'cvc',
+                    name: '企業創投(CVC)',
+                    icon: '🏢',
+                    color: '#0369a1',
+                    provides: [
+                        '大額策略資金',
+                        '業務合作機會',
+                        '產業資源和客戶',
+                        '人才和基礎設施'
+                    ],
+                    examples: ['Google Ventures', '微軟Ventures', 'Facebook Ventures'],
+                    pros: '大額資金、業務機會、策略支持',
+                    cons: '決策慢、利益衝突風險、可能失去自主性'
+                }
+            ]
+        };
+
+        function drawEcosystem() {
+            const svg = document.getElementById('ecosystemSvg');
+            if (svg.children.length > 0) return; // Already drawn
+
+            const width = svg.parentElement.clientWidth;
+            const height = svg.parentElement.clientHeight;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) / 3.5;
+
+            // Draw center circle (Startup)
+            const centerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            centerCircle.setAttribute('cx', centerX);
+            centerCircle.setAttribute('cy', centerY);
+            centerCircle.setAttribute('r', '60');
+            centerCircle.setAttribute('fill', ecosystemData.center.color);
+            centerCircle.setAttribute('filter', 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))');
+            svg.appendChild(centerCircle);
+
+            const centerText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            centerText.setAttribute('x', centerX);
+            centerText.setAttribute('y', centerY - 10);
+            centerText.setAttribute('text-anchor', 'middle');
+            centerText.setAttribute('font-size', '28');
+            centerText.setAttribute('font-weight', 'bold');
+            centerText.textContent = ecosystemData.center.icon;
+            svg.appendChild(centerText);
+
+            const centerLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            centerLabel.setAttribute('x', centerX);
+            centerLabel.setAttribute('y', centerY + 25);
+            centerLabel.setAttribute('text-anchor', 'middle');
+            centerLabel.setAttribute('font-size', '14');
+            centerLabel.setAttribute('font-weight', '600');
+            centerLabel.setAttribute('fill', 'white');
+            centerLabel.textContent = ecosystemData.center.name;
+            svg.appendChild(centerLabel);
+
+            // Draw nodes
+            ecosystemData.nodes.forEach((node, index) => {
+                const angle = (index / ecosystemData.nodes.length) * 2 * Math.PI - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+
+                // Draw connection line with animation
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', centerX);
+                line.setAttribute('y1', centerY);
+                line.setAttribute('x2', x);
+                line.setAttribute('y2', y);
+                line.setAttribute('stroke', node.color);
+                line.setAttribute('stroke-width', '2');
+                line.setAttribute('opacity', '0.3');
+                line.setAttribute('stroke-dasharray', '5,5');
+                svg.appendChild(line);
+
+                // Create group for better interactivity
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.setAttribute('class', 'ecosystem-node');
+                g.setAttribute('onclick', `showEcosystemDetails('${node.id}')`);
+
+                // Draw node circle (inside group so click works)
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', x);
+                circle.setAttribute('cy', y);
+                circle.setAttribute('r', '45');
+                circle.setAttribute('fill', node.color);
+                circle.setAttribute('class', 'ecosystem-node-circle');
+                circle.setAttribute('filter', 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))');
+                circle.setAttribute('cursor', 'pointer');
+                g.appendChild(circle);
+
+                // Icon
+                const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                icon.setAttribute('x', x);
+                icon.setAttribute('y', y - 8);
+                icon.setAttribute('text-anchor', 'middle');
+                icon.setAttribute('font-size', '24');
+                icon.setAttribute('class', 'ecosystem-node-text');
+                icon.textContent = node.icon;
+                g.appendChild(icon);
+
+                // Label
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', x);
+                text.setAttribute('y', y + 18);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('font-size', '12');
+                text.setAttribute('font-weight', '600');
+                text.setAttribute('fill', 'white');
+                text.setAttribute('class', 'ecosystem-node-text');
+                text.textContent = node.name;
+                g.appendChild(text);
+
+                svg.appendChild(g);
+
+                // Store node data for click handler
+                g.dataset.nodeId = node.id;
+            });
+        }
+
+        function showEcosystemDetails(nodeId) {
+            const node = ecosystemData.nodes.find(n => n.id === nodeId);
+            const container = document.getElementById('ecosystemDetailsContainer');
+            const grid = document.getElementById('ecosystemDetailsGrid');
+
+            document.getElementById('ecosystemTitle').textContent = `${node.icon} ${node.name}`;
+
+            grid.innerHTML = `
+                <div class="ecosystem-detail-section">
+                    <h5>主要服務</h5>
+                    ${node.provides.map(p => `<p>• ${p}</p>`).join('')}
+                </div>
+                <div class="ecosystem-detail-section">
+                    <h5>典型案例</h5>
+                    ${node.examples.map(e => `<p>• ${e}</p>`).join('')}
+                </div>
+                <div class="ecosystem-detail-section" style="grid-column: 1 / -1;">
+                    <h5>優缺點分析</h5>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <strong>✓ 優點</strong>
+                            <p>${node.pros}</p>
+                        </div>
+                        <div class="cons">
+                            <strong>✗ 缺點</strong>
+                            <p>${node.cons}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.classList.add('show');
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            initTimeline();
+            initCompanyTypes();
+            initGovernance();
+        };
+    </script>
+</body>
+</html>

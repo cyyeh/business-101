@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>總體經濟學基礎 - 互動圖表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background-color: #f1f5f9;
+            color: #1e293b;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs-container {
+            padding: 20px 40px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 10px 24px;
+            border: none;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1em;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab-button:hover {
+            background-color: #cbd5e1;
+        }
+
+        .tab-button.active {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .content {
+            padding: 40px;
+            min-height: 600px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Tab 1: Business Cycle */
+        .cycle-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .cycle-chart {
+            background-color: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .cycle-svg {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .phase-section {
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .phase-section:hover {
+            opacity: 0.8;
+        }
+
+        .phase-info {
+            background-color: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+            border-left: 6px solid #2563eb;
+        }
+
+        .phase-info h3 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #2563eb;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .info-item {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .info-item h4 {
+            color: #475569;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+            font-weight: 600;
+        }
+
+        .info-item ul {
+            margin-left: 20px;
+            font-size: 0.9em;
+            color: #64748b;
+        }
+
+        .info-item li {
+            margin-bottom: 8px;
+        }
+
+        /* Tab 2: Economic Dashboard */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .dashboard-card {
+            background-color: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-card h3 {
+            margin-bottom: 15px;
+            color: #2563eb;
+            font-size: 1.1em;
+        }
+
+        .gauge-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .gauge {
+            width: 120px;
+            height: 120px;
+        }
+
+        .slider-container {
+            margin-bottom: 20px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e2e8f0;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-value {
+            text-align: center;
+            font-weight: 600;
+            color: #2563eb;
+            margin-top: 10px;
+            font-size: 1.2em;
+        }
+
+        .scenario-panel {
+            grid-column: 1 / -1;
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid #2563eb;
+        }
+
+        .scenario-panel h3 {
+            color: #2563eb;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .scenario-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .scenario-item {
+            background-color: #f0f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .scenario-item strong {
+            color: #0c4a6e;
+        }
+
+        /* Tab 3: Monetary vs Fiscal Policy */
+        .policy-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .policy-section {
+            background-color: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .policy-section h3 {
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .monetary h3 {
+            color: #2563eb;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 15px;
+        }
+
+        .fiscal h3 {
+            color: #059669;
+            border-bottom: 3px solid #059669;
+            padding-bottom: 15px;
+        }
+
+        .policy-tools {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .policy-tool {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid #cbd5e1;
+            transition: all 0.3s ease;
+        }
+
+        .policy-tool:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .policy-tool strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #1e293b;
+        }
+
+        .policy-tool small {
+            color: #64748b;
+            display: block;
+        }
+
+        .policy-effect {
+            background-color: #fef3c7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #d97706;
+            display: none;
+        }
+
+        .policy-effect.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .scenario-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .toggle-btn {
+            padding: 8px 16px;
+            border: 2px solid #cbd5e1;
+            background-color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn.active {
+            background-color: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .center-effect {
+            grid-column: 1 / -1;
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #64748b;
+            text-align: center;
+        }
+
+        .effect-arrow {
+            font-size: 2em;
+            margin: 10px 0;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .effect-item {
+            display: inline-block;
+            background-color: #f0f9ff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 5px;
+            font-weight: 600;
+            color: #0c4a6e;
+        }
+
+        /* Tab 4: Exchange Rate */
+        .exchange-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .exchange-scenario {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .scenario-card {
+            background-color: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .scenario-card.active {
+            border-color: #2563eb;
+            background-color: #f0f9ff;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        }
+
+        .scenario-card h4 {
+            color: #2563eb;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .effect-box {
+            background-color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #cbd5e1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .effect-box.positive {
+            border-left-color: #10b981;
+            background-color: #f0fdf4;
+        }
+
+        .effect-box.negative {
+            border-left-color: #ef4444;
+            background-color: #fef2f2;
+        }
+
+        .effect-box .emoji {
+            font-size: 1.5em;
+            margin-left: 10px;
+        }
+
+        .exchange-slider-container {
+            background-color: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .exchange-slider-container h4 {
+            color: #2563eb;
+            margin-bottom: 20px;
+        }
+
+        .exchange-info {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .trade-diagram {
+            background-color: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .trade-diagram h4 {
+            color: #2563eb;
+            margin-bottom: 20px;
+        }
+
+        .trade-box {
+            display: inline-block;
+            background-color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 2px solid #cbd5e1;
+            margin: 0 10px;
+            font-weight: 600;
+            min-width: 120px;
+        }
+
+        .trade-operator {
+            display: inline-block;
+            font-size: 1.5em;
+            margin: 0 10px;
+            color: #64748b;
+            font-weight: bold;
+        }
+
+        .trade-result {
+            display: block;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .trade-result.surplus {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .trade-result.deficit {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .policy-container {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .exchange-scenario {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs-container {
+                justify-content: center;
+            }
+
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>總體經濟學基礎</h1>
+            <p>互動式教學圖表 - 理解經濟循環、政策與國際貿易</p>
+        </div>
+
+        <div class="tabs-container">
+            <button class="tab-button active" onclick="switchTab(event, 'tab1')">景氣循環圖</button>
+            <button class="tab-button" onclick="switchTab(event, 'tab2')">經濟指標儀表板</button>
+            <button class="tab-button" onclick="switchTab(event, 'tab3')">貨幣政策 vs 財政政策</button>
+            <button class="tab-button" onclick="switchTab(event, 'tab4')">匯率與國際貿易</button>
+        </div>
+
+        <div class="content">
+            <!-- TAB 1: Business Cycle -->
+            <div id="tab1" class="tab-content active">
+                <div class="cycle-container">
+                    <div class="cycle-chart">
+                        <svg class="cycle-svg" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet">
+                            <!-- Trend line -->
+                            <line x1="50" y1="200" x2="750" y2="200" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+
+                            <!-- Business cycle curve -->
+                            <path id="cycleCurve" d="M 50 200 Q 200 100 350 150 T 750 200" stroke="#64748b" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+                            <!-- Expansion phase (green) -->
+                            <g id="phase-expansion" class="phase-section" onclick="showPhaseInfo('expansion')">
+                                <path d="M 50 200 Q 125 150 200 100" stroke="#10b981" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.7"/>
+                                <text x="120" y="240" text-anchor="middle" font-size="14" font-weight="bold" fill="#059669">擴張</text>
+                                <text x="120" y="256" text-anchor="middle" font-size="11" fill="#64748b">(Expansion)</text>
+                            </g>
+
+                            <!-- Peak phase (yellow) -->
+                            <g id="phase-peak" class="phase-section" onclick="showPhaseInfo('peak')">
+                                <path d="M 200 100 Q 275 75 350 100" stroke="#eab308" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.7"/>
+                                <text x="275" y="50" text-anchor="middle" font-size="14" font-weight="bold" fill="#b45309">高峰</text>
+                                <text x="275" y="66" text-anchor="middle" font-size="11" fill="#64748b">(Peak)</text>
+                            </g>
+
+                            <!-- Recession phase (red) -->
+                            <g id="phase-recession" class="phase-section" onclick="showPhaseInfo('recession')">
+                                <path d="M 350 100 Q 425 150 500 200" stroke="#ef4444" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.7"/>
+                                <text x="425" y="50" text-anchor="middle" font-size="14" font-weight="bold" fill="#b91c1c">衰退</text>
+                                <text x="425" y="66" text-anchor="middle" font-size="11" fill="#64748b">(Recession)</text>
+                            </g>
+
+                            <!-- Trough phase (blue) -->
+                            <g id="phase-trough" class="phase-section" onclick="showPhaseInfo('trough')">
+                                <path d="M 500 200 Q 575 250 650 200" stroke="#3b82f6" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.7"/>
+                                <text x="575" y="300" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e40af">谷底</text>
+                                <text x="575" y="316" text-anchor="middle" font-size="11" fill="#64748b">(Trough)</text>
+                            </g>
+
+                            <!-- Axes labels -->
+                            <text x="750" y="220" font-size="12" fill="#64748b">時間</text>
+                            <text x="20" y="100" font-size="12" fill="#64748b">經濟</text>
+                            <text x="15" y="115" font-size="12" fill="#64748b">產出</text>
+                        </svg>
+                    </div>
+
+                    <div class="phase-info" id="phaseInfo">
+                        <h3 id="phaseName">景氣循環四個階段</h3>
+                        <p style="margin-bottom: 20px; color: #64748b;">點擊圖表上的任何階段來查看詳細信息</p>
+                        <div class="info-grid" id="phaseDetails">
+                            <div class="info-item">
+                                <h4>📌 簡介</h4>
+                                <p>景氣循環描述了經濟在擴張和衰退之間的周期性波動。這四個階段反映了經濟活動的自然變化。</p>
+                            </div>
+                            <div class="info-item">
+                                <h4>💡 核心特點</h4>
+                                <p>每個階段都有不同的經濟特徵、政策應對和投資機會。了解這些幫助預測經濟走勢。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: Economic Dashboard -->
+            <div id="tab2" class="tab-content">
+                <div class="dashboard-container">
+                    <!-- GDP Growth -->
+                    <div class="dashboard-card">
+                        <h3>GDP成長率</h3>
+                        <div class="gauge-container">
+                            <svg class="gauge" id="gdpGauge" viewBox="0 0 120 120"></svg>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" class="slider" id="gdpSlider" min="-5" max="10" step="0.5" value="3" oninput="updateDashboard()">
+                            <div class="slider-value" id="gdpValue">3.0%</div>
+                        </div>
+                    </div>
+
+                    <!-- Inflation Rate -->
+                    <div class="dashboard-card">
+                        <h3>通膨率 (CPI)</h3>
+                        <div class="gauge-container">
+                            <svg class="gauge" id="inflationGauge" viewBox="0 0 120 120"></svg>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" class="slider" id="inflationSlider" min="0" max="10" step="0.5" value="2" oninput="updateDashboard()">
+                            <div class="slider-value" id="inflationValue">2.0%</div>
+                        </div>
+                    </div>
+
+                    <!-- Unemployment Rate -->
+                    <div class="dashboard-card">
+                        <h3>失業率</h3>
+                        <div class="gauge-container">
+                            <svg class="gauge" id="unemploymentGauge" viewBox="0 0 120 120"></svg>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" class="slider" id="unemploymentSlider" min="0" max="10" step="0.5" value="4" oninput="updateDashboard()">
+                            <div class="slider-value" id="unemploymentValue">4.0%</div>
+                        </div>
+                    </div>
+
+                    <!-- Interest Rate -->
+                    <div class="dashboard-card">
+                        <h3>利率</h3>
+                        <div class="gauge-container">
+                            <svg class="gauge" id="interestGauge" viewBox="0 0 120 120"></svg>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" class="slider" id="interestSlider" min="0" max="7" step="0.25" value="2" oninput="updateDashboard()">
+                            <div class="slider-value" id="interestValue">2.0%</div>
+                        </div>
+                    </div>
+
+                    <!-- Exchange Rate -->
+                    <div class="dashboard-card">
+                        <h3>匯率 (台幣/美元)</h3>
+                        <div class="gauge-container">
+                            <svg class="gauge" id="exchangeGauge" viewBox="0 0 120 120"></svg>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" class="slider" id="exchangeSlider" min="25" max="35" step="0.5" value="30" oninput="updateDashboard()">
+                            <div class="slider-value" id="exchangeValue">30.0</div>
+                        </div>
+                    </div>
+
+                    <!-- Scenario Analysis -->
+                    <div class="scenario-panel">
+                        <h3>📊 情境分析</h3>
+                        <div class="scenario-content">
+                            <div class="scenario-item">
+                                <strong>房價走勢:</strong>
+                                <p id="housePriceScenario">根據當前指標變化...</p>
+                            </div>
+                            <div class="scenario-item">
+                                <strong>股市表現:</strong>
+                                <p id="stockMarketScenario">根據當前指標變化...</p>
+                            </div>
+                            <div class="scenario-item">
+                                <strong>消費行為:</strong>
+                                <p id="consumerScenario">根據當前指標變化...</p>
+                            </div>
+                            <div class="scenario-item">
+                                <strong>企業投資:</strong>
+                                <p id="investmentScenario">根據當前指標變化...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: Monetary vs Fiscal Policy -->
+            <div id="tab3" class="tab-content">
+                <div style="margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px; color: #2563eb;">選擇情景:</h3>
+                    <div class="scenario-toggle">
+                        <button class="toggle-btn active" onclick="setPolicyScenario('expansionary')">擴張性政策 (刺激經濟)</button>
+                        <button class="toggle-btn" onclick="setPolicyScenario('contractionary')">緊縮性政策 (控制通膨)</button>
+                    </div>
+                </div>
+
+                <div class="policy-container">
+                    <!-- Monetary Policy -->
+                    <div class="policy-section monetary">
+                        <h3>💰 貨幣政策 (央行)</h3>
+                        <div class="policy-tools">
+                            <div class="policy-tool" onclick="showPolicyEffect('interest-rate', '調整利率')">
+                                <strong>調整利率</strong>
+                                <small>降低/提高央行基準利率</small>
+                            </div>
+                            <div class="policy-tool" onclick="showPolicyEffect('open-market', '公開市場操作')">
+                                <strong>公開市場操作</strong>
+                                <small>買賣政府債券調整貨幣供給</small>
+                            </div>
+                            <div class="policy-tool" onclick="showPolicyEffect('reserve-ratio', '存款準備率')">
+                                <strong>存款準備率</strong>
+                                <small>調整銀行需持有的準備金</small>
+                            </div>
+                            <div class="policy-tool" onclick="showPolicyEffect('quantitative-easing', '量化寬鬆')">
+                                <strong>量化寬鬆 (QE)</strong>
+                                <small>大規模購買長期資產</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fiscal Policy -->
+                    <div class="policy-section fiscal">
+                        <h3>🏛️ 財政政策 (政府)</h3>
+                        <div class="policy-tools">
+                            <div class="policy-tool" onclick="showPolicyEffect('gov-spending', '政府支出')">
+                                <strong>政府支出</strong>
+                                <small>增加/減少公共部門支出</small>
+                            </div>
+                            <div class="policy-tool" onclick="showPolicyEffect('tax-adjustment', '稅收調整')">
+                                <strong>稅收調整</strong>
+                                <small>調整稅率刺激或抑制經濟</small>
+                            </div>
+                            <div class="policy-tool" onclick="showPolicyEffect('public-investment', '公共建設')">
+                                <strong>公共建設投資</strong>
+                                <small>基礎設施、道路、橋樑等</small>
+                            </div>
+                            <div class="policy-tool" onclick="showPolicyEffect('transfer-payments', '補貼/移轉支付')">
+                                <strong>補貼/移轉支付</strong>
+                                <small>失業救濟、社會福利等</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Central Effect Panel -->
+                    <div class="center-effect">
+                        <h3>📈 政策效應 (在 <span id="scenarioName">擴張</span> 情景)</h3>
+                        <div id="policyEffectText" style="text-align: left; margin-top: 20px; background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: none;">
+                            <p id="effectDescription" style="color: #0c4a6e;"></p>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <div class="effect-arrow">↓</div>
+                            <div style="font-weight: 600; margin-bottom: 15px;">對經濟的影響:</div>
+                            <div id="policyImpact">
+                                <div class="effect-item">GDP ↑</div>
+                                <div class="effect-item">物價 ↑</div>
+                                <div class="effect-item">就業 ↑</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: Exchange Rate & International Trade -->
+            <div id="tab4" class="tab-content">
+                <div class="exchange-container">
+                    <h2 style="color: #2563eb; margin-bottom: 20px;">匯率對經濟的影響</h2>
+
+                    <div class="exchange-scenario">
+                        <!-- Appreciation Scenario -->
+                        <div class="scenario-card active" id="appreciationCard" onclick="switchExchangeScenario('appreciation')">
+                            <h4>📈 台幣升值</h4>
+                            <p style="color: #64748b; margin-bottom: 15px;">1美元 = 25元 (升值)</p>
+                            <div class="effect-box positive">
+                                <span>進口商成本下降</span>
+                                <span class="emoji">😊</span>
+                            </div>
+                            <div class="effect-box negative">
+                                <span>出口商收入減少</span>
+                                <span class="emoji">😞</span>
+                            </div>
+                            <div class="effect-box positive">
+                                <span>出國旅遊更便宜</span>
+                                <span class="emoji">✈️</span>
+                            </div>
+                            <div class="effect-box negative">
+                                <span>外資吸引力下降</span>
+                                <span class="emoji">📉</span>
+                            </div>
+                        </div>
+
+                        <!-- Depreciation Scenario -->
+                        <div class="scenario-card" id="depreciationCard" onclick="switchExchangeScenario('depreciation')">
+                            <h4>📉 台幣貶值</h4>
+                            <p style="color: #64748b; margin-bottom: 15px;">1美元 = 35元 (貶值)</p>
+                            <div class="effect-box negative">
+                                <span>進口商成本上升</span>
+                                <span class="emoji">😞</span>
+                            </div>
+                            <div class="effect-box positive">
+                                <span>出口商收入增加</span>
+                                <span class="emoji">😊</span>
+                            </div>
+                            <div class="effect-box negative">
+                                <span>出國旅遊更昂貴</span>
+                                <span class="emoji">💸</span>
+                            </div>
+                            <div class="effect-box positive">
+                                <span>外資吸引力上升</span>
+                                <span class="emoji">📈</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Exchange Rate Slider -->
+                    <div class="exchange-slider-container">
+                        <h4>調整匯率 (台幣/美元)</h4>
+                        <div class="slider-container">
+                            <input type="range" class="slider" id="exchangeRateSlider" min="20" max="40" step="0.5" value="30" oninput="updateExchangeRate()">
+                            <div class="slider-value" id="exchangeRateDisplay">30.0</div>
+                        </div>
+                        <div class="exchange-info">
+                            <strong id="exchangeInterpretation">當前匯率: 1美元 = 30.0台幣</strong>
+                            <p id="exchangeImplication" style="margin-top: 10px; color: #64748b;">調整滑塊以查看不同匯率水平的影響...</p>
+                        </div>
+                    </div>
+
+                    <!-- Trade Balance Diagram -->
+                    <div class="trade-diagram">
+                        <h4>貿易收支平衡</h4>
+                        <div style="margin-top: 25px; font-size: 1.1em;">
+                            <div class="trade-box" id="exportBox">
+                                出口<br><span style="color: #2563eb; font-size: 1.3em;">500億</span>
+                            </div>
+                            <span class="trade-operator">−</span>
+                            <div class="trade-box" id="importBox">
+                                進口<br><span style="color: #059669; font-size: 1.3em;">400億</span>
+                            </div>
+                            <span class="trade-operator">=</span>
+                            <div class="trade-box" id="resultBox">
+                                貿易順差<br><span style="color: #059669; font-size: 1.3em;">+100億</span>
+                            </div>
+                        </div>
+                        <div class="trade-result surplus" id="tradeBalance">
+                            貿易順差: 台灣出口超過進口，外匯收入增加 📊
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== TAB SWITCHING =====
+        function switchTab(event, tabName) {
+            // Hide all tabs
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Show selected tab and mark button as active
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Initialize animations for specific tabs
+            if (tabName === 'tab1') {
+                animateCycleCurve();
+            } else if (tabName === 'tab2') {
+                updateDashboard();
+            }
+        }
+
+        // ===== TAB 1: BUSINESS CYCLE =====
+        const phaseData = {
+            expansion: {
+                name: '擴張期 (Expansion)',
+                characteristics: [
+                    '產出與收入上升',
+                    '失業率下降',
+                    '消費和投資增加',
+                    '通膨開始上升'
+                ],
+                indicators: [
+                    'GDP正成長',
+                    '工業生產指數上升',
+                    '消費者信心指數高',
+                    '企業利潤增長'
+                ],
+                actions: [
+                    '企業：積極擴產和招聘',
+                    '消費者：增加支出',
+                    '央行：監控通膨',
+                    '投資者：增加股票配置'
+                ],
+                investment: '股票表現良好，推薦增加權益類投資'
+            },
+            peak: {
+                name: '高峰期 (Peak)',
+                characteristics: [
+                    '經濟成長達到最高',
+                    '失業率最低',
+                    '通膨壓力最大',
+                    '產能充分利用'
+                ],
+                indicators: [
+                    'GDP成長率達峰值',
+                    '物價指數明顯上升',
+                    '短期利率快速提升',
+                    '資產泡沫開始形成'
+                ],
+                actions: [
+                    '央行：開始加息控通膨',
+                    '政府：減少刺激政策',
+                    '消費者：警惕價格上升',
+                    '投資者：轉向防守性資產'
+                ],
+                investment: '警惕泡沫，適當減少股票，增加債券配置'
+            },
+            recession: {
+                name: '衰退期 (Recession)',
+                characteristics: [
+                    '產出和收入下降',
+                    '失業率上升',
+                    '企業利潤下滑',
+                    '消費和投資下降'
+                ],
+                indicators: [
+                    'GDP負成長',
+                    '工業生產指數下降',
+                    '失業率明顯上升',
+                    '企業倒閉增加'
+                ],
+                actions: [
+                    '央行：降息提供流動性',
+                    '政府：實施刺激政策',
+                    '企業：控制成本',
+                    '投資者：精選價值型投資'
+                ],
+                investment: '尋找被低估的資產，為未來反彈做準備'
+            },
+            trough: {
+                name: '谷底期 (Trough)',
+                characteristics: [
+                    '經濟衰退程度最深',
+                    '失業率最高',
+                    '消費和投資最低',
+                    '價格下降明顯'
+                ],
+                indicators: [
+                    'GDP最低點',
+                    '失業率達峰值',
+                    '消費者信心最低',
+                    '企業融資困難'
+                ],
+                actions: [
+                    '央行：維持寬鬆政策',
+                    '政府：增加支出',
+                    '企業：等待時機',
+                    '投資者：等待反彈信號'
+                ],
+                investment: '風險收益比最有利，谷底往往是最佳買點'
+            }
+        };
+
+        function showPhaseInfo(phase) {
+            const data = phaseData[phase];
+            const phaseInfo = document.getElementById('phaseInfo');
+
+            let html = `<h3 style="color: #2563eb;">${data.name}</h3>`;
+            html += `<div class="info-grid">
+                <div class="info-item">
+                    <h4>📊 經濟特徵</h4>
+                    <ul>
+                        ${data.characteristics.map(c => `<li>${c}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="info-item">
+                    <h4>📈 經濟指標</h4>
+                    <ul>
+                        ${data.indicators.map(i => `<li>${i}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="info-item">
+                    <h4>⚙️ 企業應對</h4>
+                    <ul>
+                        ${data.actions.map(a => `<li>${a}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="info-item">
+                    <h4>💡 投資啟示</h4>
+                    <p>${data.investment}</p>
+                </div>
+            </div>`;
+
+            phaseInfo.innerHTML = html;
+        }
+
+        function animateCycleCurve() {
+            const curve = document.getElementById('cycleCurve');
+            curve.style.strokeDasharray = curve.getTotalLength();
+            curve.style.strokeDashoffset = curve.getTotalLength();
+            curve.style.animation = 'none';
+
+            setTimeout(() => {
+                curve.style.transition = 'stroke-dashoffset 2s ease-in-out';
+                curve.style.strokeDashoffset = 0;
+            }, 100);
+        }
+
+        // ===== TAB 2: ECONOMIC DASHBOARD =====
+        function drawGauge(id, value, max, color) {
+            const svg = document.getElementById(id);
+            svg.innerHTML = '';
+
+            const radius = 55;
+            const cx = 60;
+            const cy = 60;
+            const angle = (value / max) * Math.PI;
+
+            // Background arc
+            const bgPath = `M ${cx - radius} ${cy} A ${radius} ${radius} 0 0 1 ${cx + radius} ${cy}`;
+            const bgArc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            bgArc.setAttribute('d', bgPath);
+            bgArc.setAttribute('stroke', '#e2e8f0');
+            bgArc.setAttribute('stroke-width', '8');
+            bgArc.setAttribute('fill', 'none');
+            svg.appendChild(bgArc);
+
+            // Value arc
+            const endX = cx - radius * Math.cos(angle);
+            const endY = cy - radius * Math.sin(angle);
+            const valuePath = `M ${cx - radius} ${cy} A ${radius} ${radius} 0 0 1 ${endX} ${endY}`;
+            const valueArc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            valueArc.setAttribute('d', valuePath);
+            valueArc.setAttribute('stroke', color);
+            valueArc.setAttribute('stroke-width', '8');
+            valueArc.setAttribute('fill', 'none');
+            valueArc.setAttribute('stroke-linecap', 'round');
+            svg.appendChild(valueArc);
+
+            // Center circle
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', cx);
+            circle.setAttribute('cy', cy);
+            circle.setAttribute('r', '8');
+            circle.setAttribute('fill', color);
+            svg.appendChild(circle);
+        }
+
+        function updateDashboard() {
+            const gdp = parseFloat(document.getElementById('gdpSlider').value);
+            const inflation = parseFloat(document.getElementById('inflationSlider').value);
+            const unemployment = parseFloat(document.getElementById('unemploymentSlider').value);
+            const interest = parseFloat(document.getElementById('interestSlider').value);
+            const exchange = parseFloat(document.getElementById('exchangeSlider').value);
+
+            // Update displays
+            document.getElementById('gdpValue').textContent = gdp.toFixed(1) + '%';
+            document.getElementById('inflationValue').textContent = inflation.toFixed(1) + '%';
+            document.getElementById('unemploymentValue').textContent = unemployment.toFixed(1) + '%';
+            document.getElementById('interestValue').textContent = interest.toFixed(2) + '%';
+            document.getElementById('exchangeValue').textContent = exchange.toFixed(1);
+
+            // Draw gauges
+            drawGauge('gdpGauge', gdp + 5, 15, '#2563eb');
+            drawGauge('inflationGauge', inflation, 10, '#f59e0b');
+            drawGauge('unemploymentGauge', unemployment, 10, '#ef4444');
+            drawGauge('interestGauge', interest, 7, '#8b5cf6');
+            drawGauge('exchangeGauge', exchange, 35, '#10b981');
+
+            // Analyze scenario
+            analyzeEconomicScenario(gdp, inflation, unemployment, interest, exchange);
+        }
+
+        function analyzeEconomicScenario(gdp, inflation, unemployment, interest, exchange) {
+            let housePriceText = '中性';
+            let stockMarketText = '中性';
+            let consumerText = '中性';
+            let investmentText = '中性';
+
+            // House prices logic
+            if (gdp > 5 && interest < 3 && inflation < 3) {
+                housePriceText = '📈 強勢上漲 - 低利率和強勢經濟推高房價';
+            } else if (gdp < 0 && unemployment > 5) {
+                housePriceText = '📉 快速下跌 - 經濟衰退和高失業率打擊需求';
+            } else if (interest > 4) {
+                housePriceText = '⚠️ 面臨壓力 - 高利率增加購房成本';
+            } else {
+                housePriceText = '➡️ 平穩發展 - 經濟基本面穩定';
+            }
+
+            // Stock market logic
+            if (gdp > 4 && inflation < 4 && unemployment < 5) {
+                stockMarketText = '📈 牛市前景 - 強勁經濟成長支撐股市';
+            } else if (gdp < 0 && inflation > 5) {
+                stockMarketText = '📉 熊市風險 - 衰退和高通膨雙重打擊';
+            } else if (inflation > 6 && interest > 4) {
+                stockMarketText = '⚠️ 震盪調整 - 高通膨和高利率制約漲幅';
+            } else {
+                stockMarketText = '➡️ 謹慎樂觀 - 逐步消化政策調整';
+            }
+
+            // Consumer spending logic
+            if (gdp > 3 && unemployment < 4 && inflation < 3) {
+                consumerText = '📈 消費繁榮 - 就業穩定和低通膨提升購買力';
+            } else if (unemployment > 6 && gdp < 1) {
+                consumerText = '📉 消費萎靡 - 失業和低增長抑制支出';
+            } else if (inflation > 5 && interest > 4) {
+                consumerText = '⚠️ 消費疲弱 - 高成本和高利率損害購買力';
+            } else {
+                consumerText = '➡️ 保持謹慎 - 觀望後市再決策';
+            }
+
+            // Investment logic
+            if (gdp > 4 && interest < 3 && inflation < 2) {
+                investmentText = '📈 擴張投資 - 最優的投資環境';
+            } else if (gdp < 0 || unemployment > 7) {
+                investmentText = '⚠️ 延緩計畫 - 經濟前景不明朗';
+            } else if (interest > 5) {
+                investmentText = '📉 融資成本高 - 企業投資意願下降';
+            } else {
+                investmentText = '➡️ 精選項目 - 謹慎但穩步推進';
+            }
+
+            document.getElementById('housePriceScenario').textContent = housePriceText;
+            document.getElementById('stockMarketScenario').textContent = stockMarketText;
+            document.getElementById('consumerScenario').textContent = consumerText;
+            document.getElementById('investmentScenario').textContent = investmentText;
+        }
+
+        // ===== TAB 3: MONETARY VS FISCAL POLICY =====
+        let currentPolicyScenario = 'expansionary';
+
+        function setPolicyScenario(scenario) {
+            currentPolicyScenario = scenario;
+
+            // Update toggle buttons
+            const buttons = document.querySelectorAll('.toggle-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update scenario name
+            const scenarioName = scenario === 'expansionary' ? '擴張' : '緊縮';
+            document.getElementById('scenarioName').textContent = scenarioName;
+
+            // Hide existing effect
+            const effectText = document.getElementById('policyEffectText');
+            effectText.style.display = 'none';
+
+            // Update impact indicators
+            if (scenario === 'expansionary') {
+                document.getElementById('policyImpact').innerHTML = `
+                    <div class="effect-item">GDP ↑ 上升</div>
+                    <div class="effect-item">物價 ↑ 上升</div>
+                    <div class="effect-item">就業 ↑ 上升</div>
+                `;
+            } else {
+                document.getElementById('policyImpact').innerHTML = `
+                    <div class="effect-item">GDP ↓ 下降</div>
+                    <div class="effect-item">物價 ↓ 下降</div>
+                    <div class="effect-item">就業 ↓ 下降</div>
+                `;
+            }
+        }
+
+        function showPolicyEffect(policyId, policyName) {
+            const effectText = document.getElementById('policyEffectText');
+            const effectDescription = document.getElementById('effectDescription');
+
+            let description = '';
+
+            if (currentPolicyScenario === 'expansionary') {
+                const expansionaryEffects = {
+                    'interest-rate': '央行降低基準利率，使借貸成本下降。企業和消費者更願意借款投資和消費，促進經濟增長。',
+                    'open-market': '央行購買政府債券，向金融系統注入現金。增加貨幣供給，降低市場利率，刺激投資。',
+                    'reserve-ratio': '降低銀行存款準備率，銀行可用於放貸的資金增加。促進信貸擴張，支持經濟增長。',
+                    'quantitative-easing': '在低利率環境下，央行直接購買長期資產。增加市場流動性，壓低長期利率，刺激資產價格上漲。',
+                    'gov-spending': '政府增加支出（道路、學校、醫院等）。直接創造就業機會和收入，刺激經濟增長。',
+                    'tax-adjustment': '政府降低稅率，提高居民可支配收入。促進消費增加，刺激經濟活動。',
+                    'public-investment': '政府投資基礎設施項目。創造建設就業，增加經濟生產能力，帶動相關產業發展。',
+                    'transfer-payments': '政府增加補貼和福利（失業救濟、養老金等）。直接增加低收入者收入，促進消費。'
+                };
+                description = expansionaryEffects[policyId];
+            } else {
+                const contractionaryEffects = {
+                    'interest-rate': '央行提高基準利率，增加借貸成本。企業和消費者減少借款投資和消費，控制經濟過熱和通膨。',
+                    'open-market': '央行出售政府債券，從金融系統回收現金。減少貨幣供給，提高市場利率，抑制經濟活動。',
+                    'reserve-ratio': '提高銀行存款準備率，銀行用於放貸的資金減少。抑制信貸擴張，控制經濟增長。',
+                    'quantitative-easing': '央行出售或不再購買資產。減少市場流動性，提高長期利率，抑制資產價格和投資。',
+                    'gov-spending': '政府減少支出。直接降低經濟需求，抑制經濟活動和通膨。',
+                    'tax-adjustment': '政府提高稅率，降低居民可支配收入。減少消費支出，抑制經濟過度增長。',
+                    'public-investment': '政府減少基礎設施投資。減少政府支出和相關就業，控制經濟增速。',
+                    'transfer-payments': '政府減少補貼和福利。減少低收入者收入，降低總體消費需求。'
+                };
+                description = contractionaryEffects[policyId];
+            }
+
+            effectDescription.textContent = description;
+            effectText.style.display = 'block';
+        }
+
+        // ===== TAB 4: EXCHANGE RATE & INTERNATIONAL TRADE =====
+        function switchExchangeScenario(scenario) {
+            document.getElementById('appreciationCard').classList.remove('active');
+            document.getElementById('depreciationCard').classList.remove('active');
+
+            if (scenario === 'appreciation') {
+                document.getElementById('appreciationCard').classList.add('active');
+            } else {
+                document.getElementById('depreciationCard').classList.add('active');
+            }
+        }
+
+        function updateExchangeRate() {
+            const rate = parseFloat(document.getElementById('exchangeRateSlider').value);
+            document.getElementById('exchangeRateDisplay').textContent = rate.toFixed(1);
+
+            const interpretation = document.getElementById('exchangeInterpretation');
+            const implication = document.getElementById('exchangeImplication');
+
+            interpretation.textContent = `當前匯率: 1美元 = ${rate.toFixed(1)}台幣`;
+
+            if (rate < 25) {
+                implication.textContent = '台幣大幅升值 - 出口商面臨極大壓力，進口商受惠最大。';
+                switchExchangeScenario('appreciation');
+            } else if (rate < 30) {
+                implication.textContent = '台幣升值 - 出口競爭力下降，進口商成本優勢增加。';
+                switchExchangeScenario('appreciation');
+            } else if (rate < 35) {
+                implication.textContent = '台幣貶值 - 出口商收入增加，進口商成本上升。';
+                switchExchangeScenario('depreciation');
+            } else {
+                implication.textContent = '台幣大幅貶值 - 出口商競爭力大幅提升，進口價格明顯上升。';
+                switchExchangeScenario('depreciation');
+            }
+
+            updateTradeBalance(rate);
+        }
+
+        function updateTradeBalance(rate) {
+            // Simulate trade balance changes based on exchange rate
+            let exports = 500;
+            let imports = 400;
+
+            // When rate is low (appreciation), exports decrease and imports increase
+            if (rate < 27) {
+                exports = 450;
+                imports = 450;
+            } else if (rate < 30) {
+                exports = 475;
+                imports = 425;
+            } else if (rate < 33) {
+                exports = 525;
+                imports = 375;
+            } else {
+                exports = 550;
+                imports = 350;
+            }
+
+            const balance = exports - imports;
+
+            document.getElementById('exportBox').innerHTML = `出口<br><span style="color: #2563eb; font-size: 1.3em;">${exports}億</span>`;
+            document.getElementById('importBox').innerHTML = `進口<br><span style="color: #059669; font-size: 1.3em;">${imports}億</span>`;
+            document.getElementById('resultBox').innerHTML = `${balance > 0 ? '貿易順差' : '貿易逆差'}<br><span style="color: ${balance > 0 ? '#059669' : '#dc2626'}; font-size: 1.3em;">${balance > 0 ? '+' : ''}${balance}億</span>`;
+
+            const tradeBalance = document.getElementById('tradeBalance');
+            if (balance > 0) {
+                tradeBalance.className = 'trade-result surplus';
+                tradeBalance.textContent = `貿易順差: 台灣出口超過進口 ${balance}億元，外匯收入增加 📊`;
+            } else {
+                tradeBalance.className = 'trade-result deficit';
+                tradeBalance.textContent = `貿易逆差: 台灣進口超過出口 ${Math.abs(balance)}億元，外匯支出增加 📊`;
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDashboard();
+            updateExchangeRate();
+            animateCycleCurve();
+        });
+    </script>
+</body>
+</html>
