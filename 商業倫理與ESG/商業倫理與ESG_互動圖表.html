@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商業倫理與ESG - 互動圖表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background-color: #f1f5f9;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+            background-color: #f8fafc;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            border: none;
+            background-color: white;
+            color: #047857;
+            cursor: pointer;
+            border-radius: 20px;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid #e2e8f0;
+        }
+
+        .tab-button:hover {
+            background-color: #f0fdf4;
+            border-color: #047857;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            color: white;
+            border-color: #047857;
+        }
+
+        .content-area {
+            padding: 40px;
+            min-height: 600px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ESG Three-Dimensional Styles */
+        .esg-assessment-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 28px;
+            margin-bottom: 40px;
+        }
+
+        .esg-dimension-card {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .esg-dimension-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, currentColor, currentColor);
+        }
+
+        .esg-dimension-card:nth-child(1) {
+            color: #10b981;
+            background: linear-gradient(135deg, #10b98115 0%, transparent 100%);
+            border-left: 5px solid #10b981;
+        }
+
+        .esg-dimension-card:nth-child(2) {
+            color: #f59e0b;
+            background: linear-gradient(135deg, #f59e0b15 0%, transparent 100%);
+            border-left: 5px solid #f59e0b;
+        }
+
+        .esg-dimension-card:nth-child(3) {
+            color: #8b5cf6;
+            background: linear-gradient(135deg, #8b5cf615 0%, transparent 100%);
+            border-left: 5px solid #8b5cf6;
+        }
+
+        .esg-dimension-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+        }
+
+        .esg-icon {
+            font-size: 3em;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .esg-dimension-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 12px;
+            color: currentColor;
+        }
+
+        .esg-indicators {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .esg-indicators.show {
+            display: block;
+        }
+
+        .indicator-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 3px solid currentColor;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        /* Stakeholder Matrix Styles */
+        .stakeholder-matrix {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .quadrant {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .quadrant:nth-child(1) {
+            border-left: 4px solid #10b981;
+            background: linear-gradient(135deg, #10b98108 0%, transparent 100%);
+        }
+
+        .quadrant:nth-child(2) {
+            border-left: 4px solid #f59e0b;
+            background: linear-gradient(135deg, #f59e0b08 0%, transparent 100%);
+        }
+
+        .quadrant:nth-child(3) {
+            border-left: 4px solid #8b5cf6;
+            background: linear-gradient(135deg, #8b5cf608 0%, transparent 100%);
+        }
+
+        .quadrant:nth-child(4) {
+            border-left: 4px solid #ec4899;
+            background: linear-gradient(135deg, #ec489908 0%, transparent 100%);
+        }
+
+        .quadrant h4 {
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .stakeholder-list {
+            list-style: none;
+            margin-top: 12px;
+        }
+
+        .stakeholder-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.95em;
+        }
+
+        .stakeholder-list li:last-child {
+            border-bottom: none;
+        }
+
+        .stakeholder-list strong {
+            color: #047857;
+        }
+
+        /* Carbon Footprint Calculator */
+        .calculator-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .calculator-input-group {
+            margin-bottom: 24px;
+        }
+
+        .calculator-input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        input[type="number"], select {
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.95em;
+            width: 100%;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #047857;
+            box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.1);
+        }
+
+        .calculator-button {
+            background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            color: white;
+            padding: 12px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .calculator-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(4, 120, 87, 0.3);
+        }
+
+        .calculator-result {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #10b981;
+            display: none;
+        }
+
+        .calculator-result.show {
+            display: block;
+        }
+
+        .result-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 8px;
+        }
+
+        .result-label {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        /* Investment Strategy Comparison */
+        .strategy-comparison {
+            overflow-x: auto;
+            margin-bottom: 40px;
+        }
+
+        .strategy-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .strategy-table th {
+            background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            color: white;
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .strategy-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .strategy-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .strategy-table tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .strategy-table tbody tr:hover {
+            background: #f0fdf4;
+        }
+
+        .strategy-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-low {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-high {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        /* ESG Maturity Model */
+        .maturity-container {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .maturity-stages {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .maturity-stage {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .maturity-stage::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ef4444, #f97316, #eab308, #84cc16, #22c55e);
+        }
+
+        .stage-level {
+            display: inline-block;
+            background: #065f46;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .maturity-stage h4 {
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .maturity-description {
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .maturity-features {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .feature {
+            font-size: 0.85em;
+            margin-top: 8px;
+            padding-left: 20px;
+            position: relative;
+            color: #555;
+        }
+
+        .feature::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dbeafe 100%);
+            border-left: 4px solid #047857;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-box strong {
+            color: #047857;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.9em;
+            color: #999;
+            padding: 20px;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>商業倫理與ESG - 互動圖表</h1>
+            <p>了解企業永續發展的關鍵工具與評估框架</p>
+        </div>
+
+        <div class="tabs-container">
+            <button class="tab-button active" onclick="switchTab('esg-dimensions')">ESG三維度評估</button>
+            <button class="tab-button" onclick="switchTab('stakeholder-matrix')">利害關係人矩陣</button>
+            <button class="tab-button" onclick="switchTab('carbon-calculator')">碳足跡計算器</button>
+            <button class="tab-button" onclick="switchTab('investment-strategy')">ESG投資策略</button>
+            <button class="tab-button" onclick="switchTab('maturity-model')">ESG成熟度模型</button>
+        </div>
+
+        <div class="content-area">
+            <!-- ESG Dimensions Tab -->
+            <div id="esg-dimensions" class="tab-content active">
+                <div class="info-box">
+                    <strong>環境（E）、社會（S）、治理（G）</strong>是評估企業永續發展與社會責任的三大維度。點擊下方卡片查看各維度的關鍵指標。
+                </div>
+
+                <div class="esg-assessment-container">
+                    <div class="esg-dimension-card" onclick="toggleESGIndicators(0)">
+                        <span class="esg-icon">🌍</span>
+                        <h3>環境（E）</h3>
+                        <p>企業對自然環境的影響與承諾</p>
+                        <div class="esg-indicators">
+                            <div class="indicator-item">
+                                <strong>碳排放與氣候:</strong> Scope 1/2/3排放量、科學基礎減碳目標、碳中和進展
+                            </div>
+                            <div class="indicator-item">
+                                <strong>廢棄物與循環經濟:</strong> 回收率、廢棄物減量、產品可修復性、包裝永續性
+                            </div>
+                            <div class="indicator-item">
+                                <strong>水資源管理:</strong> 用水效率、水回收率、污水處理、缺水地區對策
+                            </div>
+                            <div class="indicator-item">
+                                <strong>生物多樣性:</strong> 對生態系統的影響、瀕危物種保護、土地使用
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="esg-dimension-card" onclick="toggleESGIndicators(1)">
+                        <span class="esg-icon">👥</span>
+                        <h3>社會（S）</h3>
+                        <p>企業對員工、社區與消費者的影響</p>
+                        <div class="esg-indicators">
+                            <div class="indicator-item">
+                                <strong>勞工權益:</strong> 薪資標準、工作時數、安全環境、組織結社自由
+                            </div>
+                            <div class="indicator-item">
+                                <strong>多元共融:</strong> 女性與少數族裔領導比例、薪酬平等、殘障包容
+                            </div>
+                            <div class="indicator-item">
+                                <strong>供應鏈倫理:</strong> 勞工審計、血汗工廠預防、公平貿易、衝突礦物
+                            </div>
+                            <div class="indicator-item">
+                                <strong>社區與顧客:</strong> 社區發展計畫、顧客隱私保護、產品安全、消費者滿意度
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="esg-dimension-card" onclick="toggleESGIndicators(2)">
+                        <span class="esg-icon">⚖️</span>
+                        <h3>治理（G）</h3>
+                        <p>企業內部控制與廉正管理</p>
+                        <div class="esg-indicators">
+                            <div class="indicator-item">
+                                <strong>董事會結構:</strong> 獨立董事比例、多元性、專業背景、任期制度
+                            </div>
+                            <div class="indicator-item">
+                                <strong>高管薪酬:</strong> CEO與員工薪酬比、績效掛鉤、長期激勵
+                            </div>
+                            <div class="indicator-item">
+                                <strong>反貪腐與合規:</strong> 反賄賂政策、廉政訓練、內部舉報機制、監管記錄
+                            </div>
+                            <div class="indicator-item">
+                                <strong>資訊透明:</strong> 財務披露完整性、ESG報告、關聯交易披露、風險管理
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stakeholder Matrix Tab -->
+            <div id="stakeholder-matrix" class="tab-content">
+                <div class="info-box">
+                    <strong>利害關係人矩陣</strong>幫助企業識別各利害關係人的影響力與利益關係，制定相應的溝通與管理策略。
+                </div>
+
+                <div class="stakeholder-matrix">
+                    <h3>企業應如何與不同利害關係人互動？</h3>
+                    <div class="matrix-grid">
+                        <div class="quadrant">
+                            <h4>▲ 高影響力 + 高利益關係</h4>
+                            <p style="margin-bottom: 12px; color: #666;">
+                                <strong style="color: #10b981;">策略：密切管理、定期溝通</strong>
+                            </p>
+                            <ul class="stakeholder-list">
+                                <li><strong>股東：</strong>定期投資者會議、年報披露</li>
+                                <li><strong>主要客户：</strong>定製化服務、反饋機制</li>
+                                <li><strong>主要供應商：</strong>策略夥伴關係、共同發展</li>
+                                <li><strong>員工：</strong>參與決策、發展計畫</li>
+                            </ul>
+                        </div>
+
+                        <div class="quadrant">
+                            <h4>▲ 高影響力 + 低利益關係</h4>
+                            <p style="margin-bottom: 12px; color: #666;">
+                                <strong style="color: #f59e0b;">策略：監測與回應</strong>
+                            </p>
+                            <ul class="stakeholder-list">
+                                <li><strong>政府監管機構：</strong>合規、定期報告</li>
+                                <li><strong>媒體：</strong>透明溝通、危機管理</li>
+                                <li><strong>環保與人權NGO：</strong>對話與合作</li>
+                                <li><strong>業界協會：</strong>標準設定參與</li>
+                            </ul>
+                        </div>
+
+                        <div class="quadrant">
+                            <h4>▼ 低影響力 + 高利益關係</h4>
+                            <p style="margin-bottom: 12px; color: #666;">
+                                <strong style="color: #8b5cf6;">策略：保持滿意、適度參與</strong>
+                            </p>
+                            <ul class="stakeholder-list">
+                                <li><strong>小供應商：</strong>公平對待、付款按時</li>
+                                <li><strong>員工家庭：</strong>員工福利計畫、工作-生活平衡</li>
+                                <li><strong>內部社區：</strong>當地就業、環保承諾</li>
+                                <li><strong>廣義消費者：</strong>產品品質、客服</li>
+                            </ul>
+                        </div>
+
+                        <div class="quadrant">
+                            <h4>▼ 低影響力 + 低利益關係</h4>
+                            <p style="margin-bottom: 12px; color: #666;">
+                                <strong style="color: #ec4899;">策略：定期監控</strong>
+                            </p>
+                            <ul class="stakeholder-list">
+                                <li><strong>遠距社區：</strong>定期反饋、必要時參與</li>
+                                <li><strong>一般大眾：</strong>公開資訊、品牌形象維護</li>
+                                <li><strong>未來世代：</strong>永續政策、長期承諾</li>
+                                <li><strong>學術機構：</strong>研究合作、數據分享</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Carbon Calculator Tab -->
+            <div id="carbon-calculator" class="tab-content">
+                <div class="info-box">
+                    <strong>企業碳足跡計算器</strong>幫助企業估算主要排放來源。本計算器採用簡化模型，實際計算應由專業機構進行。
+                </div>
+
+                <div class="calculator-section">
+                    <h3>計算您的企業年度碳排放量（簡化版）</h3>
+
+                    <div class="calculator-input-group">
+                        <label>1. 能源使用（年度）</label>
+                        <div class="input-row">
+                            <div>
+                                <label style="font-size: 0.9em;">電力消耗 (kWh)</label>
+                                <input type="number" id="electricity" placeholder="e.g., 500000" min="0">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.9em;">天然氣消耗 (m³)</label>
+                                <input type="number" id="gas" placeholder="e.g., 10000" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="calculator-input-group">
+                        <label>2. 運輸排放</label>
+                        <div class="input-row">
+                            <div>
+                                <label style="font-size: 0.9em;">員工通勤 (公里/年)</label>
+                                <input type="number" id="commute" placeholder="e.g., 500000" min="0">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.9em;">商務旅行 (公里/年)</label>
+                                <input type="number" id="travel" placeholder="e.g., 100000" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="calculator-input-group">
+                        <label>3. 廢棄物管理</label>
+                        <div class="input-row">
+                            <div>
+                                <label style="font-size: 0.9em;">廢棄物產生 (噸/年)</label>
+                                <input type="number" id="waste" placeholder="e.g., 50" min="0">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.9em;">回收率 (%)</label>
+                                <input type="number" id="recycleRate" placeholder="e.g., 30" min="0" max="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="calculator-button" onclick="calculateCarbon()">計算碳排放</button>
+
+                    <div id="carbonResult" class="calculator-result">
+                        <div class="result-value" id="carbonValue">0</div>
+                        <div class="result-label">年度碳排放 (公噸 CO₂e)</div>
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+                            <p style="font-size: 0.9em; color: #666; margin-bottom: 8px;">
+                                <strong>排放來源分解：</strong>
+                            </p>
+                            <div id="emissionBreakdown" style="font-size: 0.85em; color: #666;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Investment Strategy Tab -->
+            <div id="investment-strategy" class="tab-content">
+                <div class="info-box">
+                    <strong>ESG投資策略比較</strong>展示不同的永續投資方法，各有優缺點與適用場景。
+                </div>
+
+                <div class="strategy-comparison">
+                    <table class="strategy-table">
+                        <thead>
+                            <tr>
+                                <th>投資策略</th>
+                                <th>基本原理</th>
+                                <th>風險水平</th>
+                                <th>預期回報</th>
+                                <th>社會影響</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>排除篩選法</strong></td>
+                                <td>排除有害產業（菸草、武器、化石燃料等）</td>
+                                <td><span class="strategy-badge badge-low">低</span></td>
+                                <td><span class="strategy-badge badge-medium">中等</span></td>
+                                <td><span class="strategy-badge badge-high">高</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>最佳選擇法</strong></td>
+                                <td>在各產業中選擇ESG表現最好的企業</td>
+                                <td><span class="strategy-badge badge-low">低</span></td>
+                                <td><span class="strategy-badge badge-high">高</span></td>
+                                <td><span class="strategy-badge badge-medium">中等</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>正面篩選法</strong></td>
+                                <td>主動投資永續發展與綠色科技企業</td>
+                                <td><span class="strategy-badge badge-medium">中等</span></td>
+                                <td><span class="strategy-badge badge-high">高</span></td>
+                                <td><span class="strategy-badge badge-high">高</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>企業參與法</strong></td>
+                                <td>與企業對話推動ESG改善，甚至投票施壓</td>
+                                <td><span class="strategy-badge badge-medium">中等</span></td>
+                                <td><span class="strategy-badge badge-medium">中等</span></td>
+                                <td><span class="strategy-badge badge-high">高</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>影響力投資</strong></td>
+                                <td>投資於可測量社會/環境正面影響的企業</td>
+                                <td><span class="strategy-badge badge-high">高</span></td>
+                                <td><span class="strategy-badge badge-medium">中等</span></td>
+                                <td><span class="strategy-badge badge-high">高</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>ESG整合</strong></td>
+                                <td>在傳統財務分析中納入ESG因素</td>
+                                <td><span class="strategy-badge badge-low">低</span></td>
+                                <td><span class="strategy-badge badge-high">高</span></td>
+                                <td><span class="strategy-badge badge-medium">中等</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="background: #f8fafc; border-radius: 8px; padding: 20px; margin-top: 30px;">
+                    <h4 style="margin-bottom: 16px;">選擇策略的考慮因素：</h4>
+                    <ul style="list-style: none;">
+                        <li style="padding: 8px 0; padding-left: 24px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #10b981; font-weight: bold;">✓</span>
+                            <strong>風險承受度：</strong>保守投資者傾向排除篩選法，積極投資者可選擇影響力投資
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 24px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #10b981; font-weight: bold;">✓</span>
+                            <strong>社會承諾：</strong>若重視社會影響，正面篩選法與影響力投資更合適
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 24px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #10b981; font-weight: bold;">✓</span>
+                            <strong>投資規模：</strong>大型機構投資者可進行企業參與，小型投資者適合基金方式
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 24px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #10b981; font-weight: bold;">✓</span>
+                            <strong>時間承諾：</strong>影響力投資需要更長期的耐心，短期回報可選擇最佳選擇法
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Maturity Model Tab -->
+            <div id="maturity-model" class="tab-content">
+                <div class="info-box">
+                    <strong>ESG成熟度模型</strong>展示企業從初期到卓越的ESG發展階段，幫助企業自我評估與規劃改進路徑。
+                </div>
+
+                <div class="maturity-container">
+                    <h3>企業ESG發展的五個階段</h3>
+                    <div class="maturity-stages">
+                        <div class="maturity-stage">
+                            <span class="stage-level">第一階段</span>
+                            <h4>初期（Ad Hoc）</h4>
+                            <div class="maturity-description">
+                                ESG未被系統化管理，主要應對監管或危機。
+                            </div>
+                            <div class="maturity-features">
+                                <div class="feature">無正式ESG策略</div>
+                                <div class="feature">反應式管理風險</div>
+                                <div class="feature">有限的數據與報告</div>
+                                <div class="feature">缺乏跨部門協調</div>
+                            </div>
+                        </div>
+
+                        <div class="maturity-stage">
+                            <span class="stage-level">第二階段</span>
+                            <h4>發展中（Developing）</h4>
+                            <div class="maturity-description">
+                                開始建立基礎流程與治理，但執行仍不完整。
+                            </div>
+                            <div class="maturity-features">
+                                <div class="feature">制定ESG政策</div>
+                                <div class="feature">建立責任部門</div>
+                                <div class="feature">開始定期報告</div>
+                                <div class="feature">部分供應鏈審計</div>
+                            </div>
+                        </div>
+
+                        <div class="maturity-stage">
+                            <span class="stage-level">第三階段</span>
+                            <h4>成熟（Mature）</h4>
+                            <div class="maturity-description">
+                                ESG整合入業務策略與決策，有明確目標與績效跟蹤。
+                            </div>
+                            <div class="maturity-features">
+                                <div class="feature">ESG與商業戰略連結</div>
+                                <div class="feature">定量目標與KPI</div>
+                                <div class="feature">高管薪酬與ESG掛鉤</div>
+                                <div class="feature">完整供應鏈管理</div>
+                            </div>
+                        </div>
+
+                        <div class="maturity-stage">
+                            <span class="stage-level">第四階段</span>
+                            <h4>優秀（Advanced）</h4>
+                            <div class="maturity-description">
+                                ESG已成為核心文化，創造共享價值與創新。
+                            </div>
+                            <div class="maturity-features">
+                                <div class="feature">ESG驅動創新與新業務</div>
+                                <div class="feature">行業領導與倡導</div>
+                                <div class="feature">第三方認證與驗證</div>
+                                <div class="feature">透明與整合報告</div>
+                            </div>
+                        </div>
+
+                        <div class="maturity-stage">
+                            <span class="stage-level">第五階段</span>
+                            <h4>卓越（Exemplary）</h4>
+                            <div class="maturity-description">
+                                ESG已成為企業存在的目的，引領行業與社會轉型。
+                            </div>
+                            <div class="maturity-features">
+                                <div class="feature">目的驅動企業（Purpose-Driven）</div>
+                                <div class="feature">系統性解決全球挑戰</div>
+                                <div class="feature">完全透明與問責</div>
+                                <div class="feature">利害關係人資本主義踐行</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: #f8fafc; border-radius: 8px; padding: 20px; margin-top: 30px;">
+                        <h4 style="margin-bottom: 16px;">從成熟邁向優秀的關鍵行動：</h4>
+                        <ol style="list-style-position: inside; color: #666; line-height: 1.8;">
+                            <li>將ESG與創新掛鉤，尋找新的商業機遇</li>
+                            <li>進行第三方認證與獨立審計，建立信譽</li>
+                            <li>與業界同儕合作推動標準與變革</li>
+                            <li>增強供應鏈的能力建構而非簡單的審計</li>
+                            <li>建立透明的利害關係人對話機制</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            互動圖表工具 | 商業倫理與ESG學習平台 | 更新於 2026年4月5日
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+
+            // Highlight selected button
+            event.target.classList.add('active');
+        }
+
+        function toggleESGIndicators(index) {
+            const cards = document.querySelectorAll('.esg-dimension-card');
+            const indicators = cards[index].querySelector('.esg-indicators');
+
+            // Close all other indicators
+            document.querySelectorAll('.esg-indicators').forEach((ind, i) => {
+                if (i !== index) ind.classList.remove('show');
+            });
+
+            // Toggle current
+            indicators.classList.toggle('show');
+        }
+
+        function calculateCarbon() {
+            const electricity = parseFloat(document.getElementById('electricity').value) || 0;
+            const gas = parseFloat(document.getElementById('gas').value) || 0;
+            const commute = parseFloat(document.getElementById('commute').value) || 0;
+            const travel = parseFloat(document.getElementById('travel').value) || 0;
+            const waste = parseFloat(document.getElementById('waste').value) || 0;
+            const recycleRate = parseFloat(document.getElementById('recycleRate').value) || 0;
+
+            // Conversion factors (simplified)
+            const electricityEmission = electricity * 0.5 / 1000; // kg to tonnes
+            const gasEmission = gas * 1.9 / 1000;
+            const commuteEmission = commute * 0.21 / 1000;
+            const travelEmission = travel * 0.12 / 1000;
+            const wasteEmission = waste * (1 - recycleRate/100) * 0.5;
+
+            const totalEmission = electricityEmission + gasEmission + commuteEmission + travelEmission + wasteEmission;
+
+            document.getElementById('carbonValue').textContent = totalEmission.toFixed(2);
+
+            const breakdown = `
+                <div>電力排放: ${electricityEmission.toFixed(2)} 公噸 CO₂e</div>
+                <div>天然氣排放: ${gasEmission.toFixed(2)} 公噸 CO₂e</div>
+                <div>通勤排放: ${commuteEmission.toFixed(2)} 公噸 CO₂e</div>
+                <div>商務旅行: ${travelEmission.toFixed(2)} 公噸 CO₂e</div>
+                <div>廢棄物排放: ${wasteEmission.toFixed(2)} 公噸 CO₂e</div>
+            `;
+            document.getElementById('emissionBreakdown').innerHTML = breakdown;
+
+            document.getElementById('carbonResult').classList.add('show');
+        }
+    </script>
+</body>
+</html>

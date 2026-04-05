@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>數據分析與商業決策 - 互動圖表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background-color: #f1f5f9;
+            color: #2d3748;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 12px;
+            padding: 20px 30px;
+            background-color: #fafbfc;
+            border-bottom: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            border: none;
+            background: white;
+            color: #4a5568;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab-button:hover {
+            background: #f7fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .content {
+            padding: 40px 30px;
+            min-height: 600px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* KPI 儀表板 */
+        .kpi-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            border-left: 4px solid;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .kpi-card.revenue {
+            border-left-color: #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.05) 100%);
+        }
+
+        .kpi-card.conversion {
+            border-left-color: #3b82f6;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(29, 78, 216, 0.05) 100%);
+        }
+
+        .kpi-card.retention {
+            border-left-color: #f59e0b;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(217, 119, 6, 0.05) 100%);
+        }
+
+        .kpi-card.cost {
+            border-left-color: #ef4444;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(220, 38, 38, 0.05) 100%);
+        }
+
+        .kpi-label {
+            font-size: 0.95em;
+            color: #718096;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #1a202c;
+        }
+
+        .kpi-change {
+            font-size: 0.9em;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .kpi-change.positive {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .kpi-change.negative {
+            background: #fee2e2;
+            color: #7f1d1d;
+        }
+
+        /* A/B 測試計算器 */
+        .calculator-section {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .calculator-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .input-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-field label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-size: 0.95em;
+        }
+
+        .input-field input,
+        .input-field select {
+            padding: 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-field input:focus,
+        .input-field select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .calc-button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            align-self: flex-end;
+        }
+
+        .calc-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .result-box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 30px;
+            display: none;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-box.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .result-value {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        /* RFM 分析工具 */
+        .rfm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .rfm-input-group {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .rfm-input-group h4 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .rfm-input-group .input-field {
+            margin-bottom: 15px;
+        }
+
+        .rfm-results {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .rfm-results.show {
+            display: block;
+        }
+
+        .rfm-matrix {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .rfm-cell {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .rfm-cell.vip {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .rfm-cell.potential {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+
+        .rfm-cell.decline {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .rfm-cell.inactive {
+            background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+        }
+
+        .rfm-label {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .rfm-value {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .rfm-description {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+
+        /* 數據視覺化類型選擇 */
+        .chart-selector {
+            margin-bottom: 40px;
+        }
+
+        .chart-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-option {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #e2e8f0;
+        }
+
+        .chart-option:hover {
+            border-color: #667eea;
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .chart-option.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .chart-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .chart-name {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .chart-description {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .chart-preview {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+            display: none;
+            text-align: center;
+        }
+
+        .chart-preview.show {
+            display: block;
+        }
+
+        .sample-chart {
+            height: 300px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        /* 漏斗分析視覺化 */
+        .funnel-diagram {
+            max-width: 600px;
+            margin: 40px auto;
+        }
+
+        .funnel-stage {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: 10px auto;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .funnel-stage:hover {
+            transform: scale(1.05);
+        }
+
+        .funnel-stage.stage-1 {
+            width: 100%;
+        }
+
+        .funnel-stage.stage-2 {
+            width: 85%;
+        }
+
+        .funnel-stage.stage-3 {
+            width: 70%;
+        }
+
+        .funnel-stage.stage-4 {
+            width: 55%;
+        }
+
+        .funnel-stage.stage-5 {
+            width: 40%;
+        }
+
+        .funnel-rate {
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .tabs-container {
+                padding: 15px 20px;
+                flex-direction: column;
+            }
+
+            .tab-button {
+                width: 100%;
+                text-align: center;
+            }
+
+            .kpi-value {
+                font-size: 2em;
+            }
+
+            .calc-button {
+                width: 100%;
+                align-self: stretch;
+            }
+
+            .chart-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            color: #1e40af;
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 數據分析與商業決策</h1>
+            <p>互動式分析工具與計算器</p>
+        </div>
+
+        <div class="tabs-container">
+            <button class="tab-button active" onclick="switchTab('kpi')">KPI 儀表板</button>
+            <button class="tab-button" onclick="switchTab('abtest')">A/B 測試計算</button>
+            <button class="tab-button" onclick="switchTab('rfm')">RFM 分析</button>
+            <button class="tab-button" onclick="switchTab('funnel')">漏斗分析</button>
+            <button class="tab-button" onclick="switchTab('chart')">圖表選擇器</button>
+        </div>
+
+        <div class="content">
+            <!-- KPI 儀表板 -->
+            <div id="kpi" class="tab-content active">
+                <h2 style="margin-bottom: 30px; color: #2d3748;">KPI 儀表板示例</h2>
+
+                <div class="info-box">
+                    <strong>說明：</strong>
+                    以下是一家電商平台的虛擬 KPI 儀表板。在實際應用中，這些數據應該實時連接到您的數據倉庫或分析平台。
+                </div>
+
+                <div class="kpi-dashboard">
+                    <div class="kpi-card revenue">
+                        <div class="kpi-label">月均營收</div>
+                        <div class="kpi-value">¥285.5K</div>
+                        <div class="kpi-change positive">↑ 12.5% 相比上月</div>
+                    </div>
+
+                    <div class="kpi-card conversion">
+                        <div class="kpi-label">轉化率</div>
+                        <div class="kpi-value">3.8%</div>
+                        <div class="kpi-change positive">↑ 0.3% 相比上月</div>
+                    </div>
+
+                    <div class="kpi-card retention">
+                        <div class="kpi-label">30日留存率</div>
+                        <div class="kpi-value">68%</div>
+                        <div class="kpi-change positive">↑ 5% 相比上月</div>
+                    </div>
+
+                    <div class="kpi-card cost">
+                        <div class="kpi-label">客戶獲取成本</div>
+                        <div class="kpi-value">¥58.5</div>
+                        <div class="kpi-change negative">↓ 4.2% 相比上月</div>
+                    </div>
+
+                    <div class="kpi-card revenue">
+                        <div class="kpi-label">平均訂單金額</div>
+                        <div class="kpi-value">¥325</div>
+                        <div class="kpi-change positive">↑ 8.1% 相比上月</div>
+                    </div>
+
+                    <div class="kpi-card conversion">
+                        <div class="kpi-label">客戶終身價值</div>
+                        <div class="kpi-value">¥2,150</div>
+                        <div class="kpi-change positive">↑ 15.3% 相比去年</div>
+                    </div>
+                </div>
+
+                <div style="background: #f8fafc; padding: 30px; border-radius: 12px; margin-top: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">KPI 解讀指南</h3>
+                    <ul style="color: #4a5568; line-height: 1.8;">
+                        <li><strong>月均營收：</strong>反映平台整體業務健康度，增長代表市場擴張</li>
+                        <li><strong>轉化率：</strong>用戶從訪問到購買的比例，代表營銷效率</li>
+                        <li><strong>30日留存率：</strong>回頭客比例，代表產品粘性</li>
+                        <li><strong>客戶獲取成本：</strong>為獲得一個新客戶的花費，越低越好</li>
+                        <li><strong>平均訂單金額：</strong>單次交易的金額，代表銷售能力</li>
+                        <li><strong>客戶終身價值：</strong>一個客戶未來能貢獻的總利潤，決定獲客預算</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- A/B 測試計算器 -->
+            <div id="abtest" class="tab-content">
+                <h2 style="margin-bottom: 30px; color: #2d3748;">A/B 測試樣本量計算器</h2>
+
+                <div class="info-box">
+                    <strong>說明：</strong>
+                    本計算器幫助您確定進行統計顯著性 A/B 測試所需的樣本量。更大的樣本量帶來更高的統計確定性，但成本也更高。
+                </div>
+
+                <div class="calculator-section">
+                    <h3>輸入參數</h3>
+
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="baseline">對照組基線轉化率 (%)</label>
+                            <input type="number" id="baseline" value="5" min="0.1" max="100" step="0.1" placeholder="例：5">
+                        </div>
+
+                        <div class="input-field">
+                            <label for="mde">最小實際顯著差異 (%)</label>
+                            <input type="number" id="mde" value="10" min="1" max="100" step="1" placeholder="例：10">
+                        </div>
+
+                        <div class="input-field">
+                            <label for="alpha">顯著性水平 α (通常 5%)</label>
+                            <input type="number" id="alpha" value="5" min="1" max="10" step="0.5" placeholder="例：5">
+                        </div>
+
+                        <div class="input-field">
+                            <label for="power">統計功效 (通常 80%)</label>
+                            <input type="number" id="power" value="80" min="50" max="99" step="1" placeholder="例：80">
+                        </div>
+                    </div>
+
+                    <button class="calc-button" onclick="calculateSampleSize()">計算所需樣本量</button>
+                </div>
+
+                <div id="abResult" class="result-box">
+                    <h3 style="color: #667eea; margin-bottom: 20px;">計算結果</h3>
+
+                    <div class="result-row">
+                        <span class="result-label">每組所需樣本量：</span>
+                        <span class="result-value" id="resultSample">-</span>
+                    </div>
+
+                    <div class="result-row">
+                        <span class="result-label">總所需樣本量（對照 + 實驗）：</span>
+                        <span class="result-value" id="resultTotal">-</span>
+                    </div>
+
+                    <div class="result-row">
+                        <span class="result-label">預期實驗週期（日均 100 流量）：</span>
+                        <span class="result-value" id="resultDays">-</span> 天
+                    </div>
+
+                    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #4a5568; font-size: 0.95em;">
+                        <strong>解釋：</strong>根據您的參數，每個分組需要上述樣本量才能達到所設置的統計功效。實驗期間應保證足夠的隨機性和獨立性。
+                    </div>
+                </div>
+            </div>
+
+            <!-- RFM 分析 -->
+            <div id="rfm" class="tab-content">
+                <h2 style="margin-bottom: 30px; color: #2d3748;">RFM 客戶分析工具</h2>
+
+                <div class="info-box">
+                    <strong>說明：</strong>
+                    RFM 分析基於最近消費（Recency）、消費頻次（Frequency）和消費金額（Monetary）三個維度評估客戶價值。請輸入您的客戶數據。
+                </div>
+
+                <div class="rfm-grid">
+                    <div class="rfm-input-group">
+                        <h4>最近消費間隔</h4>
+                        <div class="input-field">
+                            <label for="recency">距上次購買天數</label>
+                            <input type="number" id="recency" value="15" min="0" placeholder="例：15">
+                        </div>
+                    </div>
+
+                    <div class="rfm-input-group">
+                        <h4>消費頻次</h4>
+                        <div class="input-field">
+                            <label for="frequency">過去12月購買次數</label>
+                            <input type="number" id="frequency" value="8" min="0" placeholder="例：8">
+                        </div>
+                    </div>
+
+                    <div class="rfm-input-group">
+                        <h4>消費金額</h4>
+                        <div class="input-field">
+                            <label for="monetary">過去12月總消費（元）</label>
+                            <input type="number" id="monetary" value="2500" min="0" placeholder="例：2500">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="calc-button" onclick="calculateRFM()" style="margin: 20px 0;">分析客戶價值</button>
+
+                <div id="rfmResult" class="rfm-results">
+                    <h3 style="color: #667eea; margin-bottom: 20px;">客戶分層結果</h3>
+
+                    <div class="rfm-matrix" id="rfmMatrix">
+                        <!-- 將由 JavaScript 填充 -->
+                    </div>
+
+                    <div style="background: #f8fafc; padding: 25px; border-radius: 12px; margin-top: 30px;">
+                        <h4 style="color: #2d3748; margin-bottom: 15px;">您的客戶檔案</h4>
+                        <div id="rfmProfile" style="color: #4a5568; line-height: 1.8;">
+                            <!-- 將由 JavaScript 填充 -->
+                        </div>
+                    </div>
+
+                    <div style="background: #f8fafc; padding: 25px; border-radius: 12px; margin-top: 20px;">
+                        <h4 style="color: #2d3748; margin-bottom: 15px;">建議策略</h4>
+                        <div id="rfmStrategy" style="color: #4a5568; line-height: 1.8;">
+                            <!-- 將由 JavaScript 填充 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 漏斗分析 -->
+            <div id="funnel" class="tab-content">
+                <h2 style="margin-bottom: 30px; color: #2d3748;">轉化漏斗分析</h2>
+
+                <div class="info-box">
+                    <strong>說明：</strong>
+                    漏斗分析追蹤用戶在多步驟轉化過程中的進展。以下是一個典型的電商轉化漏斗。
+                </div>
+
+                <div class="funnel-diagram">
+                    <div class="funnel-stage stage-1">
+                        <div>進入網站</div>
+                        <div class="funnel-rate">10,000 人 | 100%</div>
+                    </div>
+
+                    <div class="funnel-stage stage-2">
+                        <div>瀏覽商品</div>
+                        <div class="funnel-rate">8,500 人 | 85.0%</div>
+                    </div>
+
+                    <div class="funnel-stage stage-3">
+                        <div>加入購物車</div>
+                        <div class="funnel-rate">5,950 人 | 59.5%</div>
+                    </div>
+
+                    <div class="funnel-stage stage-4">
+                        <div>開始結帳</div>
+                        <div class="funnel-rate">2,975 人 | 29.75%</div>
+                    </div>
+
+                    <div class="funnel-stage stage-5">
+                        <div>完成購買</div>
+                        <div class="funnel-rate">1,190 人 | 11.9%</div>
+                    </div>
+                </div>
+
+                <div style="background: #f8fafc; padding: 30px; border-radius: 12px; margin-top: 40px;">
+                    <h3 style="color: #667eea; margin-bottom: 20px;">漏斗轉化分析</h3>
+
+                    <div style="color: #4a5568; line-height: 1.8;">
+                        <div style="margin-bottom: 15px;">
+                            <strong style="color: #2d3748;">階段 1 → 2：流失 1,500 人 (15%)</strong>
+                            <p style="margin: 5px 0;">問題診斷：訪客到瀏覽商品的跳失率較高。可能原因：首頁設計不清晰、商品推薦不精准、用戶體驗障礙。</p>
+                            <p style="margin: 5px 0;">優化建議：改進網站導航、優化商品分類、加強首頁推薦。</p>
+                        </div>
+
+                        <div style="margin-bottom: 15px;">
+                            <strong style="color: #2d3748;">階段 2 → 3：流失 2,550 人 (30%)</strong>
+                            <p style="margin: 5px 0;">問題診斷：這是最大的跳失點。訪客願意看商品，但不願加購物車。可能原因：價格過高、擔心購買安全、對商品信息不足。</p>
+                            <p style="margin: 5px 0;">優化建議：提供優惠、優化商品詳情頁、增加用戶評論和保障說明。</p>
+                        </div>
+
+                        <div>
+                            <strong style="color: #2d3748;">階段 3 → 5：流失 4,760 人 (80%)</strong>
+                            <p style="margin: 5px 0;">問題診斷：購物車放棄率高。可能原因：結帳流程複雜、出現隱藏費用、支付方式有限、擔心信息安全。</p>
+                            <p style="margin: 5px 0;">優化建議：簡化結帳步驟、提前展示總價、增加多種支付方式、加強安全保證。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 圖表選擇器 -->
+            <div id="chart" class="tab-content">
+                <h2 style="margin-bottom: 30px; color: #2d3748;">數據視覺化圖表選擇器</h2>
+
+                <div class="info-box">
+                    <strong>說明：</strong>
+                    選擇適合您數據類型和分析目的的圖表。點擊下方選項查看詳情和使用場景。
+                </div>
+
+                <div class="chart-selector">
+                    <h3 style="color: #2d3748; margin-bottom: 20px;">比較類圖表</h3>
+                    <div class="chart-options">
+                        <div class="chart-option" onclick="selectChart('bar')">
+                            <div class="chart-icon">📊</div>
+                            <div class="chart-name">柱狀圖</div>
+                            <div class="chart-description">比較不同類別的數值大小</div>
+                        </div>
+
+                        <div class="chart-option" onclick="selectChart('horizontal-bar')">
+                            <div class="chart-icon">🔄</div>
+                            <div class="chart-name">橫向柱狀圖</div>
+                            <div class="chart-description">用於長標籤名稱的比較</div>
+                        </div>
+
+                        <div class="chart-option" onclick="selectChart('dot')">
+                            <div class="chart-icon">⭐</div>
+                            <div class="chart-name">熔岩圖</div>
+                            <div class="chart-description">簡潔的分類數值比較</div>
+                        </div>
+                    </div>
+
+                    <h3 style="color: #2d3748; margin: 30px 0 20px 0;">趨勢類圖表</h3>
+                    <div class="chart-options">
+                        <div class="chart-option" onclick="selectChart('line')">
+                            <div class="chart-icon">📈</div>
+                            <div class="chart-name">折線圖</div>
+                            <div class="chart-description">展示時間序列的趨勢變化</div>
+                        </div>
+
+                        <div class="chart-option" onclick="selectChart('area')">
+                            <div class="chart-icon">📉</div>
+                            <div class="chart-name">面積圖</div>
+                            <div class="chart-description">展示多個系列的累積趨勢</div>
+                        </div>
+
+                        <div class="chart-option" onclick="selectChart('combination')">
+                            <div class="chart-icon">🔗</div>
+                            <div class="chart-name">組合圖</div>
+                            <div class="chart-description">結合柱狀和折線的趨勢</div>
+                        </div>
+                    </div>
+
+                    <h3 style="color: #2d3748; margin: 30px 0 20px 0;">組成類圖表</h3>
+                    <div class="chart-options">
+                        <div class="chart-option" onclick="selectChart('stacked')">
+                            <div class="chart-icon">📦</div>
+                            <div class="chart-name">堆積柱狀圖</div>
+                            <div class="chart-description">展示部分與整體的關係</div>
+                        </div>
+
+                        <div class="chart-option" onclick="selectChart('treemap')">
+                            <div class="chart-icon">🗂️</div>
+                            <div class="chart-name">樹形圖</div>
+                            <div class="chart-description">展示多層級的組成結構</div>
+                        </div>
+
+                        <div class="chart-option" onclick="selectChart('pie')">
+                            <div class="chart-icon">🥧</div>
+                            <div class="chart-name">圓餅圖</div>
+                            <div class="chart-description">展示比例分佈（需注意易用性）</div>
+                        </div>
+                    </div>
+
+                    <h3 style="color: #2d3748; margin: 30px 0 20px 0;">分佈類圖表</h3>
+                    <div class="chart-options">
+                        <div class="chart-option" onclick="selectChart('histogram')">
+                            <div class="chart-icon">📊</div>
+                            <div class="chart-name">直方圖</div>
+                            <div class="chart-description">展示連續變數的分佈</div>
+                        </div>
+
+                        <div class="chart-option" onclick="selectChart('boxplot')">
+                            <div class="chart-icon">📦</div>
+                            <div class="chart-name">箱線圖</div>
+                            <div class="chart-description">比較多個分佈的統計特徵</div>
+                        </div>
+
+                        <div class="chart-option" onclick="selectChart('violin')">
+                            <div class="chart-icon">🎻</div>
+                            <div class="chart-name">小提琴圖</div>
+                            <div class="chart-description">展示分佈的完整形態</div>
+                        </div>
+                    </div>
+
+                    <h3 style="color: #2d3748; margin: 30px 0 20px 0;">關係類圖表</h3>
+                    <div class="chart-options">
+                        <div class="chart-option" onclick="selectChart('scatter')">
+                            <div class="chart-icon">💫</div>
+                            <div class="chart-name">散點圖</div>
+                            <div class="chart-description">展示兩個連續變數的相關性</div>
+                        </div>
+
+                        <div class="chart-option" onclick="selectChart('bubble')">
+                            <div class="chart-icon">🫧</div>
+                            <div class="chart-name">氣泡圖</div>
+                            <div class="chart-description">展示三個連續變數的關係</div>
+                        </div>
+
+                        <div class="chart-option" onclick="selectChart('heatmap')">
+                            <div class="chart-icon">🔥</div>
+                            <div class="chart-name">熱力圖</div>
+                            <div class="chart-description">展示矩陣數據的強度分佈</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="chartPreview" class="chart-preview">
+                    <h3 id="chartTitle" style="color: #667eea; margin-bottom: 20px; text-align: left;">圖表詳情</h3>
+                    <div class="sample-chart" id="chartSample"></div>
+                    <div style="text-align: left; margin-top: 20px; background: white; padding: 20px; border-radius: 10px;">
+                        <h4 style="color: #2d3748; margin-bottom: 10px;">使用場景</h4>
+                        <p id="chartUsage" style="color: #4a5568; margin-bottom: 15px;"></p>
+                        <h4 style="color: #2d3748; margin-bottom: 10px;">優缺點</h4>
+                        <div id="chartPros" style="color: #4a5568;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function calculateSampleSize() {
+            const baseline = parseFloat(document.getElementById('baseline').value) / 100;
+            const mde = parseFloat(document.getElementById('mde').value) / 100;
+            const alpha = parseFloat(document.getElementById('alpha').value) / 100;
+            const power = parseFloat(document.getElementById('power').value) / 100;
+
+            // Z 值近似計算
+            const zAlpha = alpha < 0.05 ? 1.96 : alpha < 0.10 ? 1.645 : 1.282;
+            const zBeta = power < 0.80 ? 0.84 : power < 0.90 ? 1.28 : 1.64;
+
+            const treatment = baseline * (1 + mde);
+
+            // 樣本量公式
+            const n = 2 * Math.pow(zAlpha + zBeta, 2) * (baseline * (1 - baseline) + treatment * (1 - treatment)) / Math.pow(treatment - baseline, 2);
+
+            const samplePerGroup = Math.ceil(n);
+            const totalSample = samplePerGroup * 2;
+            const daysNeeded = Math.ceil(totalSample / 100);
+
+            document.getElementById('resultSample').textContent = samplePerGroup.toLocaleString('zh-TW');
+            document.getElementById('resultTotal').textContent = totalSample.toLocaleString('zh-TW');
+            document.getElementById('resultDays').textContent = daysNeeded;
+
+            document.getElementById('abResult').classList.add('show');
+        }
+
+        function calculateRFM() {
+            const recency = parseFloat(document.getElementById('recency').value);
+            const frequency = parseFloat(document.getElementById('frequency').value);
+            const monetary = parseFloat(document.getElementById('monetary').value);
+
+            let segment = '';
+            let recommendation = '';
+
+            // 簡化的 RFM 分類邏輯
+            if (recency <= 30 && frequency >= 8 && monetary >= 2000) {
+                segment = '⭐ VIP 客戶';
+                recommendation = '<strong>策略：</strong>重點維護<br>• 提供專屬優惠和提前新品通知<br>• 定期主動溝通瞭解需求<br>• 建立高端會員計劃';
+            } else if (frequency >= 5 || monetary >= 1500) {
+                segment = '📈 高價值客戶';
+                recommendation = '<strong>策略：</strong>深度挖掘<br>• 推薦高價產品和組合方案<br>• 提供升級銷售機會<br>• 邀請參加品牌活動';
+            } else if (recency <= 60) {
+                segment = '🌱 潛力客戶';
+                recommendation = '<strong>策略：</strong>激活與培育<br>• 發送個性化推薦<br>• 提供入門級優惠<br>• 增加購買頻次';
+            } else {
+                segment = '⚠️ 衰退客戶';
+                recommendation = '<strong>策略：</strong>挽留與喚醒<br>• 發送復購優惠<br>• 瞭解流失原因<br>• 提供特殊返利方案';
+            }
+
+            const rfmMatrix = `
+                <div class="rfm-cell vip">
+                    <div class="rfm-label">最近度(R)</div>
+                    <div class="rfm-value">${recency} 天</div>
+                    <div class="rfm-description">${recency <= 30 ? '優秀' : recency <= 60 ? '良好' : '需改善'}</div>
+                </div>
+                <div class="rfm-cell potential">
+                    <div class="rfm-label">頻次(F)</div>
+                    <div class="rfm-value">${frequency} 次</div>
+                    <div class="rfm-description">${frequency >= 8 ? '優秀' : frequency >= 5 ? '良好' : '需改善'}</div>
+                </div>
+                <div class="rfm-cell decline">
+                    <div class="rfm-label">金額(M)</div>
+                    <div class="rfm-value">¥${monetary}</div>
+                    <div class="rfm-description">${monetary >= 2000 ? '優秀' : monetary >= 1000 ? '良好' : '需改善'}</div>
+                </div>
+            `;
+
+            const profile = `
+                <strong>客戶分類：${segment}</strong><br><br>
+                • 最後購買距今：${recency} 天<br>
+                • 過去12月購買：${frequency} 次<br>
+                • 過去12月消費：¥${monetary}<br>
+                • 平均單次消費：¥${(monetary / frequency).toFixed(0)}
+            `;
+
+            document.getElementById('rfmMatrix').innerHTML = rfmMatrix;
+            document.getElementById('rfmProfile').innerHTML = profile;
+            document.getElementById('rfmStrategy').innerHTML = recommendation;
+            document.getElementById('rfmResult').classList.add('show');
+        }
+
+        function selectChart(chartType) {
+            document.querySelectorAll('.chart-option').forEach(opt => opt.classList.remove('selected'));
+            event.target.closest('.chart-option').classList.add('selected');
+
+            const chartInfo = {
+                bar: {
+                    title: '柱狀圖',
+                    usage: '最常用的比較圖表，用於展示不同類別的數值大小。例如：各產品線的銷售額、各地區的客戶數、各部門的業績等。',
+                    pros: '✅ 直觀易懂，便於快速比較<br>✅ 支持多序列對比<br>✅ 適合大多數商業場景<br><br>❌ 不適合展示超過 10+ 個類別（過於擁擠）<br>❌ 需要排序才能有效展示'
+                },
+                line: {
+                    title: '折線圖',
+                    usage: '展示時間序列數據的趨勢變化，例如月度銷售趨勢、用戶增長曲線、股價走勢等。特別適合監控業務關鍵指標的變化。',
+                    pros: '✅ 清晰展示趨勢<br>✅ 支持多條線對比<br>✅ 便於識別異常與峰值<br><br>❌ 大量類別時會過於雜亂<br>❌ 需要足夠密度的數據點'
+                },
+                scatter: {
+                    title: '散點圖',
+                    usage: '展示兩個連續變數之間的相關性，例如廣告費與銷售額的關係、用戶活躍度與留存率的關係等。可識別異常值和線性關係。',
+                    pros: '✅ 清楚展示相關性<br>✅ 易於識別異常值<br>✅ 支持氣泡大小表示第三維度<br><br>❌ 數據點太多時會重疊<br>❌ 不適合分類數據'
+                },
+                heatmap: {
+                    title: '熱力圖',
+                    usage: '展示矩陣數據的強度分佈，例如用戶在不同時段、不同渠道的活躍度，或地理數據的分佈。通過顏色深淺表示數值大小。',
+                    pros: '✅ 快速識別高值區域<br>✅ 適合大量矩陣數據<br>✅ 視覺效果突出<br><br>❌ 需要色盲友善設計<br>❌ 精確數值讀取困難'
+                },
+                stacked: {
+                    title: '堆積柱狀圖',
+                    usage: '展示多個系列組成整體的結構，例如銷售額的產品組成、客戶的地域分佈。可用 100% 堆積形式展示比例。',
+                    pros: '✅ 展示部分與整體<br>✅ 便於比較同類項<br>✅ 節省空間<br><br>❌ 難以比較中間層級的大小<br>❌ 超過 5 個系列時效果差'
+                },
+                pie: {
+                    title: '圓餅圖',
+                    usage: '展示占比分佈，例如收入的渠道比例、市場份額分佈。常用但需謹慎（人眼難以準確判斷圓心角）。',
+                    pros: '✅ 直觀展示比例<br>✅ 易於業務人士理解<br><br>❌ 難以精準比較大小<br>❌ 超過 5 個分類效果差<br>❌ 比較多個圓餅時困難'
+                }
+            };
+
+            const info = chartInfo[chartType] || chartInfo.bar;
+            document.getElementById('chartTitle').textContent = info.title;
+            document.getElementById('chartUsage').textContent = info.usage;
+            document.getElementById('chartPros').innerHTML = info.pros;
+            document.getElementById('chartPreview').classList.add('show');
+        }
+    </script>
+</body>
+</html>

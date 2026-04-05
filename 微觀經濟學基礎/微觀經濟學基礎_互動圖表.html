@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微觀經濟學基礎 - 互動圖表</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background-color: #f1f5f9;
+            color: #1e293b;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs-container {
+            padding: 20px 40px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 10px 24px;
+            border: none;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1em;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab-button:hover {
+            background-color: #cbd5e1;
+        }
+
+        .tab-button.active {
+            background-color: #16a34a;
+            color: white;
+        }
+
+        .content {
+            padding: 40px;
+            min-height: 600px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Supply & Demand Tab */
+        .supply-demand-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .chart-section {
+            background-color: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+
+        .control-panel {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .value-display {
+            background-color: #ecfdf5;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #16a34a;
+            font-weight: 600;
+            color: #166534;
+        }
+
+        /* Elasticity Tab */
+        .elasticity-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .elasticity-card {
+            background-color: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .elasticity-card h3 {
+            color: #16a34a;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .elasticity-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-input {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-input label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.9em;
+        }
+
+        .form-input input {
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        .calculate-btn {
+            padding: 12px;
+            background-color: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .calculate-btn:hover {
+            background-color: #15803d;
+        }
+
+        .result-box {
+            background-color: #ecfdf5;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #16a34a;
+            margin-top: 15px;
+        }
+
+        .result-box h4 {
+            color: #166534;
+            margin-bottom: 10px;
+        }
+
+        .result-value {
+            font-size: 1.8em;
+            color: #16a34a;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .interpretation {
+            font-size: 0.9em;
+            color: #475569;
+            font-style: italic;
+        }
+
+        /* Market Structure Tab */
+        .structure-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .structure-card {
+            background-color: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .structure-card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-color: #16a34a;
+        }
+
+        .structure-card h3 {
+            color: #16a34a;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .structure-attribute {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .structure-attribute:last-child {
+            border-bottom: none;
+        }
+
+        .attribute-label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        .attribute-value {
+            color: #64748b;
+            margin-top: 5px;
+            font-size: 0.95em;
+        }
+
+        /* Game Theory Tab */
+        .game-theory-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .game-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .game-btn {
+            padding: 10px 20px;
+            background-color: #e2e8f0;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .game-btn.active {
+            background-color: #16a34a;
+            color: white;
+        }
+
+        .payoff-matrix {
+            background-color: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+
+        .payoff-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        .payoff-table th, .payoff-table td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #cbd5e1;
+        }
+
+        .payoff-table th {
+            background-color: #16a34a;
+            color: white;
+            font-weight: 600;
+        }
+
+        .payoff-table tr:first-child th {
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .payoff-table td {
+            background-color: white;
+        }
+
+        .payoff-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .payoff-cell small {
+            color: #64748b;
+        }
+
+        .game-analysis {
+            background-color: #ecfdf5;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #16a34a;
+            margin-top: 20px;
+        }
+
+        .game-analysis h4 {
+            color: #166534;
+            margin-bottom: 10px;
+        }
+
+        /* Consumer Surplus Tab */
+        .surplus-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .surplus-chart {
+            background-color: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        .surplus-controls {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-box {
+            background-color: #f0fdf4;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #16a34a;
+            margin-top: 20px;
+        }
+
+        .info-box h4 {
+            color: #166534;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .info-box p {
+            color: #475569;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        .comparison-table th {
+            background-color: #16a34a;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>微觀經濟學基礎</h1>
+            <p>互動式圖表與計算工具</p>
+        </div>
+
+        <div class="tabs-container">
+            <button class="tab-button active" onclick="switchTab('supply-demand')">供給-需求曲線</button>
+            <button class="tab-button" onclick="switchTab('elasticity')">價格彈性計算機</button>
+            <button class="tab-button" onclick="switchTab('market-structure')">市場結構比較</button>
+            <button class="tab-button" onclick="switchTab('game-theory')">賽局論</button>
+            <button class="tab-button" onclick="switchTab('consumer-surplus')">消費者剩餘</button>
+        </div>
+
+        <div class="content">
+            <!-- Tab 1: Supply & Demand -->
+            <div id="supply-demand" class="tab-content active">
+                <div class="supply-demand-container">
+                    <h2>供給-需求曲線模擬器</h2>
+
+                    <div class="chart-section">
+                        <h3>互動圖表</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="supplyDemandChart"></canvas>
+                        </div>
+
+                        <div class="control-panel">
+                            <div class="control-group">
+                                <label>需求強度</label>
+                                <input type="range" id="demandSlider" min="1" max="100" value="50" onchange="updateSupplyDemand()">
+                                <span class="value-display">需求量: <span id="demandValue">50</span> 單位</span>
+                            </div>
+
+                            <div class="control-group">
+                                <label>供給強度</label>
+                                <input type="range" id="supplySlider" min="1" max="100" value="50" onchange="updateSupplyDemand()">
+                                <span class="value-display">供給量: <span id="supplyValue">50</span> 單位</span>
+                            </div>
+
+                            <div class="control-group">
+                                <label>市場價格</label>
+                                <input type="range" id="priceSlider" min="10" max="100" value="50" onchange="updateSupplyDemand()">
+                                <span class="value-display">價格: <span id="priceValue">50</span> 元</span>
+                            </div>
+                        </div>
+
+                        <div class="info-box" style="margin-top: 20px;">
+                            <h4>解讀：</h4>
+                            <p><strong>需求曲線</strong>：價格越低，消費者願意買越多。</p>
+                            <p><strong>供給曲線</strong>：價格越高，生產者願意賣越多。</p>
+                            <p><strong>均衡點</strong>：供給量 = 需求量的交點，是市場自然找到的價格。</p>
+                            <p style="margin-top: 10px; color: #166534; font-weight: 600;">調整滑塊觀看當供給或需求變化時，均衡點如何移動！</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Elasticity Calculator -->
+            <div id="elasticity" class="tab-content">
+                <h2>價格彈性計算機</h2>
+                <div class="elasticity-container">
+                    <div class="elasticity-card">
+                        <h3>需求價格彈性</h3>
+                        <div class="elasticity-form">
+                            <div class="form-input">
+                                <label>初始價格 (元)</label>
+                                <input type="number" id="demandP1" value="100" placeholder="如 100">
+                            </div>
+                            <div class="form-input">
+                                <label>新價格 (元)</label>
+                                <input type="number" id="demandP2" value="80" placeholder="如 80">
+                            </div>
+                            <div class="form-input">
+                                <label>初始需求量 (單位)</label>
+                                <input type="number" id="demandQ1" value="500" placeholder="如 500">
+                            </div>
+                            <div class="form-input">
+                                <label>新需求量 (單位)</label>
+                                <input type="number" id="demandQ2" value="600" placeholder="如 600">
+                            </div>
+                            <button class="calculate-btn" onclick="calculateDemandElasticity()">計算需求彈性</button>
+
+                            <div id="demandResult" class="result-box" style="display: none;">
+                                <h4>計算結果</h4>
+                                <div class="result-value" id="demandElasticityValue">-0.50</div>
+                                <div class="interpretation" id="demandInterpretation"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="elasticity-card">
+                        <h3>供給價格彈性</h3>
+                        <div class="elasticity-form">
+                            <div class="form-input">
+                                <label>初始價格 (元)</label>
+                                <input type="number" id="supplyP1" value="50" placeholder="如 50">
+                            </div>
+                            <div class="form-input">
+                                <label>新價格 (元)</label>
+                                <input type="number" id="supplyP2" value="70" placeholder="如 70">
+                            </div>
+                            <div class="form-input">
+                                <label>初始供給量 (單位)</label>
+                                <input type="number" id="supplyQ1" value="300" placeholder="如 300">
+                            </div>
+                            <div class="form-input">
+                                <label>新供給量 (單位)</label>
+                                <input type="number" id="supplyQ2" value="450" placeholder="如 450">
+                            </div>
+                            <button class="calculate-btn" onclick="calculateSupplyElasticity()">計算供給彈性</button>
+
+                            <div id="supplyResult" class="result-box" style="display: none;">
+                                <h4>計算結果</h4>
+                                <div class="result-value" id="supplyElasticityValue">0.75</div>
+                                <div class="interpretation" id="supplyInterpretation"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box" style="margin-top: 30px;">
+                    <h4>彈性解釋指南</h4>
+                    <table class="comparison-table">
+                        <tr>
+                            <th>彈性範圍</th>
+                            <th>類型</th>
+                            <th>含義</th>
+                        </tr>
+                        <tr>
+                            <td>|E| > 1</td>
+                            <td>富有彈性</td>
+                            <td>價格變化 1%，產量變化超過 1%（敏感）</td>
+                        </tr>
+                        <tr>
+                            <td>|E| = 1</td>
+                            <td>單位彈性</td>
+                            <td>價格變化 1%，產量變化 1%（等比例）</td>
+                        </tr>
+                        <tr>
+                            <td>|E| < 1</td>
+                            <td>缺乏彈性</td>
+                            <td>價格變化 1%，產量變化不到 1%（不敏感）</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab 3: Market Structure -->
+            <div id="market-structure" class="tab-content">
+                <h2>市場結構比較</h2>
+                <div class="structure-container">
+                    <div class="structure-card">
+                        <h3>完全競爭</h3>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">競爭者數量</div>
+                            <div class="attribute-value">非常多（極多）</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">商品差異</div>
+                            <div class="attribute-value">完全同質</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">進入壁壘</div>
+                            <div class="attribute-value">沒有</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">定價權</div>
+                            <div class="attribute-value">無（價格接受者）</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">長期利潤</div>
+                            <div class="attribute-value">零經濟利潤</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">例子</div>
+                            <div class="attribute-value">農產品市場、菜市場</div>
+                        </div>
+                    </div>
+
+                    <div class="structure-card">
+                        <h3>壟斷性競爭</h3>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">競爭者數量</div>
+                            <div class="attribute-value">很多</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">商品差異</div>
+                            <div class="attribute-value">有差異（品牌、款式）</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">進入壁壘</div>
+                            <div class="attribute-value">低</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">定價權</div>
+                            <div class="attribute-value">有限（受產品差異）</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">長期利潤</div>
+                            <div class="attribute-value">趨向零經濟利潤</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">例子</div>
+                            <div class="attribute-value">手搖飲料、咖啡店</div>
+                        </div>
+                    </div>
+
+                    <div class="structure-card">
+                        <h3>寡占</h3>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">競爭者數量</div>
+                            <div class="attribute-value">少數（2-10 家）</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">商品差異</div>
+                            <div class="attribute-value">有差異或同質</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">進入壁壘</div>
+                            <div class="attribute-value">高</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">定價權</div>
+                            <div class="attribute-value">有（戰略相互依存）</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">長期利潤</div>
+                            <div class="attribute-value">正經濟利潤</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">例子</div>
+                            <div class="attribute-value">手機製造商、航空業</div>
+                        </div>
+                    </div>
+
+                    <div class="structure-card">
+                        <h3>獨占</h3>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">競爭者數量</div>
+                            <div class="attribute-value">一家</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">商品差異</div>
+                            <div class="attribute-value">沒有替代品</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">進入壁壘</div>
+                            <div class="attribute-value">極高（不可進入）</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">定價權</div>
+                            <div class="attribute-value">完全（價格制定者）</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">長期利潤</div>
+                            <div class="attribute-value">高經濟利潤</div>
+                        </div>
+                        <div class="structure-attribute">
+                            <div class="attribute-label">例子</div>
+                            <div class="attribute-value">自來水公司、電力公司</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: Game Theory -->
+            <div id="game-theory" class="tab-content">
+                <h2>賽局論：互動決策分析</h2>
+
+                <div class="game-selector">
+                    <button class="game-btn active" onclick="switchGame('prisoners')">囚徒困境</button>
+                    <button class="game-btn" onclick="switchGame('coordination')">協調賽局</button>
+                    <button class="game-btn" onclick="switchGame('competition')">價格競爭</button>
+                </div>
+
+                <div id="prisoners" class="game-theory-container">
+                    <div class="payoff-matrix">
+                        <h3>囚徒困境：兩家超市的定價決策</h3>
+                        <p style="color: #64748b; margin: 10px 0;">情境：兩家超市競爭，各自決定是否降價搶客戶</p>
+
+                        <table class="payoff-table" style="margin-top: 15px;">
+                            <tr>
+                                <th>超市 A ↓ / 超市 B →</th>
+                                <th>不降價</th>
+                                <th>降價</th>
+                            </tr>
+                            <tr>
+                                <th>不降價</th>
+                                <td>
+                                    <div class="payoff-cell">
+                                        <strong>A: 100萬元</strong>
+                                        <strong style="color: #16a34a;">B: 100萬元</strong>
+                                        <small>大家都賺，最理想</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="payoff-cell">
+                                        <strong>A: 50萬元</strong>
+                                        <strong style="color: #16a34a;">B: 150萬元</strong>
+                                        <small>B搶走A的客戶</small>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>降價</th>
+                                <td>
+                                    <div class="payoff-cell">
+                                        <strong>A: 150萬元</strong>
+                                        <strong style="color: #16a34a;">B: 50萬元</strong>
+                                        <small>A搶走B的客戶</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="payoff-cell">
+                                        <strong>A: 60萬元</strong>
+                                        <strong style="color: #16a34a;">B: 60萬元</strong>
+                                        <small>都降價，都虧了</small>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="game-analysis">
+                        <h4>納什均衡分析</h4>
+                        <p>雖然「都不降價」對雙方最好（各賺 100 萬），但每家都想：「如果對方不降，我就降搶他生意；如果對方降，我也要降免得虧太多。」結果雙方都選擇降價，各只賺 60 萬——<strong>個人理性導致集體非理性</strong>。這就是囚徒困境的悖論。</p>
+                        <p style="margin-top: 10px; color: #166534;"><strong>出路：</strong>長期合作、建立信任、或透過協議承諾「大家都守價」。</p>
+                    </div>
+                </div>
+
+                <div id="coordination" class="game-theory-container" style="display: none;">
+                    <div class="payoff-matrix">
+                        <h3>協調賽局：技術標準之爭</h3>
+                        <p style="color: #64748b; margin: 10px 0;">情境：兩大手機廠商選擇作業系統，用戶傾向選擇市佔率高的</p>
+
+                        <table class="payoff-table" style="margin-top: 15px;">
+                            <tr>
+                                <th>廠商 A ↓ / 廠商 B →</th>
+                                <th>系統 X</th>
+                                <th>系統 Y</th>
+                            </tr>
+                            <tr>
+                                <th>系統 X</th>
+                                <td>
+                                    <div class="payoff-cell">
+                                        <strong>A: 200萬元</strong>
+                                        <strong style="color: #16a34a;">B: 200萬元</strong>
+                                        <small>統一標準，網路效應強</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="payoff-cell">
+                                        <strong>A: 50萬元</strong>
+                                        <strong style="color: #16a34a;">B: 50萬元</strong>
+                                        <small>標準不一，用戶體驗差</small>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>系統 Y</th>
+                                <td>
+                                    <div class="payoff-cell">
+                                        <strong>A: 50萬元</strong>
+                                        <strong style="color: #16a34a;">B: 50萬元</strong>
+                                        <small>標準不一，用戶體驗差</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="payoff-cell">
+                                        <strong>A: 200萬元</strong>
+                                        <strong style="color: #16a34a;">B: 200萬元</strong>
+                                        <small>統一標準，網路效應強</small>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="game-analysis">
+                        <h4>協調賽局特徵</h4>
+                        <p>兩個納什均衡都很好（都賺 200 萬），但問題是達成哪一個？這種情況下，雙方會透過談判、先發制人、或市場領導地位來協調。智慧型手機的 iOS 對 Android 戰就是例子，最後市場分化，部分用戶選 iOS，部分選 Android，形成兩大標準共存。</p>
+                    </div>
+                </div>
+
+                <div id="competition" class="game-theory-container" style="display: none;">
+                    <div class="payoff-matrix">
+                        <h3>價格競爭：設定售價</h3>
+                        <p style="color: #64748b; margin: 10px 0;">情境：兩家便利店同時決定咖啡價格</p>
+
+                        <table class="payoff-table" style="margin-top: 15px;">
+                            <tr>
+                                <th>店 A ↓ / 店 B →</th>
+                                <th>高價 (35元)</th>
+                                <th>中價 (25元)</th>
+                                <th>低價 (15元)</th>
+                            </tr>
+                            <tr>
+                                <th>高價 (35元)</th>
+                                <td>
+                                    <div class="payoff-cell">
+                                        <strong>A: 80</strong>
+                                        <strong style="color: #16a34a;">B: 80</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="payoff-cell">
+                                        <strong>A: 40</strong>
+                                        <strong style="color: #16a34a;">B: 120</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="payoff-cell">
+                                        <strong>A: 20</strong>
+                                        <strong style="color: #16a34a;">B: 150</strong>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>中價 (25元)</th>
+                                <td>
+                                    <div class="payoff-cell">
+                                        <strong>A: 120</strong>
+                                        <strong style="color: #16a34a;">B: 40</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="payoff-cell">
+                                        <strong>A: 100</strong>
+                                        <strong style="color: #16a34a;">B: 100</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="payoff-cell">
+                                        <strong>A: 60</strong>
+                                        <strong style="color: #16a34a;">B: 130</strong>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>低價 (15元)</th>
+                                <td>
+                                    <div class="payoff-cell">
+                                        <strong>A: 150</strong>
+                                        <strong style="color: #16a34a;">B: 20</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="payoff-cell">
+                                        <strong>A: 130</strong>
+                                        <strong style="color: #16a34a;">B: 60</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="payoff-cell">
+                                        <strong>A: 90</strong>
+                                        <strong style="color: #16a34a;">B: 90</strong>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="game-analysis">
+                        <h4>價格戰的結果</h4>
+                        <p>每家店各自最優選擇似乎是「低價」（如果對方高價，我低價能賺 150；如果對方低價，我低價只虧但比高價好）。結果兩家都選低價，各賺 90。但如果雙方都能守住「中價」，各能賺 100。這再次顯示：沒有信任與協調的市場競爭往往導致價格戰、利潤縮水。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 5: Consumer & Producer Surplus -->
+            <div id="consumer-surplus" class="tab-content">
+                <h2>消費者與生產者剩餘</h2>
+
+                <div class="surplus-container">
+                    <div class="surplus-chart">
+                        <h3>互動圖表：政策對剩餘的影響</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="surplusChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="surplus-controls">
+                        <div class="control-group">
+                            <label>政策類型</label>
+                            <select id="policySelect" onchange="updateSurplus()" style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                                <option value="free">完全自由市場</option>
+                                <option value="tax">商品稅</option>
+                                <option value="ceiling">價格上限</option>
+                                <option value="subsidy">政府補貼</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group">
+                            <label>政策強度</label>
+                            <input type="range" id="policyStrength" min="0" max="100" value="30" onchange="updateSurplus()">
+                            <span class="value-display">強度: <span id="strengthValue">30</span>%</span>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>什麼是剩餘？</h4>
+                        <p><strong>消費者剩餘：</strong> 消費者願意付的價格 - 實際付的價格。比如你願意出 200 元買褲子，結果打折到 150 元，你的剩餘就是 50 元——賺到便宜。</p>
+                        <p><strong>生產者剩餘：</strong> 實際售價 - 生產者願意接受的最低價。比如褲子製造成本 80 元，實際賣 150 元，生產者剩餘是 70 元——賺到利潤。</p>
+                        <p style="margin-top: 15px; color: #166534;"><strong>總社會福利 = 消費者剩餘 + 生產者剩餘</strong></p>
+                        <p>政府干預（稅、限價、補貼）通常會減少總福利，因為一些互利的交易沒發生（死重損失）。</p>
+                    </div>
+
+                    <div class="info-box" style="margin-top: 20px;">
+                        <h4>不同政策的影響</h4>
+                        <table class="comparison-table">
+                            <tr>
+                                <th>政策</th>
+                                <th>對消費者剩餘</th>
+                                <th>對生產者剩餘</th>
+                                <th>淨效果</th>
+                            </tr>
+                            <tr>
+                                <td>完全自由市場</td>
+                                <td>最大化</td>
+                                <td>最大化</td>
+                                <td>總福利最大</td>
+                            </tr>
+                            <tr>
+                                <td>商品稅</td>
+                                <td>減少</td>
+                                <td>減少</td>
+                                <td>有死重損失</td>
+                            </tr>
+                            <tr>
+                                <td>價格上限</td>
+                                <td>增加（但短缺）</td>
+                                <td>大幅減少</td>
+                                <td>有死重損失</td>
+                            </tr>
+                            <tr>
+                                <td>政府補貼</td>
+                                <td>增加</td>
+                                <td>增加</td>
+                                <td>有死重損失（但可能改善外部性）</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>微觀經濟學互動圖表 | 最後更新：2026 年 4 月</p>
+            <p style="margin-top: 10px; font-size: 0.85em;">本工具用於教育目的，幫助學生理解經濟學基本概念</p>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Initialize charts when tab becomes active
+            setTimeout(() => {
+                if (tabName === 'supply-demand') initSupplyDemandChart();
+                if (tabName === 'consumer-surplus') initSurplusChart();
+            }, 100);
+        }
+
+        function switchGame(gameName) {
+            document.querySelectorAll('.game-theory-container').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.game-btn').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(gameName).style.display = 'block';
+            event.target.classList.add('active');
+        }
+
+        // Supply & Demand Chart
+        let sdChart = null;
+        function initSupplyDemandChart() {
+            const ctx = document.getElementById('supplyDemandChart');
+            if (!ctx) return;
+
+            if (sdChart) sdChart.destroy();
+
+            const demand = parseFloat(document.getElementById('demandSlider').value);
+            const supply = parseFloat(document.getElementById('supplySlider').value);
+            const price = parseFloat(document.getElementById('priceSlider').value);
+
+            sdChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100'],
+                    datasets: [
+                        {
+                            label: '需求曲線（D）',
+                            data: [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0].map(v => v * (demand / 50)),
+                            borderColor: '#16a34a',
+                            backgroundColor: 'rgba(22, 163, 74, 0.05)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: '供給曲線（S）',
+                            data: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(v => v * (supply / 50)),
+                            borderColor: '#dc2626',
+                            backgroundColor: 'rgba(220, 38, 38, 0.05)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: { size: 12, family: "'Noto Sans TC', sans-serif" }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: { display: true, text: '數量' },
+                            min: 0,
+                            max: 100
+                        },
+                        x: {
+                            title: { display: true, text: '價格（元）' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateSupplyDemand() {
+            document.getElementById('demandValue').textContent = document.getElementById('demandSlider').value;
+            document.getElementById('supplyValue').textContent = document.getElementById('supplySlider').value;
+            document.getElementById('priceValue').textContent = document.getElementById('priceSlider').value;
+
+            if (document.getElementById('supplyDemandChart')) {
+                initSupplyDemandChart();
+            }
+        }
+
+        // Elasticity Calculations
+        function calculateDemandElasticity() {
+            const p1 = parseFloat(document.getElementById('demandP1').value);
+            const p2 = parseFloat(document.getElementById('demandP2').value);
+            const q1 = parseFloat(document.getElementById('demandQ1').value);
+            const q2 = parseFloat(document.getElementById('demandQ2').value);
+
+            if (!p1 || !p2 || !q1 || !q2) {
+                alert('請輸入所有數值');
+                return;
+            }
+
+            const pChange = (p2 - p1) / p1 * 100;
+            const qChange = (q2 - q1) / q1 * 100;
+            const elasticity = qChange / pChange;
+
+            document.getElementById('demandElasticityValue').textContent = elasticity.toFixed(2);
+
+            let interpretation = '';
+            if (Math.abs(elasticity) > 1) {
+                interpretation = '富有彈性：需求對價格變化敏感。降價可增加總收益。';
+            } else if (Math.abs(elasticity) === 1) {
+                interpretation = '單位彈性：需求變化與價格變化同步。';
+            } else {
+                interpretation = '缺乏彈性：需求對價格變化不敏感。提價可增加總收益。';
+            }
+
+            document.getElementById('demandInterpretation').textContent = interpretation;
+            document.getElementById('demandResult').style.display = 'block';
+        }
+
+        function calculateSupplyElasticity() {
+            const p1 = parseFloat(document.getElementById('supplyP1').value);
+            const p2 = parseFloat(document.getElementById('supplyP2').value);
+            const q1 = parseFloat(document.getElementById('supplyQ1').value);
+            const q2 = parseFloat(document.getElementById('supplyQ2').value);
+
+            if (!p1 || !p2 || !q1 || !q2) {
+                alert('請輸入所有數值');
+                return;
+            }
+
+            const pChange = (p2 - p1) / p1 * 100;
+            const qChange = (q2 - q1) / q1 * 100;
+            const elasticity = qChange / pChange;
+
+            document.getElementById('supplyElasticityValue').textContent = elasticity.toFixed(2);
+
+            let interpretation = '';
+            if (elasticity > 1) {
+                interpretation = '富有彈性：供給對價格變化敏感。生產者容易調整產量。';
+            } else if (elasticity === 1) {
+                interpretation = '單位彈性：供給變化與價格變化同步。';
+            } else {
+                interpretation = '缺乏彈性：供給對價格變化不敏感。短期內無法大幅增加產量。';
+            }
+
+            document.getElementById('supplyInterpretation').textContent = interpretation;
+            document.getElementById('supplyResult').style.display = 'block';
+        }
+
+        // Surplus Chart
+        let surplusChart = null;
+        function initSurplusChart() {
+            const ctx = document.getElementById('surplusChart');
+            if (!ctx) return;
+
+            if (surplusChart) surplusChart.destroy();
+
+            const policy = document.getElementById('policySelect').value;
+            const strength = parseFloat(document.getElementById('policyStrength').value) / 100;
+
+            let consumerSurplus = 100;
+            let producerSurplus = 100;
+            let deadweightLoss = 0;
+            let labels = ['消費者剩餘', '生產者剩餘', '死重損失'];
+            let colors = ['#16a34a', '#1e40af', '#dc2626'];
+
+            if (policy === 'free') {
+                consumerSurplus = 100;
+                producerSurplus = 100;
+                deadweightLoss = 0;
+            } else if (policy === 'tax') {
+                consumerSurplus = 100 - (30 * strength);
+                producerSurplus = 100 - (30 * strength);
+                deadweightLoss = 20 * strength;
+            } else if (policy === 'ceiling') {
+                consumerSurplus = 100 + (20 * strength);
+                producerSurplus = 100 - (50 * strength);
+                deadweightLoss = 30 * strength;
+            } else if (policy === 'subsidy') {
+                consumerSurplus = 100 + (25 * strength);
+                producerSurplus = 100 + (25 * strength);
+                deadweightLoss = 15 * strength;
+            }
+
+            surplusChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '金額（相對單位）',
+                        data: [consumerSurplus, producerSurplus, deadweightLoss],
+                        backgroundColor: colors,
+                        borderColor: colors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            min: 0,
+                            max: 150,
+                            title: { display: true, text: '相對金額' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateSurplus() {
+            document.getElementById('strengthValue').textContent = document.getElementById('policyStrength').value;
+            if (document.getElementById('surplusChart')) {
+                initSurplusChart();
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initSupplyDemandChart();
+        });
+    </script>
+</body>
+</html>

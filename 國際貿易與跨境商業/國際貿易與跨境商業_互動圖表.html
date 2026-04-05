@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>國際貿易與跨境商業 - 互動圖表</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.0/dist/chart.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #e2e8f0; min-height: 100vh; padding-bottom: 40px; }
+
+  .header { text-align: center; padding: 40px 20px 20px; }
+  .header h1 { font-size: 32px; color: #ffffff; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+  .header p { color: rgba(255,255,255,0.8); font-size: 14px; }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+
+  .tabs { display: flex; justify-content: center; gap: 12px; margin: 30px 0; flex-wrap: wrap; }
+  .tab { padding: 12px 28px; border-radius: 25px; cursor: pointer; font-size: 14px; font-weight: 600; border: 2px solid rgba(255,255,255,0.3); background: transparent; color: #ffffff; transition: all 0.3s; }
+  .tab:hover { border-color: rgba(255,255,255,0.7); transform: translateY(-2px); }
+  .tab.active { background: rgba(255,255,255,0.25); border-color: #ffffff; box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+
+  .scene { display: none; }
+  .scene.active { display: block; }
+
+  .card { background: rgba(15, 23, 42, 0.8); border-radius: 16px; padding: 30px; margin: 20px 0; border: 1px solid rgba(148, 163, 184, 0.2); backdrop-filter: blur(10px); }
+  .card h2 { font-size: 22px; margin-bottom: 20px; color: #60a5fa; }
+  .card p { color: #cbd5e1; line-height: 1.8; margin-bottom: 10px; }
+
+  .chart-container { position: relative; height: 400px; margin: 30px 0; }
+  .chart-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 20px; margin: 20px 0; }
+
+  .decision-tree { background: rgba(15, 23, 42, 0.8); border-radius: 16px; padding: 30px; margin: 20px 0; border: 1px solid rgba(148, 163, 184, 0.2); }
+  .tree-node { margin: 15px 0; padding: 15px; border-left: 4px solid #60a5fa; background: rgba(96, 165, 250, 0.05); border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+  .tree-node:hover { background: rgba(96, 165, 250, 0.15); transform: translateX(5px); }
+  .tree-node strong { color: #60a5fa; }
+  .tree-node span { display: block; color: #94a3b8; font-size: 13px; margin-top: 8px; }
+
+  .incoterms-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+  .incoterms-table th, .incoterms-table td { padding: 15px; text-align: left; border-bottom: 1px solid rgba(148, 163, 184, 0.3); }
+  .incoterms-table th { background: rgba(96, 165, 250, 0.1); color: #60a5fa; font-weight: 700; }
+  .incoterms-table tr:hover { background: rgba(96, 165, 250, 0.05); }
+
+  .calculator { background: rgba(15, 23, 42, 0.8); border-radius: 16px; padding: 30px; margin: 20px 0; border: 1px solid rgba(148, 163, 184, 0.2); }
+  .calc-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 15px 0; }
+  .calc-input { display: flex; flex-direction: column; }
+  .calc-input label { color: #94a3b8; font-size: 13px; margin-bottom: 8px; font-weight: 600; }
+  .calc-input input { padding: 10px; background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 8px; color: #e2e8f0; }
+  .calc-input input:focus { outline: none; border-color: #60a5fa; box-shadow: 0 0 10px rgba(96, 165, 250, 0.3); }
+  .calc-result { background: rgba(96, 165, 250, 0.1); padding: 20px; border-radius: 12px; margin-top: 20px; border-left: 4px solid #60a5fa; }
+  .calc-result-label { color: #94a3b8; font-size: 13px; margin-bottom: 8px; }
+  .calc-result-value { font-size: 24px; font-weight: 700; color: #60a5fa; }
+
+  .global-trade-map { height: 500px; background: rgba(30, 41, 59, 0.5); border-radius: 12px; padding: 20px; margin: 20px 0; border: 1px solid rgba(148, 163, 184, 0.3); display: flex; align-items: center; justify-content: center; color: #94a3b8; }
+
+  .flow-diagram { display: flex; flex-direction: column; gap: 20px; margin: 20px 0; }
+  .flow-item { background: linear-gradient(135deg, rgba(96, 165, 250, 0.2), rgba(139, 92, 246, 0.2)); padding: 20px; border-radius: 12px; border-left: 4px solid #60a5fa; }
+  .flow-item.payment { border-left-color: #10b981; background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.2)); }
+  .flow-item strong { color: #60a5fa; }
+  .flow-item.payment strong { color: #10b981; }
+
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; margin: 20px 0; }
+  .legend-item { display: flex; align-items: center; gap: 10px; }
+  .legend-dot { width: 16px; height: 16px; border-radius: 4px; }
+  .legend-text { font-size: 13px; color: #94a3b8; }
+
+  button { padding: 12px 24px; background: #60a5fa; border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+  button:hover { background: #3b82f6; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(96, 165, 250, 0.3); }
+
+  @media (max-width: 768px) {
+    .header h1 { font-size: 24px; }
+    .chart-row { grid-template-columns: 1fr; }
+    .calc-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>國際貿易與跨境商業</h1>
+  <p>互動工具與視覺化 | 選擇下方分頁探索</p>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('flow')">貿易流程圖</div>
+    <div class="tab" onclick="switchTab('incoterms')">Incoterms 比較</div>
+    <div class="tab" onclick="switchTab('strategy')">市場進入策略</div>
+    <div class="tab" onclick="switchTab('calculator')">計算工具</div>
+    <div class="tab" onclick="switchTab('statistics')">全球貿易數據</div>
+  </div>
+
+  <!-- ========== 貿易流程圖 ========== -->
+  <div class="scene active" id="scene-flow">
+    <div class="card">
+      <h2>出口商的跨國貿易流程</h2>
+      <p>從簽約到收款的完整路徑</p>
+
+      <div class="flow-diagram">
+        <div class="flow-item">
+          <strong>1. 市場開發與洽談</strong>
+          <span>出口商透過 B2B 平台（阿里巴巴、Global Sources）或直銷，與海外買家建立聯繫，報價並磋商</span>
+        </div>
+        <div class="flow-item">
+          <strong>2. 簽署合約與確認付款方式</strong>
+          <span>雙方確認：Incoterms（FOB / CIF / DDP）、支付方式（信用狀、電匯、託收）、交付日期、質量標準</span>
+        </div>
+        <div class="flow-item">
+          <strong>3. 簽發信用狀（如適用）</strong>
+          <span>買方銀行開立信用狀，承諾在收到符合條件的單據後付款。出口商的銀行確認信用狀條款</span>
+        </div>
+        <div class="flow-item payment">
+          <strong>4. 預付款或開始生產</strong>
+          <span>如採信用狀，出口商可無須預付款直接開始生產；如採電匯，通常要求預付 30-50%</span>
+        </div>
+        <div class="flow-item">
+          <strong>5. 生產與檢驗</strong>
+          <span>按訂單要求生產，買方可派駐檢驗員或要求第三方檢驗（如 SGS）確保品質</span>
+        </div>
+        <div class="flow-item">
+          <strong>6. 出口報關與通關</strong>
+          <span>出口商委託報關行向海關申報，繳納出口稅（如有），取得出口許可證與提單</span>
+        </div>
+        <div class="flow-item">
+          <strong>7. 貨運與在途保險</strong>
+          <span>委託貨運代理安排海運或空運，購買海上保險（若 CIF 條款由賣方購買）</span>
+        </div>
+        <div class="flow-item">
+          <strong>8. 提交單據與押匯</strong>
+          <span>出口商向銀行提交提單、發票、原產地證等單據，請銀行向進口商銀行提交以換取貨款</span>
+        </div>
+        <div class="flow-item payment">
+          <strong>9. 收到貨款</strong>
+          <span>進口商銀行核實單據無誤，支付貨款。出口商銀行收款後轉帳予出口商</span>
+        </div>
+        <div class="flow-item">
+          <strong>10. 進口商海外清關與提貨</strong>
+          <span>進口商憑提單在目的港清關提貨，支付進口稅與港雜費。全流程完成</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>跨境電商的交易流程（B2C）</h2>
+      <p>消費者下單到收貨的路徑（以亞馬遜 FBA 為例）</p>
+
+      <div class="flow-diagram">
+        <div class="flow-item payment">
+          <strong>1. 消費者線上下單付款</strong>
+          <span>消費者在亞馬遜選擇商品，用信用卡或 PayPal 付款</span>
+        </div>
+        <div class="flow-item">
+          <strong>2. 亞馬遜確認訂單與庫存</strong>
+          <span>平台檢查倉庫庫存（中國賣家已預先存貨在亞馬遜美國倉庫），確保可發貨</span>
+        </div>
+        <div class="flow-item">
+          <strong>3. 分揀與打包</strong>
+          <span>亞馬遜物流中心員工揀取商品，打包並貼上快遞單號</span>
+        </div>
+        <div class="flow-item">
+          <strong>4. 配送</strong>
+          <span>透過 USPS / UPS / FedEx 運送至消費者，通常 1-2 天送達（Prime 會員）</span>
+        </div>
+        <div class="flow-item">
+          <strong>5. 消費者簽收</strong>
+          <span>消費者在線確認收貨，或拒收與退貨</span>
+        </div>
+        <div class="flow-item payment">
+          <strong>6. 亞馬遜撥款給賣家</strong>
+          <span>亞馬遜扣除佣金（通常 15-45%）、退貨風險後，約 2-4 週內撥款至賣家帳戶</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== Incoterms 比較 ========== -->
+  <div class="scene" id="scene-incoterms">
+    <div class="card">
+      <h2>Incoterms 2020 主要條款對比</h2>
+      <p>選擇合適的交易條款是國際貿易的關鍵決策</p>
+
+      <table class="incoterms-table">
+        <tr>
+          <th>條款</th>
+          <th>全稱</th>
+          <th>風險轉移點</th>
+          <th>賣方責任</th>
+          <th>買方責任</th>
+          <th>適用場景</th>
+        </tr>
+        <tr>
+          <td><strong>EXW</strong></td>
+          <td>離廠價</td>
+          <td>工廠門口</td>
+          <td>準備商品在自家工廠等待</td>
+          <td>所有運輸、保險、清關費用</td>
+          <td>買方有強大物流能力；賣方信用弱</td>
+        </tr>
+        <tr>
+          <td><strong>FCA</strong></td>
+          <td>貨交承運人</td>
+          <td>交給第一承運人時</td>
+          <td>將商品交給買方指定承運人</td>
+          <td>國際運輸、保險、進口清關</td>
+          <td>多式聯運（海運、空運、陸運混合）</td>
+        </tr>
+        <tr>
+          <td><strong>FOB</strong></td>
+          <td>船上交貨</td>
+          <td>貨物在裝船時（船舷）</td>
+          <td>安排國內運輸、報關、將貨裝上船</td>
+          <td>海運、保險、進口清關、進口稅</td>
+          <td>傳統海運貿易的標準條款</td>
+        </tr>
+        <tr>
+          <td><strong>CFR</strong></td>
+          <td>成本和運費</td>
+          <td>貨物船舷</td>
+          <td>支付海運費用至目的港，但不買保險</td>
+          <td>購買海運保險、進口清關、進口稅</td>
+          <td>買方願承擔海運保險風險（少用）</td>
+        </tr>
+        <tr>
+          <td><strong>CIF</strong></td>
+          <td>成本、保險及運費</td>
+          <td>貨物船舷</td>
+          <td>支付海運費與保險至目的港</td>
+          <td>進口清關、進口稅、港雜費</td>
+          <td>進口商對海運不熟悉；風險較低</td>
+        </tr>
+        <tr>
+          <td><strong>CPT</strong></td>
+          <td>運費已付至</td>
+          <td>交給承運人時</td>
+          <td>支付至目的港的運費（但無保險）</td>
+          <td>保險、進口清關、進口稅</td>
+          <td>多式聯運且無需保險</td>
+        </tr>
+        <tr>
+          <td><strong>CIP</strong></td>
+          <td>運費保險已付至</td>
+          <td>交給承運人時</td>
+          <td>支付至目的港的運費與保險</td>
+          <td>進口清關、進口稅</td>
+          <td>多式聯運且買方要求最低風險</td>
+        </tr>
+        <tr>
+          <td><strong>DAP</strong></td>
+          <td>未清關送達</td>
+          <td>到達目的地時</td>
+          <td>支付國際運輸至目的地</td>
+          <td>進口清關、進口稅</td>
+          <td>買方對進口清關不熟悉</td>
+        </tr>
+        <tr>
+          <td><strong>DPU</strong></td>
+          <td>已卸貨送達（新增條款）</td>
+          <td>目的地卸貨後</td>
+          <td>支付運輸至目的地並卸貨</td>
+          <td>進口清關、進口稅</td>
+          <td>多式聯運、需要卸貨服務</td>
+        </tr>
+        <tr>
+          <td><strong>DDP</strong></td>
+          <td>完稅後交付</td>
+          <td>買方地點</td>
+          <td>所有費用與風險，包括進口稅</td>
+          <td>只需簽收</td>
+          <td>買方絕對省事；賣方風險最高</td>
+        </tr>
+      </table>
+
+      <div class="card" style="margin-top: 30px;">
+        <h2>選擇邏輯</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+          <div style="padding: 15px; background: rgba(96, 165, 250, 0.1); border-radius: 8px;">
+            <strong style="color: #60a5fa;">我是賣家 & 經驗豐富</strong>
+            <p style="color: #94a3b8; margin-top: 10px; font-size: 13px;">選 EXW 或 FOB，將運輸風險轉給買方</p>
+          </div>
+          <div style="padding: 15px; background: rgba(96, 165, 250, 0.1); border-radius: 8px;">
+            <strong style="color: #60a5fa;">我是賣家 & 新手</strong>
+            <p style="color: #94a3b8; margin-top: 10px; font-size: 13px;">選 CIF 或 CIP，但費用較高</p>
+          </div>
+          <div style="padding: 15px; background: rgba(10, 185, 129, 0.1); border-radius: 8px;">
+            <strong style="color: #10b981;">我是買家 & 經驗豐富</strong>
+            <p style="color: #94a3b8; margin-top: 10px; font-size: 13px;">選 FOB 或 FCA，自己控制運輸可省成本</p>
+          </div>
+          <div style="padding: 15px; background: rgba(10, 185, 129, 0.1); border-radius: 8px;">
+            <strong style="color: #10b981;">我是買家 & 新手</strong>
+            <p style="color: #94a3b8; margin-top: 10px; font-size: 13px;">選 DDP，賣家全包，簡單安心</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 市場進入策略 ========== -->
+  <div class="scene" id="scene-strategy">
+    <div class="card">
+      <h2>國際市場進入策略決策樹</h2>
+      <p>根據資金、時間、風險偏好選擇合適策略</p>
+
+      <div class="decision-tree">
+        <div class="tree-node" onclick="toggleDecision(this)">
+          <strong>你有多少資金預算？</strong>
+          <span>▼ 點擊展開選項</span>
+        </div>
+        <div style="display: none; margin-left: 20px;">
+          <div class="tree-node" onclick="toggleDecision(this)">
+            <strong>預算少於 100 萬美元</strong>
+            <span>▼ 適合選擇</span>
+          </div>
+          <div style="display: none; margin-left: 20px;">
+            <div style="padding: 15px; background: rgba(34, 197, 94, 0.1); border-radius: 8px; margin: 10px 0; border-left: 4px solid #22c55e;">
+              <strong style="color: #22c55e;">✓ 出口</strong>
+              <p style="color: #94a3b8; font-size: 13px; margin-top: 8px;">直接或透過代理商出口。風險最低，投資最少。適合製造商。</p>
+            </div>
+            <div style="padding: 15px; background: rgba(34, 197, 94, 0.1); border-radius: 8px; margin: 10px 0; border-left: 4px solid #22c55e;">
+              <strong style="color: #22c55e;">✓ 授權</strong>
+              <p style="color: #94a3b8; font-size: 13px; margin-top: 8px;">授權當地廠商使用技術 / 品牌。收取權利金。無需大投資。</p>
+            </div>
+          </div>
+
+          <div class="tree-node" onclick="toggleDecision(this)">
+            <strong>預算 100-500 萬美元</strong>
+            <span>▼ 適合選擇</span>
+          </div>
+          <div style="display: none; margin-left: 20px;">
+            <div style="padding: 15px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; margin: 10px 0; border-left: 4px solid #3b82f6;">
+              <strong style="color: #3b82f6;">✓ 合資</strong>
+              <p style="color: #94a3b8; font-size: 13px; margin-top: 8px;">與當地夥伴合資建廠。分擔風險與資金。需要選好合作夥伴。</p>
+            </div>
+            <div style="padding: 15px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; margin: 10px 0; border-left: 4px solid #3b82f6;">
+              <strong style="color: #3b82f6;">✓ 區域總代理</strong>
+              <p style="color: #94a3b8; font-size: 13px; margin-top: 8px;">在某區域建立銷售與售後服務中心。專注市場拓展。</p>
+            </div>
+          </div>
+
+          <div class="tree-node" onclick="toggleDecision(this)">
+            <strong>預算 500 萬美元以上</strong>
+            <span>▼ 適合選擇</span>
+          </div>
+          <div style="display: none; margin-left: 20px;">
+            <div style="padding: 15px; background: rgba(168, 85, 247, 0.1); border-radius: 8px; margin: 10px 0; border-left: 4px solid #a855f7;">
+              <strong style="color: #a855f7;">✓ 獨資子公司</strong>
+              <p style="color: #94a3b8; font-size: 13px; margin-top: 8px;">完全自主控股當地公司。最大控制力，也是最高風險。適合龍頭企業。</p>
+            </div>
+            <div style="padding: 15px; background: rgba(168, 85, 247, 0.1); border-radius: 8px; margin: 10px 0; border-left: 4px solid #a855f7;">
+              <strong style="color: #a855f7;">✓ 併購當地企業</strong>
+              <p style="color: #94a3b8; font-size: 13px; margin-top: 8px;">直接買下當地廠商。快速進入，但整合風險高。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 30px;">
+        <div class="legend">
+          <div style="flex: 1; padding: 15px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border-left: 4px solid #10b981;">
+            <strong style="color: #10b981;">低投入、快速進入</strong>
+            <p style="color: #94a3b8; font-size: 13px; margin-top: 8px;">出口、授權、代理</p>
+          </div>
+          <div style="flex: 1; padding: 15px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; border-left: 4px solid #3b82f6;">
+            <strong style="color: #3b82f6;">中等投入、風險分擔</strong>
+            <p style="color: #94a3b8; font-size: 13px; margin-top: 8px;">合資、區域據點</p>
+          </div>
+          <div style="flex: 1; padding: 15px; background: rgba(168, 85, 247, 0.1); border-radius: 8px; border-left: 4px solid #a855f7;">
+            <strong style="color: #a855f7;">高投入、完全控制</strong>
+            <p style="color: #94a3b8; font-size: 13px; margin-top: 8px;">獨資、併購</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 計算工具 ========== -->
+  <div class="scene" id="scene-calculator">
+    <div class="calculator">
+      <h2>匯率與關稅影響計算器</h2>
+      <p style="color: #94a3b8; margin-bottom: 20px;">計算匯率變動與關稅對進出口成本的影響</p>
+
+      <div class="calc-row">
+        <div class="calc-input">
+          <label>商品成本（USD）</label>
+          <input type="number" id="baseCost" placeholder="100" value="100" onchange="calculateCost()">
+        </div>
+        <div class="calc-input">
+          <label>數量（件）</label>
+          <input type="number" id="quantity" placeholder="1000" value="1000" onchange="calculateCost()">
+        </div>
+        <div class="calc-input">
+          <label>目標市場匯率</label>
+          <input type="number" id="exchangeRate" placeholder="6.5" value="6.5" step="0.01" onchange="calculateCost()">
+        </div>
+      </div>
+
+      <div class="calc-row">
+        <div class="calc-input">
+          <label>進口關稅率（%）</label>
+          <input type="number" id="tariffRate" placeholder="10" value="10" onchange="calculateCost()">
+        </div>
+        <div class="calc-input">
+          <label>海運成本（每件 USD）</label>
+          <input type="number" id="shippingCost" placeholder="5" value="5" onchange="calculateCost()">
+        </div>
+        <div class="calc-input">
+          <label>平台佣金（%）</label>
+          <input type="number" id="commission" placeholder="15" value="15" onchange="calculateCost()">
+        </div>
+      </div>
+
+      <div id="costResults" style="display: none;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
+          <div class="calc-result">
+            <div class="calc-result-label">總成本（人民幣）</div>
+            <div class="calc-result-value" id="totalCostCNY">-</div>
+          </div>
+          <div class="calc-result">
+            <div class="calc-result-label">單件成本（人民幣）</div>
+            <div class="calc-result-value" id="unitCostCNY">-</div>
+          </div>
+          <div class="calc-result">
+            <div class="calc-result-label">建議售價（人民幣，50% 毛利）</div>
+            <div class="calc-result-value" id="suggestedPrice">-</div>
+          </div>
+          <div class="calc-result">
+            <div class="calc-result-label">匯率變動影響</div>
+            <div class="calc-result-value" id="fxImpact">-</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calculator">
+      <h2>信用狀成本計算</h2>
+      <p style="color: #94a3b8; margin-bottom: 20px;">信用狀是安全但成本較高的支付方式</p>
+
+      <div class="calc-row">
+        <div class="calc-input">
+          <label>交易額（USD）</label>
+          <input type="number" id="lcAmount" placeholder="100000" value="100000" onchange="calculateLC()">
+        </div>
+        <div class="calc-input">
+          <label>信用狀手續費（%）</label>
+          <input type="number" id="lcFee" placeholder="0.5" value="0.5" step="0.1" onchange="calculateLC()">
+        </div>
+        <div class="calc-input">
+          <label>押匯費（%）</label>
+          <input type="number" id="discountFee" placeholder="0.2" value="0.2" step="0.1" onchange="calculateLC()">
+        </div>
+      </div>
+
+      <div id="lcResults" style="display: none;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+          <div class="calc-result">
+            <div class="calc-result-label">開狀銀行手續費</div>
+            <div class="calc-result-value" id="lcFeeAmount">-</div>
+          </div>
+          <div class="calc-result">
+            <div class="calc-result-label">押匯費用</div>
+            <div class="calc-result-value" id="discountFeeAmount">-</div>
+          </div>
+          <div class="calc-result">
+            <div class="calc-result-label">總成本</div>
+            <div class="calc-result-value" id="lcTotalCost">-</div>
+          </div>
+          <div class="calc-result">
+            <div class="calc-result-label">占交易額比例</div>
+            <div class="calc-result-value" id="lcCostRatio">-</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 全球貿易數據 ========== -->
+  <div class="scene" id="scene-statistics">
+    <div class="card">
+      <h2>全球貿易規模與增長趨勢</h2>
+      <div class="chart-container">
+        <canvas id="tradeChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>主要經濟體出口佔比（2023）</h2>
+      <div class="chart-container">
+        <canvas id="exportsChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>跨境電商增長趨勢</h2>
+      <div class="chart-container">
+        <canvas id="ecommerceChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>全球 FDI（外資直接投資）流入</h2>
+      <div class="chart-container">
+        <canvas id="fdiChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(tabName) {
+  // Hide all scenes
+  document.querySelectorAll('.scene').forEach(scene => scene.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+
+  // Show selected scene
+  document.getElementById('scene-' + tabName).classList.add('active');
+  event.target.classList.add('active');
+
+  // Initialize charts when switching to statistics tab
+  if (tabName === 'statistics') {
+    setTimeout(initCharts, 100);
+  }
+}
+
+function toggleDecision(element) {
+  const content = element.nextElementSibling;
+  if (content && content.style.display !== 'none') {
+    content.style.display = 'none';
+    element.innerHTML = element.innerHTML.replace('▼', '▶');
+  } else if (content) {
+    content.style.display = 'block';
+    element.innerHTML = element.innerHTML.replace('▶', '▼');
+  }
+}
+
+function calculateCost() {
+  const baseCost = parseFloat(document.getElementById('baseCost').value) || 100;
+  const quantity = parseFloat(document.getElementById('quantity').value) || 1000;
+  const exchangeRate = parseFloat(document.getElementById('exchangeRate').value) || 6.5;
+  const tariffRate = parseFloat(document.getElementById('tariffRate').value) || 10;
+  const shippingCost = parseFloat(document.getElementById('shippingCost').value) || 5;
+  const commission = parseFloat(document.getElementById('commission').value) || 15;
+
+  // Calculate costs
+  const costPerUnit = baseCost + shippingCost;
+  const costWithTariff = costPerUnit * (1 + tariffRate / 100);
+  const costWithCommission = costWithTariff * (1 + commission / 100);
+
+  const totalCostUSD = costWithCommission * quantity;
+  const totalCostCNY = totalCostUSD * exchangeRate;
+  const unitCostCNY = costWithCommission * exchangeRate;
+  const suggestedPrice = unitCostCNY * 1.5; // 50% markup
+
+  // FX impact
+  const fxImpact = (costWithCommission * 7 - costWithCommission * exchangeRate) * quantity;
+
+  document.getElementById('costResults').style.display = 'block';
+  document.getElementById('totalCostCNY').textContent = Math.round(totalCostCNY).toLocaleString() + ' ￥';
+  document.getElementById('unitCostCNY').textContent = Math.round(unitCostCNY) + ' ￥';
+  document.getElementById('suggestedPrice').textContent = Math.round(suggestedPrice) + ' ￥';
+  document.getElementById('fxImpact').textContent = '若匯率升至 7.0：增加 ' + Math.round(fxImpact).toLocaleString() + ' ￥';
+}
+
+function calculateLC() {
+  const lcAmount = parseFloat(document.getElementById('lcAmount').value) || 100000;
+  const lcFee = parseFloat(document.getElementById('lcFee').value) || 0.5;
+  const discountFee = parseFloat(document.getElementById('discountFee').value) || 0.2;
+
+  const lcFeeAmount = (lcAmount * lcFee / 100).toFixed(2);
+  const discountFeeAmount = (lcAmount * discountFee / 100).toFixed(2);
+  const totalCost = (parseFloat(lcFeeAmount) + parseFloat(discountFeeAmount)).toFixed(2);
+  const costRatio = ((totalCost / lcAmount) * 100).toFixed(2);
+
+  document.getElementById('lcResults').style.display = 'block';
+  document.getElementById('lcFeeAmount').textContent = '$' + parseFloat(lcFeeAmount).toLocaleString();
+  document.getElementById('discountFeeAmount').textContent = '$' + parseFloat(discountFeeAmount).toLocaleString();
+  document.getElementById('lcTotalCost').textContent = '$' + parseFloat(totalCost).toLocaleString();
+  document.getElementById('lcCostRatio').textContent = costRatio + '%';
+}
+
+function initCharts() {
+  // Global Trade Volume
+  const tradeCtx = document.getElementById('tradeChart');
+  if (tradeCtx && !tradeCtx.chart) {
+    tradeCtx.chart = new Chart(tradeCtx, {
+      type: 'line',
+      data: {
+        labels: ['2018', '2019', '2020', '2021', '2022', '2023'],
+        datasets: [{
+          label: '全球出口額（兆美元）',
+          data: [18.8, 18.3, 17.7, 19.4, 20.1, 19.8],
+          borderColor: '#60a5fa',
+          backgroundColor: 'rgba(96, 165, 250, 0.1)',
+          borderWidth: 3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#cbd5e1' } } },
+        scales: { y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(148, 163, 184, 0.1)' } }, x: { ticks: { color: '#94a3b8' } } }
+      }
+    });
+  }
+
+  // Exports by country
+  const exportsCtx = document.getElementById('exportsChart');
+  if (exportsCtx && !exportsCtx.chart) {
+    exportsCtx.chart = new Chart(exportsCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['中國', '歐盟', '美國', '日本', '印度', '其他'],
+        datasets: [{
+          data: [13, 15, 11, 4, 2.5, 54.5],
+          backgroundColor: ['#ef4444', '#60a5fa', '#3b82f6', '#10b981', '#f59e0b', '#64748b']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#cbd5e1' } } }
+      }
+    });
+  }
+
+  // E-commerce growth
+  const ecommerceCtx = document.getElementById('ecommerceChart');
+  if (ecommerceCtx && !ecommerceCtx.chart) {
+    ecommerceCtx.chart = new Chart(ecommerceCtx, {
+      type: 'bar',
+      data: {
+        labels: ['2019', '2020', '2021', '2022', '2023'],
+        datasets: [{
+          label: '跨境電商交易額（兆美元）',
+          data: [0.65, 1.1, 1.5, 1.8, 2.1],
+          backgroundColor: '#a855f7'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#cbd5e1' } } },
+        scales: { y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(148, 163, 184, 0.1)' } }, x: { ticks: { color: '#94a3b8' } } }
+      }
+    });
+  }
+
+  // FDI flows
+  const fdiCtx = document.getElementById('fdiChart');
+  if (fdiCtx && !fdiCtx.chart) {
+    fdiCtx.chart = new Chart(fdiCtx, {
+      type: 'bar',
+      data: {
+        labels: ['美國', '中國', '香港', '新加坡', '英國', '印度'],
+        datasets: [{
+          label: 'FDI 流入（十億美元）',
+          data: [250, 120, 140, 110, 80, 65],
+          backgroundColor: '#10b981'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#cbd5e1' } } },
+        scales: { y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(148, 163, 184, 0.1)' } }, x: { ticks: { color: '#94a3b8' } } }
+      }
+    });
+  }
+}
+
+// Initialize cost calculator on load
+window.addEventListener('load', calculateCost);
+</script>
+
+</body>
+</html>

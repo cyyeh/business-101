@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科技與數位轉型 - 互動圖表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background-color: #f1f5f9;
+            color: #2d3748;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 12px;
+            padding: 20px 30px;
+            background-color: #fafbfc;
+            border-bottom: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            border: none;
+            background: white;
+            color: #4a5568;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab-button:hover {
+            background: #f7fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .content {
+            padding: 40px 30px;
+            min-height: 600px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #2d3748;
+        }
+
+        .chart-container {
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .chart-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+
+        .slider-group {
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .slider-label span:first-child {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .slider-label span:last-child {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            border: 3px solid #667eea;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            border: 3px solid #667eea;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-title {
+            font-size: 0.95em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .card-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .card-desc {
+            font-size: 0.85em;
+            color: #718096;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .comparison-table th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .comparison-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .badge-high {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge-medium {
+            background: #feebc8;
+            color: #7c2d12;
+        }
+
+        .badge-low {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+
+        .bar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .bar-fill {
+            width: 100%;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .bar:hover .bar-fill {
+            opacity: 0.8;
+            transform: scaleY(1.05);
+        }
+
+        .bar-label {
+            font-size: 0.9em;
+            font-weight: 600;
+            text-align: center;
+            color: #2d3748;
+        }
+
+        .bar-value {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 30px;
+            position: relative;
+            padding-left: 50px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            background: #667eea;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #667eea;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-year {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .timeline-text {
+            color: #4a5568;
+            font-size: 0.95em;
+        }
+
+        .maturity-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .maturity-cell {
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .maturity-cell:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .maturity-cell.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .maturity-level-1 {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .maturity-level-2 {
+            background: #feebc8;
+            color: #7c2d12;
+        }
+
+        .maturity-level-3 {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+
+        .maturity-level-4 {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .maturity-level-5 {
+            background: #e6fffa;
+            color: #234e52;
+        }
+
+        .maturity-cell-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .maturity-cell-desc {
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+
+        .result-box {
+            padding: 20px;
+            background: #edf2f7;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .result-title {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .result-text {
+            color: #4a5568;
+            font-size: 0.95em;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .maturity-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .bar-chart {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>科技與數位轉型</h1>
+            <p>互動圖表與計算工具</p>
+        </div>
+
+        <div class="tabs-container">
+            <button class="tab-button active" onclick="showTab('maturity')">數位轉型成熟度評估</button>
+            <button class="tab-button" onclick="showTab('cloud')">雲端服務模式比較</button>
+            <button class="tab-button" onclick="showTab('saas')">SaaS 關鍵指標計算器</button>
+            <button class="tab-button" onclick="showTab('network')">平台經濟網路效應</button>
+            <button class="tab-button" onclick="showTab('transformation')">轉型演進階段</button>
+        </div>
+
+        <div class="content">
+            <!-- Tab 1: 數位轉型成熟度評估 -->
+            <div id="maturity" class="tab-content active">
+                <h2 class="section-title">數位轉型成熟度評估</h2>
+                <p style="margin-bottom: 30px; font-size: 1em; color: #4a5568;">評估企業在數位轉型中的成熟度，從初級到世界級。選擇符合貴公司現狀的等級：</p>
+
+                <div class="maturity-grid" id="maturityGrid">
+                    <div class="maturity-cell maturity-level-1" onclick="selectMaturity(1)">
+                        <div class="maturity-cell-title">1. 初級</div>
+                        <div class="maturity-cell-desc">數位化甚少，主要依賴人工流程與紙本記錄</div>
+                    </div>
+                    <div class="maturity-cell maturity-level-2" onclick="selectMaturity(2)">
+                        <div class="maturity-cell-title">2. 初步</div>
+                        <div class="maturity-cell-desc">開始數位化部分流程，建立基本 IT 系統</div>
+                    </div>
+                    <div class="maturity-cell maturity-level-3" onclick="selectMaturity(3)">
+                        <div class="maturity-cell-title">3. 中等</div>
+                        <div class="maturity-cell-desc">大部分流程數位化，利用數據優化業務</div>
+                    </div>
+                    <div class="maturity-cell maturity-level-4" onclick="selectMaturity(4)">
+                        <div class="maturity-cell-title">4. 高級</div>
+                        <div class="maturity-cell-desc">整合性數位平台，AI 應用逐步展開</div>
+                    </div>
+                    <div class="maturity-cell maturity-level-5" onclick="selectMaturity(5)">
+                        <div class="maturity-cell-title">5. 世界級</div>
+                        <div class="maturity-cell-desc">全數位化生態，AI 驅動決策與創新</div>
+                    </div>
+                </div>
+
+                <div id="maturityResult" class="result-box" style="display: none;">
+                    <div class="result-title">轉型建議</div>
+                    <div class="result-text" id="maturityResultText"></div>
+                </div>
+            </div>
+
+            <!-- Tab 2: 雲端服務模式比較 -->
+            <div id="cloud" class="tab-content">
+                <h2 class="section-title">雲端服務模式比較</h2>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                            <th>特性</th>
+                            <th>IaaS (基礎設施)</th>
+                            <th>PaaS (平台)</th>
+                            <th>SaaS (軟體)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>企業維護責任</strong></td>
+                            <td><span class="badge badge-high">最多</span></td>
+                            <td><span class="badge badge-medium">中等</span></td>
+                            <td><span class="badge badge-low">最少</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>成本結構</strong></td>
+                            <td>高前期投資</td>
+                            <td>中等投資</td>
+                            <td>月費訂閱</td>
+                        </tr>
+                        <tr>
+                            <td><strong>定制能力</strong></td>
+                            <td><span class="badge badge-high">最高</span></td>
+                            <td><span class="badge badge-medium">中等</span></td>
+                            <td><span class="badge badge-low">最低</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>上市時間</strong></td>
+                            <td>較長 (6-12月)</td>
+                            <td>中等 (2-4月)</td>
+                            <td>快速 (1-2週)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>技術要求</strong></td>
+                            <td><span class="badge badge-high">需要高技術</span></td>
+                            <td><span class="badge badge-medium">需要開發能力</span></td>
+                            <td><span class="badge badge-low">無需技術</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>適用企業</strong></td>
+                            <td>大企業、高定制</td>
+                            <td>創業公司、快速迭代</td>
+                            <td>所有規模企業</td>
+                        </tr>
+                        <tr>
+                            <td><strong>典型產品</strong></td>
+                            <td>AWS EC2, Azure VM</td>
+                            <td>Heroku, Google App Engine</td>
+                            <td>Microsoft 365, Slack</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 30px; padding: 20px; background: #edf2f7; border-radius: 8px;">
+                    <h3 style="margin-bottom: 15px; color: #2d3748; font-weight: 600;">成本比較 (年度)</h3>
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-title">IaaS 例: AWS</div>
+                            <div class="card-value">$50,000+</div>
+                            <div class="card-desc">中等規模應用，需技術運維</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">PaaS 例: Heroku</div>
+                            <div class="card-value">$5,000-20,000</div>
+                            <div class="card-desc">快速開發與部署</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">SaaS 例: Salesforce</div>
+                            <div class="card-value">$1,200-5,000</div>
+                            <div class="card-desc">按用戶數計費</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: SaaS 關鍵指標計算器 -->
+            <div id="saas" class="tab-content">
+                <h2 class="section-title">SaaS 關鍵指標計算器</h2>
+
+                <div class="chart-container">
+                    <div class="chart-title">月度經常性收入 (MRR) 與客戶生命周期價值</div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>付費用戶數</span>
+                            <span id="mrrUserValue">1,000</span>
+                        </div>
+                        <input type="range" min="100" max="10000" value="1000" step="100" oninput="updateMRR()">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>月平均訂閱價 ($)</span>
+                            <span id="mrrPriceValue">99</span>
+                        </div>
+                        <input type="range" min="10" max="1000" value="99" step="10" oninput="updateMRR()">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>平均客戶生命週期 (月)</span>
+                            <span id="mrrLtvValue">36</span>
+                        </div>
+                        <input type="range" min="6" max="120" value="36" step="6" oninput="updateMRR()">
+                    </div>
+
+                    <div class="grid-2" style="margin-top: 30px;">
+                        <div class="card">
+                            <div class="card-title">月度經常性收入 (MRR)</div>
+                            <div class="card-value" id="mrrResult">$99,000</div>
+                            <div class="card-desc">每月穩定收入</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">年度經常性收入 (ARR)</div>
+                            <div class="card-value" id="arrResult">$1,188,000</div>
+                            <div class="card-desc">年度預期收入</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">客戶生命週期價值 (LTV)</div>
+                            <div class="card-value" id="ltvResult">$3,564,000</div>
+                            <div class="card-desc">總客戶貢獻額</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">月均 LTV</div>
+                            <div class="card-value" id="ltvPerCustomerResult">$3,564</div>
+                            <div class="card-desc">每客戶生命週期價值</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">CAC vs LTV 分析</div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>客戶獲取成本 (CAC) ($)</span>
+                            <span id="cacValue">1000</span>
+                        </div>
+                        <input type="range" min="100" max="10000" value="1000" step="100" oninput="updateCAC()">
+                    </div>
+
+                    <div id="cacResult" class="result-box" style="margin-top: 20px;">
+                        <div class="result-title">LTV/CAC 比率評估</div>
+                        <div class="result-text" id="cacResultText"></div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">客戶流失率 (Monthly Churn) 影響分析</div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>月流失率 (%)</span>
+                            <span id="churnValue">5</span>
+                        </div>
+                        <input type="range" min="0" max="20" value="5" step="0.5" oninput="updateChurn()">
+                    </div>
+
+                    <div id="churnResult" class="result-box" style="margin-top: 20px;">
+                        <div class="result-title">流失率評估</div>
+                        <div class="result-text" id="churnResultText"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: 平台經濟網路效應 -->
+            <div id="network" class="tab-content">
+                <h2 class="section-title">平台經濟網路效應模擬</h2>
+                <p style="margin-bottom: 30px; color: #4a5568;">根據 Metcalfe 定律，網絡價值與用戶數平方成正比。觀察不同規模平台的相對價值：</p>
+
+                <div class="chart-container">
+                    <div class="chart-title">用戶數與平台價值關係</div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>平台 A 用戶數 (百萬)</span>
+                            <span id="networkUserAValue">10</span>
+                        </div>
+                        <input type="range" min="1" max="50" value="10" step="1" oninput="updateNetworkEffect()">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>平台 B 用戶數 (百萬)</span>
+                            <span id="networkUserBValue">5</span>
+                        </div>
+                        <input type="range" min="1" max="50" value="5" step="1" oninput="updateNetworkEffect()">
+                    </div>
+
+                    <div class="bar-chart" id="networkChart" style="margin-top: 30px;">
+                        <div class="bar">
+                            <div class="bar-fill" id="barA" style="height: 40%;"></div>
+                            <div class="bar-value" id="valueA">100</div>
+                            <div class="bar-label">平台 A</div>
+                        </div>
+                        <div class="bar">
+                            <div class="bar-fill" id="barB" style="height: 20%;"></div>
+                            <div class="bar-value" id="valueB">25</div>
+                            <div class="bar-label">平台 B</div>
+                        </div>
+                    </div>
+
+                    <div id="networkResult" class="result-box" style="margin-top: 20px;">
+                        <div class="result-title">網路效應分析</div>
+                        <div class="result-text" id="networkResultText"></div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">贏者通吃現象：成長對比</div>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                <th>指標</th>
+                                <th>領先者 (Facebook 規模)</th>
+                                <th>後進者 (新平台)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>用戶基數</strong></td>
+                                <td>30 億</td>
+                                <td>500 萬</td>
+                            </tr>
+                            <tr>
+                                <td><strong>相對平台價值</strong></td>
+                                <td><span class="badge badge-high">100%</span></td>
+                                <td><span class="badge badge-low">0.003%</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>追趕需要</strong></td>
+                                <td>-</td>
+                                <td>投入 10 倍資本，3-5 年時間</td>
+                            </tr>
+                            <tr>
+                                <td><strong>競爭前景</strong></td>
+                                <td>幾乎不可能被超越</td>
+                                <td>除非有 10 倍差異化價值</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab 5: 轉型演進階段 -->
+            <div id="transformation" class="tab-content">
+                <h2 class="section-title">數位轉型演進階段</h2>
+                <p style="margin-bottom: 30px; color: #4a5568;">企業數位轉型通常經歷三個遞進的階段，每個階段帶來不同的商業價值：</p>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-year">第一階段：數位化 (Digitization)</div>
+                            <div class="timeline-text">
+                                <strong>目標：</strong> 將模擬流程轉為數位流程<br>
+                                <strong>例子：</strong> 紙本菜單→電子菜單、手工記帳→會計軟體<br>
+                                <strong>商業成果：</strong> 效率提升 20-30%、成本降低 15-25%<br>
+                                <strong>週期：</strong> 1-2 年<br>
+                                <strong>成功率：</strong> 70-80% (技術成本主要)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-year">第二階段：數位優化 (Digitalization)</div>
+                            <div class="timeline-text">
+                                <strong>目標：</strong> 利用數據和系統優化現有流程<br>
+                                <strong>例子：</strong> AI 推薦系統提升轉化率、數據驅動定價<br>
+                                <strong>商業成果：</strong> 營收提升 10-20%、利潤率改善 5-15%<br>
+                                <strong>週期：</strong> 2-3 年<br>
+                                <strong>成功率：</strong> 50-60% (組織執行難)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-year">第三階段：數位轉型 (Digital Transformation)</div>
+                            <div class="timeline-text">
+                                <strong>目標：</strong> 重新定義商業模式和價值主張<br>
+                                <strong>例子：</strong> Netflix 從 DVD 到串流，微信從通訊到超級應用<br>
+                                <strong>商業成果：</strong> 新市場開創、收入模式重構、5-10 倍增長潛力<br>
+                                <strong>週期：</strong> 3-5 年<br>
+                                <strong>成功率：</strong> 20-30% (戰略、組織、執行全面變革)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="card">
+                        <div class="card-title">數位轉型最常見的失敗原因</div>
+                        <div style="color: #4a5568; font-size: 0.95em;">
+                            1. 缺乏 CEO 承諾 (40%)<br>
+                            2. 組織變革困難 (35%)<br>
+                            3. 技術債務 (25%)<br>
+                            4. 人才短缺 (30%)<br>
+                            5. 改變流程被抵抗 (50%)
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">轉型成功的關鍵因素</div>
+                        <div style="color: #4a5568; font-size: 0.95em;">
+                            1. CEO 親自推動和投入<br>
+                            2. 明確的商業目標(不是技術目標)<br>
+                            3. 持續的人才投資與培養<br>
+                            4. 試驗和快速迭代的文化<br>
+                            5. 激勵與績效對齐
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Remove active from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active to clicked button
+            event.target.classList.add('active');
+        }
+
+        function selectMaturity(level) {
+            // Remove all selections
+            const cells = document.querySelectorAll('.maturity-cell');
+            cells.forEach(cell => cell.classList.remove('selected'));
+
+            // Add selection to clicked cell
+            cells[level - 1].classList.add('selected');
+
+            // Show result
+            const resultBox = document.getElementById('maturityResult');
+            const resultText = document.getElementById('maturityResultText');
+            resultBox.style.display = 'block';
+
+            const recommendations = {
+                1: '建議優先進行數位化，將紙本流程電子化。選擇合適的雲端平台(SaaS)快速上手。',
+                2: '繼續完善數位系統，建立數據收集機制。開始試驗數位優化(如數據分析)。',
+                3: '深化數據應用，探索 AI/ML 在業務中的應用。考慮平台化或生態建設。',
+                4: '推進 AI 決策系統，優化核心業務流程。考慮新商業模式創新。',
+                5: '維持領先地位，持續創新。探索新興技術(如區塊鏈、IoT)的應用機會。'
+            };
+
+            resultText.textContent = recommendations[level];
+        }
+
+        function updateMRR() {
+            const users = parseInt(document.querySelector('input[type="range"]').value);
+            const price = parseFloat(document.querySelectorAll('input[type="range"]')[1].value);
+            const months = parseInt(document.querySelectorAll('input[type="range"]')[2].value);
+
+            document.getElementById('mrrUserValue').textContent = users.toLocaleString();
+            document.getElementById('mrrPriceValue').textContent = price.toFixed(0);
+            document.getElementById('mrrLtvValue').textContent = months;
+
+            const mrr = users * price;
+            const arr = mrr * 12;
+            const ltv = users * price * months;
+            const ltvPerCustomer = price * months;
+
+            document.getElementById('mrrResult').textContent = '$' + mrr.toLocaleString('en-US', {maximumFractionDigits: 0});
+            document.getElementById('arrResult').textContent = '$' + arr.toLocaleString('en-US', {maximumFractionDigits: 0});
+            document.getElementById('ltvResult').textContent = '$' + ltv.toLocaleString('en-US', {maximumFractionDigits: 0});
+            document.getElementById('ltvPerCustomerResult').textContent = '$' + ltvPerCustomer.toLocaleString('en-US', {maximumFractionDigits: 0});
+        }
+
+        function updateCAC() {
+            const cac = parseInt(document.querySelectorAll('input[type="range"]')[3].value);
+            const ltvPerCustomer = parseFloat(document.getElementById('ltvPerCustomerResult').textContent.replace('$', '').replace(',', ''));
+
+            document.getElementById('cacValue').textContent = cac.toLocaleString();
+
+            const ratio = ltvPerCustomer / cac;
+            const resultBox = document.getElementById('cacResult');
+            const resultText = document.getElementById('cacResultText');
+
+            let assessment = '';
+            if (ratio >= 3) {
+                assessment = `✅ 優秀 (LTV/CAC = ${ratio.toFixed(2)})：可持續增長，利潤空間充足。可積極投入市場推廣。`;
+            } else if (ratio >= 1.5) {
+                assessment = `⚠️ 中等 (LTV/CAC = ${ratio.toFixed(2)})：可持續但利潤有限。需優化成本或提升客戶價值。`;
+            } else {
+                assessment = `❌ 不健康 (LTV/CAC = ${ratio.toFixed(2)})：獲客成本過高，不可持續。需大幅優化。`;
+            }
+
+            resultText.textContent = assessment;
+        }
+
+        function updateChurn() {
+            const churn = parseFloat(document.querySelectorAll('input[type="range"]')[4].value);
+            document.getElementById('churnValue').textContent = churn.toFixed(1);
+
+            const mrr = parseFloat(document.getElementById('mrrResult').textContent.replace('$', '').replace(',', ''));
+            const newMRRAfterChurn = mrr * (1 - churn / 100) * 1.05; // Assuming 5% new growth
+            const netGrowth = ((newMRRAfterChurn - mrr) / mrr * 100).toFixed(1);
+
+            const resultText = document.getElementById('churnResultText');
+
+            let assessment = '';
+            if (churn <= 3) {
+                assessment = `✅ 優秀 (${churn.toFixed(1)}%)：客戶粘著度很高，可持續增長。保持當前策略。`;
+            } else if (churn <= 5) {
+                assessment = `🟡 可接受 (${churn.toFixed(1)}%)：行業平均水準。可考慮改進客戶成功計畫以降低流失。`;
+            } else if (churn <= 10) {
+                assessment = `⚠️ 需改善 (${churn.toFixed(1)}%)：高於優秀水準。需重點關注客戶滿意度和產品改進。`;
+            } else {
+                assessment = `❌ 嚴重 (${churn.toFixed(1)}%)：客戶流失過快，商業模式存在問題。需根本性改進。`;
+            }
+
+            resultText.textContent = assessment;
+        }
+
+        function updateNetworkEffect() {
+            const userA = parseInt(document.querySelectorAll('input[type="range"]')[5].value);
+            const userB = parseInt(document.querySelectorAll('input[type="range"]')[6].value);
+
+            document.getElementById('networkUserAValue').textContent = userA;
+            document.getElementById('networkUserBValue').textContent = userB;
+
+            const valueA = userA * userA;
+            const valueB = userB * userB;
+            const maxValue = Math.max(valueA, valueB);
+
+            document.getElementById('valueA').textContent = valueA;
+            document.getElementById('valueB').textContent = valueB;
+            document.getElementById('barA').style.height = (valueA / maxValue * 100) + '%';
+            document.getElementById('barB').style.height = (valueB / maxValue * 100) + '%';
+
+            const ratio = (valueA / valueB).toFixed(1);
+            const resultText = document.getElementById('networkResultText');
+            resultText.textContent = `平台 A 的網路價值是平台 B 的 ${ratio} 倍。這展示了網路效應的威力——用戶數只多 2 倍，但平台價值卻多 ${ratio} 倍。這就是為什麼領先者很難被超越。`;
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            updateMRR();
+            updateCAC();
+            updateChurn();
+            updateNetworkEffect();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商業法律與合規 - 互動圖表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background-color: #f1f5f9;
+            color: #1f2937;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .tab-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            background-color: #f9fafb;
+        }
+
+        .tab-button {
+            padding: 10px 24px;
+            border: none;
+            background-color: #e5e7eb;
+            color: #4b5563;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+        }
+
+        .tab-button:hover {
+            background-color: #d1d5db;
+            transform: translateY(-2px);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tab 1: IP Protection Types */
+        .ip-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .ip-card {
+            background: linear-gradient(135deg, #f0f4ff 0%, #f3e8ff 100%);
+            border: 2px solid #8b5cf6;
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ip-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(139, 92, 246, 0.2);
+        }
+
+        .ip-card h3 {
+            color: #6366f1;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .ip-card-label {
+            font-size: 12px;
+            color: #7c3aed;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: inline-block;
+            background: #ede9fe;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .ip-card p {
+            font-size: 13px;
+            color: #4b5563;
+            line-height: 1.5;
+        }
+
+        .ip-details {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #6b7280;
+            padding-top: 12px;
+            border-top: 1px solid #d8c9f5;
+        }
+
+        /* Tab 2: Compliance Checklist */
+        .checklist {
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .checklist-category {
+            margin-bottom: 32px;
+        }
+
+        .checklist-category h3 {
+            color: #6366f1;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #8b5cf6;
+            font-size: 16px;
+        }
+
+        .checklist-items {
+            display: grid;
+            gap: 12px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #a78bfa;
+        }
+
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            border: 2px solid #c4b5fd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-custom:hover {
+            border-color: #8b5cf6;
+            background: #f3e8ff;
+        }
+
+        .checkbox-custom.checked {
+            background: #8b5cf6;
+            border-color: #8b5cf6;
+            color: white;
+        }
+
+        .checklist-text {
+            flex: 1;
+            font-size: 14px;
+            color: #4b5563;
+        }
+
+        /* Tab 3: Global Privacy Laws */
+        .world-map {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .region-card {
+            background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+            border: 2px solid #a78bfa;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .region-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(139, 92, 246, 0.2);
+        }
+
+        .region-card h4 {
+            color: #6366f1;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .region-laws {
+            font-size: 13px;
+            color: #4b5563;
+            line-height: 1.6;
+        }
+
+        .region-laws strong {
+            color: #7c3aed;
+        }
+
+        /* Tab 4: Contract Elements */
+        .contract-elements {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .element-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .element-box h4 {
+            color: #d97706;
+            margin-bottom: 16px;
+            font-size: 16px;
+        }
+
+        .element-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .element-list li {
+            padding: 8px 0;
+            font-size: 14px;
+            color: #4b5563;
+            border-bottom: 1px solid #f3d5a5;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .element-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #d97706;
+            font-weight: bold;
+        }
+
+        .element-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* Tab 5: Compliance Risk Assessment */
+        .risk-matrix {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .risk-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr 1fr 1fr;
+            gap: 1px;
+            background: #e5e7eb;
+        }
+
+        .risk-cell {
+            background: white;
+            padding: 16px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid #e5e7eb;
+        }
+
+        .risk-cell.header {
+            background: #6366f1;
+            color: white;
+            font-weight: 700;
+        }
+
+        .risk-cell.high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .risk-cell.medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .risk-cell.low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .risk-legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #4b5563;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .contract-elements {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-container {
+                gap: 5px;
+            }
+
+            .tab-button {
+                font-size: 12px;
+                padding: 8px 16px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f9fafb;
+            color: #6b7280;
+            font-size: 12px;
+            border-top: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>商業法律與合規 - 互動圖表</h1>
+            <p>探索合約要素、IP保護、全球隱私法規和合規風險評估</p>
+        </div>
+
+        <div class="tab-container">
+            <button class="tab-button active" onclick="showTab('ip-protection')">IP保護類型</button>
+            <button class="tab-button" onclick="showTab('checklist')">合規檢查清單</button>
+            <button class="tab-button" onclick="showTab('privacy-laws')">全球隱私法規</button>
+            <button class="tab-button" onclick="showTab('contracts')">合約要素</button>
+            <button class="tab-button" onclick="showTab('risk-assessment')">風險評估</button>
+        </div>
+
+        <div class="content">
+            <!-- Tab 1: IP Protection -->
+            <div id="ip-protection" class="tab-content active">
+                <h2 style="margin-bottom: 24px; color: #6366f1;">知識產權保護類型比較</h2>
+                <div class="ip-grid">
+                    <div class="ip-card">
+                        <div class="ip-card-label">發明類</div>
+                        <h3>專利 (Patent)</h3>
+                        <p>保護技術創新和發明</p>
+                        <div class="ip-details">
+                            <strong>保護期限：</strong> 20年<br>
+                            <strong>申請成本：</strong> 中等至高<br>
+                            <strong>公開要求：</strong> 需披露技術細節<br>
+                            <strong>地域性：</strong> 需分國家申請
+                        </div>
+                    </div>
+
+                    <div class="ip-card">
+                        <div class="ip-card-label">品牌類</div>
+                        <h3>商標 (Trademark)</h3>
+                        <p>保護品牌名稱和標識</p>
+                        <div class="ip-details">
+                            <strong>保護期限：</strong> 10年可無限續期<br>
+                            <strong>申請成本：</strong> 低至中等<br>
+                            <strong>公開要求：</strong> 商標標識需公開<br>
+                            <strong>維護費用：</strong> 定期續展
+                        </div>
+                    </div>
+
+                    <div class="ip-card">
+                        <div class="ip-card-label">作品類</div>
+                        <h3>著作權 (Copyright)</h3>
+                        <p>保護原創作品和內容</p>
+                        <div class="ip-details">
+                            <strong>保護期限：</strong> 終身+50年<br>
+                            <strong>申請成本：</strong> 無需申請<br>
+                            <strong>自動保護：</strong> 創作完成即有效<br>
+                            <strong>範圍：</strong> 文學、藝術、音樂、代碼
+                        </div>
+                    </div>
+
+                    <div class="ip-card">
+                        <div class="ip-card-label">機密類</div>
+                        <h3>營業秘密 (Trade Secret)</h3>
+                        <p>保護未公開的商業信息</p>
+                        <div class="ip-details">
+                            <strong>保護期限：</strong> 無限期（需保密）<br>
+                            <strong>申請成本：</strong> 無需申請<br>
+                            <strong>保密措施：</strong> 必須採取<br>
+                            <strong>洩露後：</strong> 保護喪失
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Compliance Checklist -->
+            <div id="checklist" class="tab-content">
+                <h2 style="margin-bottom: 24px; color: #6366f1;">企業合規檢查清單</h2>
+                <div class="checklist">
+                    <div class="checklist-category">
+                        <h3>合約與商業協議</h3>
+                        <div class="checklist-items">
+                            <div class="checklist-item">
+                                <div class="checkbox-custom" onclick="toggleCheck(this)"></div>
+                                <div class="checklist-text">所有主要業務合約已由法律部門審核</div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-custom" onclick="toggleCheck(this)"></div>
+                                <div class="checklist-text">合約包含適當的法律適用和爭議解決條款</div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-custom" onclick="toggleCheck(this)"></div>
+                                <div class="checklist-text">關聯交易已披露並經過董事會批准</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-category">
+                        <h3>知識產權保護</h3>
+                        <div class="checklist-items">
+                            <div class="checklist-item">
+                                <div class="checkbox-custom" onclick="toggleCheck(this)"></div>
+                                <div class="checklist-text">核心技術已申請專利保護</div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-custom" onclick="toggleCheck(this)"></div>
+                                <div class="checklist-text">品牌名稱和標識已註冊商標</div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-custom" onclick="toggleCheck(this)"></div>
+                                <div class="checklist-text">員工簽署了保密協議和競業禁止協議</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-category">
+                        <h3>資料隱私與安全</h3>
+                        <div class="checklist-items">
+                            <div class="checklist-item">
+                                <div class="checkbox-custom" onclick="toggleCheck(this)"></div>
+                                <div class="checklist-text">隱私政策已制定並定期更新</div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-custom" onclick="toggleCheck(this)"></div>
+                                <div class="checklist-text">用戶同意機制符合GDPR要求</div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-custom" onclick="toggleCheck(this)"></div>
+                                <div class="checklist-text">資料安全措施已實施（加密、訪問控制）</div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-custom" onclick="toggleCheck(this)"></div>
+                                <div class="checklist-text">資料洩露應急預案已制定</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-category">
+                        <h3>員工與勞動法</h3>
+                        <div class="checklist-items">
+                            <div class="checklist-item">
+                                <div class="checkbox-custom" onclick="toggleCheck(this)"></div>
+                                <div class="checklist-text">員工工資符合最低工資標準</div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-custom" onclick="toggleCheck(this)"></div>
+                                <div class="checklist-text">加班費計算符合法律規定</div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-custom" onclick="toggleCheck(this)"></div>
+                                <div class="checklist-text">社會保險繳納完整無漏</div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-custom" onclick="toggleCheck(this)"></div>
+                                <div class="checklist-text">反歧視和反騷擾政策已實施</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-category">
+                        <h3>反壟斷與反賄賂</h3>
+                        <div class="checklist-items">
+                            <div class="checklist-item">
+                                <div class="checkbox-custom" onclick="toggleCheck(this)"></div>
+                                <div class="checklist-text">競爭對手未進行非法協議</div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-custom" onclick="toggleCheck(this)"></div>
+                                <div class="checklist-text">員工培訓包括反賄賂和FCPA合規</div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-custom" onclick="toggleCheck(this)"></div>
+                                <div class="checklist-text">供應商和代理人已進行合規盡職調查</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Privacy Laws -->
+            <div id="privacy-laws" class="tab-content">
+                <h2 style="margin-bottom: 24px; color: #6366f1;">全球隱私法規地圖</h2>
+                <div class="world-map">
+                    <div class="region-card">
+                        <h4>歐洲</h4>
+                        <div class="region-laws">
+                            <strong>GDPR</strong><br>
+                            最嚴格隱私法<br>
+                            罰款至營業額4%
+                        </div>
+                    </div>
+
+                    <div class="region-card">
+                        <h4>美國</h4>
+                        <div class="region-laws">
+                            <strong>CCPA/CPRA</strong><br>
+                            加州隱私法<br>
+                            延伸至全美
+                        </div>
+                    </div>
+
+                    <div class="region-card">
+                        <h4>加拿大</h4>
+                        <div class="region-laws">
+                            <strong>PIPEDA</strong><br>
+                            個人信息保護<br>
+                            類GDPR標準
+                        </div>
+                    </div>
+
+                    <div class="region-card">
+                        <h4>英國</h4>
+                        <div class="region-laws">
+                            <strong>UK GDPR</strong><br>
+                            GDPR本土化版本<br>
+                            脫歐後獨立運作
+                        </div>
+                    </div>
+
+                    <div class="region-card">
+                        <h4>亞洲</h4>
+                        <div class="region-laws">
+                            <strong>中國個資法</strong><br>
+                            新加坡PDPA<br>
+                            日本APPI
+                        </div>
+                    </div>
+
+                    <div class="region-card">
+                        <h4>澳洲</h4>
+                        <div class="region-laws">
+                            <strong>隱私法</strong><br>
+                            數據可攜帶權<br>
+                            強制數據洩露通知
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: Contract Elements -->
+            <div id="contracts" class="tab-content">
+                <h2 style="margin-bottom: 24px; color: #6366f1;">合約要素檢查清單</h2>
+                <div class="contract-elements">
+                    <div class="element-box">
+                        <h4>基本條款</h4>
+                        <ul class="element-list">
+                            <li>雙方當事人身份明確</li>
+                            <li>標的物或服務詳細描述</li>
+                            <li>價格和支付條款</li>
+                            <li>交付/履行條件</li>
+                            <li>期限和生效日期</li>
+                            <li>責任和義務分配</li>
+                        </ul>
+                    </div>
+
+                    <div class="element-box">
+                        <h4>法律保護條款</h4>
+                        <ul class="element-list">
+                            <li>法律適用條款</li>
+                            <li>爭議解決機制</li>
+                            <li>違約救濟方式</li>
+                            <li>賠償限額</li>
+                            <li>保密和IP條款</li>
+                            <li>終止和解除條件</li>
+                        </ul>
+                    </div>
+
+                    <div class="element-box">
+                        <h4>風險管理條款</h4>
+                        <ul class="element-list">
+                            <li>保證和聲明</li>
+                            <li>保險要求</li>
+                            <li>不可抗力條款</li>
+                            <li>損害賠償上限</li>
+                            <li>責任保險條款</li>
+                            <li>風險轉移安排</li>
+                        </ul>
+                    </div>
+
+                    <div class="element-box">
+                        <h4>合規條款</h4>
+                        <ul class="element-list">
+                            <li>合規性聲明</li>
+                            <li>政府批准要求</li>
+                            <li>環保和安全要求</li>
+                            <li>反洗錢和反恐融資</li>
+                            <li>出口管制合規</li>
+                            <li>定期審計權</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 5: Risk Assessment -->
+            <div id="risk-assessment" class="tab-content">
+                <h2 style="margin-bottom: 24px; color: #6366f1;">合規風險評估矩陣</h2>
+                <div class="risk-matrix">
+                    <div class="risk-grid">
+                        <div class="risk-cell header">領域</div>
+                        <div class="risk-cell header">高風險</div>
+                        <div class="risk-cell header">中風險</div>
+                        <div class="risk-cell header">低風險</div>
+                    </div>
+
+                    <div class="risk-grid">
+                        <div class="risk-cell" style="font-weight: 600; color: #1f2937;">資料隱私</div>
+                        <div class="risk-cell high">跨境傳輸<br>生物識別</div>
+                        <div class="risk-cell medium">同意管理<br>第三方分享</div>
+                        <div class="risk-cell low">內部流程<br>記錄保留</div>
+                    </div>
+
+                    <div class="risk-grid">
+                        <div class="risk-cell" style="font-weight: 600; color: #1f2937;">智慧財產</div>
+                        <div class="risk-cell high">專利申請<br>侵權訴訟</div>
+                        <div class="risk-cell medium">商標衝突<br>授權協議</div>
+                        <div class="risk-cell low">著作權<br>署名權</div>
+                    </div>
+
+                    <div class="risk-grid">
+                        <div class="risk-cell" style="font-weight: 600; color: #1f2937;">國際交易</div>
+                        <div class="risk-cell high">出口管制<br>製裁國家</div>
+                        <div class="risk-cell medium">匯兌風險<br>關稅分類</div>
+                        <div class="risk-cell low">支付條款<br>交割方式</div>
+                    </div>
+
+                    <div class="risk-grid">
+                        <div class="risk-cell" style="font-weight: 600; color: #1f2937;">員工合規</div>
+                        <div class="risk-cell high">群體裁員<br>歧視訴訟</div>
+                        <div class="risk-cell medium">工資計算<br>福利管理</div>
+                        <div class="risk-cell low">假期申請<br>文件存檔</div>
+                    </div>
+
+                    <div class="risk-grid">
+                        <div class="risk-cell" style="font-weight: 600; color: #1f2937;">反壟斷</div>
+                        <div class="risk-cell high">價格固定<br>市場分割</div>
+                        <div class="risk-cell medium">排他性協議<br>大型併購</div>
+                        <div class="risk-cell low">定價自由<br>促銷活動</div>
+                    </div>
+                </div>
+
+                <div class="risk-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fee2e2;"></div>
+                        <span>高風險 — 需要立即關注和專家諮詢</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fef3c7;"></div>
+                        <span>中風險 — 需要監控和定期審查</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #dcfce7;"></div>
+                        <span>低風險 — 建立基本流程即可</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>本互動圖表為教育目的。法律與合規事項應諮詢專業律師。</p>
+            <p>最後更新：2026年4月5日</p>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => {
+                button.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function toggleCheck(element) {
+            element.classList.toggle('checked');
+            if (element.classList.contains('checked')) {
+                element.innerHTML = '✓';
+            } else {
+                element.innerHTML = '';
+            }
+        }
+    </script>
+</body>
+</html>
