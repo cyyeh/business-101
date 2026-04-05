@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>市場研究方法論 互動圖表工具</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 12px 25px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            font-family: 'Noto Sans TC', sans-serif;
+            transition: all 0.3s ease;
+            color: #333;
+        }
+
+        .tab-button:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-content h2 {
+            margin-bottom: 30px;
+            font-size: 1.8em;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: 'Noto Sans TC', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button.calc-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        button.calc-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .result-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            margin: 12px 0;
+            font-size: 1.1em;
+        }
+
+        .result-item strong {
+            color: #333;
+        }
+
+        .result-value {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .explanation {
+            background: #fafbff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            border-left: 4px solid #764ba2;
+            font-size: 0.95em;
+            color: #555;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .info-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 5px;
+            cursor: help;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>市場研究方法論 互動圖表工具</h1>
+        <p>市場規模估算器｜樣本量計算器｜研究方法選擇器</p>
+    </header>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab(0)">TAM/SAM/SOM 估算器</button>
+            <button class="tab-button" onclick="switchTab(1)">樣本量計算器</button>
+            <button class="tab-button" onclick="switchTab(2)">研究方法選擇器</button>
+        </div>
+
+        <!-- 標籤1：TAM/SAM/SOM 估算器 -->
+        <div id="tab0" class="tab-content active">
+            <h2>TAM/SAM/SOM 市場規模估算器</h2>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="globalMarket">全球/國家市場規模（TAM，美元）<span class="info-icon">?</span></label>
+                    <input type="number" id="globalMarket" placeholder="例如：1000000000" value="1000000000">
+                </div>
+                <div class="form-group">
+                    <label for="targetSegment">目標市場細分佔比（%）<span class="info-icon">?</span></label>
+                    <input type="number" id="targetSegment" placeholder="例如：10" value="10" min="0" max="100">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="geographicReach">企業地理範圍佔比（%）<span class="info-icon">?</span></label>
+                    <input type="number" id="geographicReach" placeholder="例如：5" value="5" min="0" max="100">
+                </div>
+                <div class="form-group">
+                    <label for="marketShare">企業市場佔有率目標（%）<span class="info-icon">?</span></label>
+                    <input type="number" id="marketShare" placeholder="例如：3" value="3" min="0" max="100">
+                </div>
+            </div>
+
+            <button class="calc-button" onclick="calculateTAMSAMSOM()">計算市場規模</button>
+
+            <div id="tamResult" class="result-box" style="display:none;">
+                <h3 style="margin-bottom: 15px; color: #333;">計算結果</h3>
+                <div class="result-item">
+                    <strong>TAM（全部可達市場）：</strong>
+                    <span class="result-value" id="tamValue">$0</span>
+                </div>
+                <div class="result-item">
+                    <strong>SAM（可服務市場）：</strong>
+                    <span class="result-value" id="samValue">$0</span>
+                </div>
+                <div class="result-item">
+                    <strong>SOM（可獲得市場）：</strong>
+                    <span class="result-value" id="somValue">$0</span>
+                </div>
+
+                <div class="explanation">
+                    <strong>什麼是TAM/SAM/SOM?</strong><br>
+                    TAM（全部可達市場）是假設產品被所有潛在消費者採用時的市場規模。<br>
+                    SAM（可服務市場）是企業基於地理位置、產品線等限制能實際達到的市場。<br>
+                    SOM（可獲得市場）是考慮競爭因素後，企業實際能獲得的市場份額。
+                </div>
+            </div>
+        </div>
+
+        <!-- 標籤2：樣本量計算器 -->
+        <div id="tab1" class="tab-content">
+            <h2>樣本量計算器</h2>
+
+            <p style="margin-bottom: 20px; color: #666;">用於估算進行問卷調查或實驗所需的最小樣本量。</p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="population">總體規模（人數）<span class="info-icon">?</span></label>
+                    <input type="number" id="population" placeholder="例如：1000000" value="1000000">
+                </div>
+                <div class="form-group">
+                    <label for="confidence">信心水準（%）<span class="info-icon">?</span></label>
+                    <select id="confidence">
+                        <option value="90">90%（Z=1.645）</option>
+                        <option value="95" selected>95%（Z=1.96）</option>
+                        <option value="99">99%（Z=2.576）</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="marginOfError">容許誤差（%）<span class="info-icon">?</span></label>
+                    <input type="number" id="marginOfError" placeholder="例如：5" value="5" min="1" max="20">
+                </div>
+                <div class="form-group">
+                    <label for="expectedProportion">預期比例（%）<span class="info-icon">?</span></label>
+                    <input type="number" id="expectedProportion" placeholder="例如：50" value="50" min="1" max="99">
+                </div>
+            </div>
+
+            <button class="calc-button" onclick="calculateSampleSize()">計算樣本量</button>
+
+            <div id="sampleResult" class="result-box" style="display:none;">
+                <h3 style="margin-bottom: 15px; color: #333;">計算結果</h3>
+                <div class="result-item">
+                    <strong>所需最小樣本量：</strong>
+                    <span class="result-value" id="sampleValue">0</span> 人
+                </div>
+                <div class="result-item">
+                    <strong>建議樣本量（含15%緩衝）：</strong>
+                    <span class="result-value" id="bufferSampleValue">0</span> 人
+                </div>
+
+                <div class="explanation">
+                    <strong>如何理解結果?</strong><br>
+                    最小樣本量是統計學上所需的最低數量。實務上，建議加15-20%緩衝以應對回應率不足等情況。<br>
+                    信心水準越高、容許誤差越小，所需樣本量越大。
+                </div>
+            </div>
+        </div>
+
+        <!-- 標籤3：研究方法選擇器 -->
+        <div id="tab2" class="tab-content">
+            <h2>研究方法選擇器</h2>
+
+            <p style="margin-bottom: 20px; color: #666;">根據你的研究目標、預算和時間限制，獲得推薦的研究方法組合。</p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="researchGoal">研究目標<span class="info-icon">?</span></label>
+                    <select id="researchGoal">
+                        <option value="">--請選擇--</option>
+                        <option value="explore">探索性（發現需求、理解為什麼）</option>
+                        <option value="describe">描述性（了解市場現狀、規模）</option>
+                        <option value="causal">因果性（驗證假設、測試因果）</option>
+                        <option value="optimize">優化性（改進產品、優化體驗）</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="budget">預算<span class="info-icon">?</span></label>
+                    <select id="budget">
+                        <option value="">--請選擇--</option>
+                        <option value="low">低預算（&lt;$5,000）</option>
+                        <option value="medium">中預算（$5,000-$25,000）</option>
+                        <option value="high">高預算（$25,000+）</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="timeline">時間限制<span class="info-icon">?</span></label>
+                    <select id="timeline">
+                        <option value="">--請選擇--</option>
+                        <option value="urgent">急迫（1-2周）</option>
+                        <option value="medium">適中（1-2個月）</option>
+                        <option value="flexible">充裕（3個月+）</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="sampleSize">預期樣本規模<span class="info-icon">?</span></label>
+                    <select id="sampleSize">
+                        <option value="">--請選擇--</option>
+                        <option value="small">小規模（&lt;50人）</option>
+                        <option value="medium">中規模（50-500人）</option>
+                        <option value="large">大規模（500人+）</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="calc-button" onclick="recommendResearchMethod()">獲取推薦</button>
+
+            <div id="methodResult" class="result-box" style="display:none;">
+                <h3 style="margin-bottom: 15px; color: #333;">推薦的研究方法組合</h3>
+                <div id="methodRecommendation" style="line-height: 1.8;">
+                    <!-- 動態填充 -->
+                </div>
+
+                <div class="explanation" style="margin-top: 20px;">
+                    <strong>為什麼推薦這個組合?</strong><br>
+                    <span id="methodExplanation"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        市場研究方法論 © 2026
+    </footer>
+
+    <script>
+        // 標籤切換
+        function switchTab(index) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+
+            tabs.forEach((tab, i) => {
+                tab.classList.remove('active');
+                buttons[i].classList.remove('active');
+            });
+
+            tabs[index].classList.add('active');
+            buttons[index].classList.add('active');
+        }
+
+        // TAM/SAM/SOM 計算
+        function calculateTAMSAMSOM() {
+            const globalMarket = parseFloat(document.getElementById('globalMarket').value) || 0;
+            const targetSegment = parseFloat(document.getElementById('targetSegment').value) || 0;
+            const geographicReach = parseFloat(document.getElementById('geographicReach').value) || 0;
+            const marketShare = parseFloat(document.getElementById('marketShare').value) || 0;
+
+            const TAM = globalMarket;
+            const SAM = TAM * (targetSegment / 100) * (geographicReach / 100);
+            const SOM = SAM * (marketShare / 100);
+
+            document.getElementById('tamValue').textContent = '$' + formatNumber(TAM);
+            document.getElementById('samValue').textContent = '$' + formatNumber(SAM);
+            document.getElementById('somValue').textContent = '$' + formatNumber(SOM);
+
+            document.getElementById('tamResult').style.display = 'block';
+        }
+
+        // 樣本量計算
+        function calculateSampleSize() {
+            const population = parseInt(document.getElementById('population').value) || 0;
+            const confidence = parseFloat(document.getElementById('confidence').value);
+            const marginOfError = parseFloat(document.getElementById('marginOfError').value) / 100;
+            const expectedProportion = parseFloat(document.getElementById('expectedProportion').value) / 100;
+
+            let zScore;
+            if (confidence === 90) zScore = 1.645;
+            else if (confidence === 95) zScore = 1.96;
+            else zScore = 2.576; // 99%
+
+            // 樣本量公式：n = (Z² × p × (1-p)) / E²
+            const sampleSize = Math.ceil((zScore * zScore * expectedProportion * (1 - expectedProportion)) / (marginOfError * marginOfError));
+
+            // 有限總體修正
+            const adjustedSampleSize = Math.ceil((sampleSize * population) / (sampleSize + population - 1));
+
+            const bufferSampleSize = Math.ceil(adjustedSampleSize * 1.15);
+
+            document.getElementById('sampleValue').textContent = adjustedSampleSize;
+            document.getElementById('bufferSampleValue').textContent = bufferSampleSize;
+
+            document.getElementById('sampleResult').style.display = 'block';
+        }
+
+        // 研究方法推薦
+        function recommendResearchMethod() {
+            const goal = document.getElementById('researchGoal').value;
+            const budget = document.getElementById('budget').value;
+            const timeline = document.getElementById('timeline').value;
+            const sampleSize = document.getElementById('sampleSize').value;
+
+            if (!goal || !budget || !timeline || !sampleSize) {
+                alert('請完整填寫所有欄位');
+                return;
+            }
+
+            let recommendation = '';
+            let explanation = '';
+
+            // 基於目標推薦
+            if (goal === 'explore') {
+                if (budget === 'low') {
+                    recommendation = '<strong>推薦方法：</strong><br>• 深度訪談（5-10人）<br>• 焦點團體（1-2組）<br><br><strong>特點：</strong> 成本低、執行快，適合早期探索。<br><strong>缺點：</strong> 樣本小，結果難以推廣。';
+                    explanation = '探索性研究重在深度理解，而非統計推論。低預算應優先進行定性研究發現洞察，後續再驗證。';
+                } else if (budget === 'medium') {
+                    recommendation = '<strong>推薦方法：</strong><br>• 焦點團體（2-3組）<br>• 深度訪談（8-15人）<br>• 使用者觀察（2周）<br><br><strong>特點：</strong> 綜合質化研究，深入理解。<br><strong>缺點：</strong> 耗時較長。';
+                    explanation = '中等預算可進行多種定性方法組合，確保全面理解消費者需求、行為與動機。';
+                } else {
+                    recommendation = '<strong>推薦方法：</strong><br>• 民族誌研究（長期觀察）<br>• 深度訪談（15-20人）<br>• 焦點團體（3-4組）<br><br><strong>特點：</strong> 最深入的理解，發現隱性需求。<br><strong>缺點：</strong> 投資大、耗時長。';
+                    explanation = '高預算支持沉浸式研究，能發現消費者難以表達的深層需求與動機。';
+                }
+            } else if (goal === 'describe') {
+                if (budget === 'low') {
+                    recommendation = '<strong>推薦方法：</strong><br>• 次級數據分析（政府統計、報告）<br>• 小規模問卷調查（100-200人）<br><br><strong>特點：</strong> 成本最低，快速了解現狀。<br><strong>缺點：</strong> 次級數據可能過時或不完全符合需求。';
+                    explanation = '描述性研究需要量化數據。低預算應優先利用現有的次級數據，再補充小規模調查。';
+                } else if (budget === 'medium') {
+                    recommendation = '<strong>推薦方法：</strong><br>• 問卷調查（300-800人）<br>• 市場統計分析<br><br><strong>特點：</strong> 合理成本內獲得市場全貌。<br><strong>缺點：</strong> 深度有限。';
+                    explanation = '中等預算可進行大規模問卷，結合統計分析描繪市場現狀、消費者特徵與趨勢。';
+                } else {
+                    recommendation = '<strong>推薦方法：</strong><br>• 大規模問卷調查（1000-3000人）<br>• 多渠道數據整合<br>• 高級統計分析<br><br><strong>特點：</strong> 全面、準確、可推廣。<br><strong>缺點：</strong> 無法理解深層原因。';
+                    explanation = '高預算支持大規模調查，確保市場現狀描述的準確性與代表性。可進一步細分市場。';
+                }
+            } else if (goal === 'causal') {
+                if (budget === 'low') {
+                    recommendation = '<strong>推薦方法：</strong><br>• 準實驗（觀察法）<br>• 小規模A/B測試（100-300人）<br><br><strong>特點：</strong> 成本可控，初步驗證。<br><strong>缺點：</strong> 控制不夠嚴格，難以排除混淆變數。';
+                    explanation = '驗證因果關係需要實驗。低預算可進行小規模初步測試，若結果有希望再擴大投資。';
+                } else if (budget === 'medium') {
+                    recommendation = '<strong>推薦方法：</strong><br>• 受控實驗<br>• A/B測試（300-1000人）<br>• 隨機對照試驗<br><br><strong>特點：</strong> 科學嚴格，結果可信。<br><strong>缺點：</strong> 需要技術支持。';
+                    explanation = '中等預算可進行規範的A/B測試與實驗，通過隨機分組與控制變數驗證因果關係。';
+                } else {
+                    recommendation = '<strong>推薦方法：</strong><br>• 多組隨機對照實驗<br>• 長期追蹤實驗<br>• 複雜多變數測試<br><br><strong>特點：</strong> 最科學、最可信。<br><strong>缺點：</strong> 投資最大。';
+                    explanation = '高預算支持複雜的多變數實驗與長期追蹤，驗證因果機制與持久效應。';
+                }
+            } else if (goal === 'optimize') {
+                if (budget === 'low') {
+                    recommendation = '<strong>推薦方法：</strong><br>• 用戶反饋收集<br>• 小規模A/B測試<br>• 行為數據分析<br><br><strong>特點：</strong> 快速迭代，持續改進。<br><strong>缺點：</strong> 改進幅度有限。';
+                    explanation = '優化需要快速反饋迴圈。低預算應依賴現有用戶反饋與小規模測試驅動漸進改善。';
+                } else if (budget === 'medium') {
+                    recommendation = '<strong>推薦方法：</strong><br>• 定期A/B測試（500-1000人）<br>• 用戶訪談與反饋<br>• 分析工具（Google Analytics等）<br><br><strong>特點：</strong> 持續改進，成果明顯。<br><strong>缺點：</strong> 需要組織支持。';
+                    explanation = '中等預算支持常規A/B測試與用戶研究迴圈，驅動產品與體驗的持續優化。';
+                } else {
+                    recommendation = '<strong>推薦方法：</strong><br>• 大規模多變數測試<br>• 實時個性化優化<br>• 機器學習模型<br>• 綜合分析平台<br><br><strong>特點：</strong> 深度、即時、自動化。<br><strong>缺點：</strong> 技術複雜。';
+                    explanation = '高預算可建立持續優化系統，運用ML驅動個性化與自動化優化。';
+                }
+            }
+
+            document.getElementById('methodRecommendation').innerHTML = recommendation;
+            document.getElementById('methodExplanation').textContent = explanation;
+            document.getElementById('methodResult').style.display = 'block';
+        }
+
+        // 格式化數字
+        function formatNumber(num) {
+            return num.toLocaleString('zh-TW', { maximumFractionDigits: 0 });
+        }
+    </script>
+
+</body>
+</html>

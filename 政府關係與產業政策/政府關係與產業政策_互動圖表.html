@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>政府關係與產業政策 - 互動圖表</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            border: none;
+            background-color: #e0e0e0;
+            color: #333;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+            font-family: 'Noto Sans TC', sans-serif;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .tab-button:hover {
+            background-color: #bdbdbd;
+        }
+
+        .tab-button.active {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Tab 1: 產業政策工具比較器 */
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tool-card {
+            background-color: #f9f9f9;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover {
+            border-color: #3498db;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tool-card.selected {
+            background-color: #e3f2fd;
+            border-color: #3498db;
+        }
+
+        .tool-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .tool-card p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .tool-details {
+            display: none;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .tool-details.active {
+            display: block;
+        }
+
+        .detail-section {
+            margin-bottom: 20px;
+        }
+
+        .detail-section h4 {
+            color: #3498db;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+
+        .detail-section p, .detail-section ul {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .detail-section ul {
+            margin-left: 20px;
+        }
+
+        .detail-section li {
+            margin-bottom: 8px;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .rating-label {
+            color: #666;
+            font-weight: 500;
+            min-width: 80px;
+        }
+
+        .rating-bar {
+            flex-grow: 1;
+            background-color: #e0e0e0;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .rating-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            color: white;
+            font-size: 12px;
+            padding-right: 5px;
+            font-weight: 500;
+        }
+
+        /* Tab 2: 地緣政治風險評估矩陣 */
+        .risk-matrix {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .matrix-table th, .matrix-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .matrix-table th {
+            background-color: #3498db;
+            color: white;
+            font-weight: 600;
+        }
+
+        .matrix-table td {
+            background-color: white;
+        }
+
+        .matrix-table tr:nth-child(even) td {
+            background-color: #f5f5f5;
+        }
+
+        .risk-low {
+            background-color: #d4edda !important;
+            color: #155724;
+            font-weight: 500;
+        }
+
+        .risk-medium {
+            background-color: #fff3cd !important;
+            color: #856404;
+            font-weight: 500;
+        }
+
+        .risk-high {
+            background-color: #f8d7da !important;
+            color: #721c24;
+            font-weight: 500;
+        }
+
+        .matrix-legend {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .legend-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Tab 3: 台灣產業政策時間軸 */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background-color: #3498db;
+            top: 0;
+        }
+
+        .timeline-item {
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) {
+            padding-right: 50%;
+            text-align: right;
+        }
+
+        .timeline-item:nth-child(even) {
+            padding-left: 50%;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border: 4px solid #3498db;
+            border-radius: 50%;
+            top: 0;
+            z-index: 1;
+        }
+
+        .timeline-content {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            border-left: none;
+            border-right: 4px solid #3498db;
+        }
+
+        .timeline-year {
+            font-size: 18px;
+            font-weight: 700;
+            color: #3498db;
+            margin-bottom: 8px;
+        }
+
+        .timeline-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .timeline-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-button {
+                width: 100%;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                margin-left: 60px;
+            }
+
+            .timeline-marker {
+                left: 20px;
+            }
+
+            .timeline-content {
+                border-left: 4px solid #3498db !important;
+                border-right: none !important;
+            }
+
+            .tool-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+        }
+
+        .info-box {
+            background-color: #e3f2fd;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #1565c0;
+        }
+
+        button {
+            font-weight: 500;
+        }
+
+        .comparison-note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>政府關係與產業政策 - 互動圖表</h1>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('tab1')">產業政策工具比較器</button>
+            <button class="tab-button" onclick="showTab('tab2')">地緣政治風險評估矩陣</button>
+            <button class="tab-button" onclick="showTab('tab3')">台灣產業政策時間軸</button>
+        </div>
+
+        <!-- Tab 1: 產業政策工具比較器 -->
+        <div id="tab1" class="tab-content active">
+            <div class="info-box">
+                選擇下方的產業政策工具，查看其優缺點、實施案例與效果評估。
+            </div>
+
+            <div class="tool-grid">
+                <div class="tool-card" onclick="selectTool('补贴')">
+                    <h3>補貼</h3>
+                    <p>政府直接向企業或產業提供財政資助</p>
+                </div>
+                <div class="tool-card" onclick="selectTool('税收')">
+                    <h3>稅收優惠</h3>
+                    <p>企業所得稅減免、研發稅收抵免等</p>
+                </div>
+                <div class="tool-card" onclick="selectTool('关税')">
+                    <h3>關稅與貿易政策</h3>
+                    <p>進口關稅、出口優惠、保護措施</p>
+                </div>
+                <div class="tool-card" onclick="selectTool('法规')">
+                    <h3>法規標準</h3>
+                    <p>技術標準、環保規範、安全要求</p>
+                </div>
+                <div class="tool-card" onclick="selectTool('采购')">
+                    <h3>政府採購</h3>
+                    <p>優先採購本地企業產品與服務</p>
+                </div>
+                <div class="tool-card" onclick="selectTool('研发')">
+                    <h3>研發投資</h3>
+                    <p>政府直接資助企業或機構研發</p>
+                </div>
+            </div>
+
+            <!-- 詳細信息 -->
+            <div id="toolDetails" class="tool-details"></div>
+        </div>
+
+        <!-- Tab 2: 地緣政治風險評估矩陣 -->
+        <div id="tab2" class="tab-content">
+            <div class="info-box">
+                此矩陣評估不同供應源的地緣政治風險與經濟效益。行表示供應源，列表示風險維度。
+            </div>
+
+            <div class="risk-matrix">
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th>供應源</th>
+                            <th>地緣政治風險</th>
+                            <th>供應穩定性</th>
+                            <th>成本優勢</th>
+                            <th>技術水準</th>
+                            <th>綜合評分</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: left; font-weight: 600;">台灣</td>
+                            <td class="risk-high">高風險</td>
+                            <td class="risk-medium">中等</td>
+                            <td class="risk-medium">中等成本</td>
+                            <td class="risk-low">先進</td>
+                            <td class="risk-medium">8/10</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; font-weight: 600;">中國</td>
+                            <td class="risk-high">極高風險</td>
+                            <td class="risk-low">高</td>
+                            <td class="risk-low">極低成本</td>
+                            <td class="risk-medium">中等</td>
+                            <td class="risk-high">4/10</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; font-weight: 600;">日本</td>
+                            <td class="risk-low">低風險</td>
+                            <td class="risk-low">高</td>
+                            <td class="risk-medium">高成本</td>
+                            <td class="risk-low">先進</td>
+                            <td class="risk-low">8.5/10</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; font-weight: 600;">南韓</td>
+                            <td class="risk-low">低風險</td>
+                            <td class="risk-low">高</td>
+                            <td class="risk-medium">中高成本</td>
+                            <td class="risk-low">先進</td>
+                            <td class="risk-low">8/10</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; font-weight: 600;">越南</td>
+                            <td class="risk-low">低風險</td>
+                            <td class="risk-medium">中等</td>
+                            <td class="risk-low">低成本</td>
+                            <td class="risk-medium">發展中</td>
+                            <td class="risk-medium">7/10</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; font-weight: 600;">印度</td>
+                            <td class="risk-low">低風險</td>
+                            <td class="risk-medium">中等</td>
+                            <td class="risk-low">低成本</td>
+                            <td class="risk-medium">發展中</td>
+                            <td class="risk-medium">7/10</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; font-weight: 600;">美國</td>
+                            <td class="risk-low">低風險</td>
+                            <td class="risk-low">高</td>
+                            <td class="risk-high">高成本</td>
+                            <td class="risk-low">先進</td>
+                            <td class="risk-medium">7.5/10</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="matrix-legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #d4edda;"></div>
+                    <div class="legend-text">低風險/優勢明顯</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #fff3cd;"></div>
+                    <div class="legend-text">中等風險/平衡</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #f8d7da;"></div>
+                    <div class="legend-text">高風險/劣勢明顯</div>
+                </div>
+            </div>
+
+            <div class="comparison-note">
+                注：此評估基於2026年資料，考慮了地緣政治環境、美中關係、疫情後供應鏈重組等因素。企業應根據自身產業特點調整權重。
+            </div>
+        </div>
+
+        <!-- Tab 3: 台灣產業政策時間軸 -->
+        <div id="tab3" class="tab-content">
+            <div class="info-box">
+                台灣產業政策演進的主要里程碑，體現了從代工到設計、從出口導向到創新驅動的轉變。
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">1965-1975</div>
+                        <div class="timeline-title">加工出口區時代</div>
+                        <div class="timeline-description">
+                            政府建立加工出口區，提供稅收優惠與基礎設施。吸引外資進行勞密集製造，包括紡織、電子組裝。此階段奠定了台灣「世界工廠」的基礎。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">1980-1990</div>
+                        <div class="timeline-title">科學園區與高科技產業化</div>
+                        <div class="timeline-description">
+                            竹科成立（1980年）。政府投資建設園區，提供企業所得稅免稅5-7年、研發補貼、人力培訓。重點扶持半導體、電腦、軟體產業。台積電、聯電等企業在此時期成長。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">1995-2005</div>
+                        <div class="timeline-title">中科、南科擴展 與產業升級</div>
+                        <div class="timeline-description">
+                            中部科學園區（1995）、南部科學園區（2002）相繼成立。台灣產業從組裝向設計升級，液晶顯示、微機電等產業發展。此時期台灣IC設計業務興起。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">2008-2015</div>
+                        <div class="timeline-title">綠能與文創產業拓展</div>
+                        <div class="timeline-description">
+                            政府推動「六大新興產業」計畫，包括綠能、醫療器材、文創等。LED照明、太陽能等產業獲得補貼與政策支持。此時期受全球金融危機衝擊，政府加強產業救濟政策。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">2016-2020</div>
+                        <div class="timeline-title">「5+2產業創新計畫」與AI時代</div>
+                        <div class="timeline-description">
+                            政府推出「亞洲矽谷」、「智慧機械」、「綠色能源」等重點計畫。人工智能、IC設計、晶片製造成為新焦點。英特爾、微軟等國際企業在台灣設置研發中心。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">2021-2026</div>
+                        <div class="timeline-title">台灣矽盾 與地緣政治時代</div>
+                        <div class="timeline-description">
+                            美中科技戰升溫，TSMC成為地緣政治焦點。台灣政府支持TSMC赴美設廠，同時推動國內半導體自主。「南向政策」升級至「新南向政策」，分散對中國依賴。政府推動淨零排放與綠能轉型目標。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab 切換功能
+        function showTab(tabName) {
+            // 隱藏所有內容
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // 移除所有按鈕的active class
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => button.classList.remove('active'));
+
+            // 顯示選定的標籤
+            document.getElementById(tabName).classList.add('active');
+
+            // 標記按鈕為active
+            event.target.classList.add('active');
+        }
+
+        // 產業政策工具詳細信息
+        const toolData = {
+            '补贴': {
+                description: '政府直接向企業或產業提供財政資助',
+                优势: [
+                    '政策效果直接且快速',
+                    '目標明確，易於調整',
+                    '適合新興產業起步階段'
+                ],
+                缺点: [
+                    '長期成本高，財政負擔重',
+                    '易引發尋租行為與腐敗',
+                    '容易導致市場扭曲'
+                ],
+                案例: [
+                    '台灣: 口罩產業補貼（COVID-19疫情）',
+                    '美國: CHIPS法案補貼（520億美元）',
+                    '歐盟: 綠能產業補貼'
+                ],
+                效率: 75,
+                公平性: 50,
+                可持续性: 55
+            },
+            '税收': {
+                description: '企業所得稅減免、研發稅收抵免、出口退稅等',
+                优势: [
+                    '行政成本低',
+                    '相對隱蔽，易獲得企業支持',
+                    '鼓勵投資與創新'
+                ],
+                缺点: [
+                    '長期財政影響難以評估',
+                    '可能被大企業濫用',
+                    '易引發稅收競爭'
+                ],
+                案例: [
+                    '台灣: 科技園區免稅優惠（5-7年)',
+                    '美國: 研發稅收抵免（25%)',
+                    '中國: 西部地區減稅優惠'
+                ],
+                效率: 70,
+                公平性: 55,
+                可持续性: 65
+            },
+            '关税': {
+                description: '進口關稅、反傾銷稅、出口優惠等貿易工具',
+                优势: [
+                    '保護本地產業與就業',
+                    '政府收入增加',
+                    '易於實施與監控'
+                ],
+                缺点: [
+                    '易引發國際貿易爭端',
+                    '提高消費品價格',
+                    '損害下游產業競爭力'
+                ],
+                案例: [
+                    '美國: 對華加徵關稅（2018-)',
+                    '歐盟: CBAM碳邊境稅',
+                    '台灣: 農產品進口保護'
+                ],
+                效率: 60,
+                公平性: 45,
+                可持续性: 40
+            },
+            '法规': {
+                description: '技術標準、環保規範、安全要求等監管工具',
+                优势: [
+                    '正當化（保護公眾利益名義）',
+                    '可同時實現多個政策目標',
+                    '相對隱蔽的保護措施'
+                ],
+                缺点: [
+                    '易被濫用為貿易保護主義',
+                    '合規成本可能很高',
+                    '國際爭議風險'
+                ],
+                案例: [
+                    '歐盟: GDPR數據保護規範',
+                    '歐盟: AI法案監管',
+                    '歐盟: 碳排放標準'
+                ],
+                效率: 65,
+                公平性: 70,
+                可持续性: 75
+            },
+            '采购': {
+                description: '優先採購本地企業產品，設置本地內容要求',
+                优势: [
+                    '直接刺激本地產業需求',
+                    '有助於建立供應鏈',
+                    '易於測量與評估'
+                ],
+                缺点: [
+                    '易提高政府成本',
+                    '可能降低採購效率',
+                    '有違反自由貿易協議的風險'
+                ],
+                案例: [
+                    '台灣: 高鐵採購優先本地廠商',
+                    '美國: 國防採購本地優先',
+                    '印度: 電子製造本地化政策'
+                ],
+                效率: 72,
+                公平性: 60,
+                可持续性: 70
+            },
+            '研发': {
+                description: '政府直接投資企業或機構研發項目',
+                优势: [
+                    '降低企業研發風險',
+                    '補充市場資金不足',
+                    '適合高風險產業（航太、生科）'
+                ],
+                缺点: [
+                    '易引發道德風險（過度依賴政府)',
+                    '成果商業化困難',
+                    '長期回報不確定'
+                ],
+                案例: [
+                    '台灣: 台積電早期研發補貼',
+                    '美國: SBIR小企業研發計畫',
+                    '以色列: 高科技研發基金'
+                ],
+                效率: 68,
+                公平性: 65,
+                可持续性: 68
+            }
+        };
+
+        function selectTool(toolName) {
+            // 更新選中狀態
+            const cards = document.querySelectorAll('.tool-card');
+            cards.forEach(card => card.classList.remove('selected'));
+            event.target.closest('.tool-card').classList.add('selected');
+
+            // 更新詳細信息
+            const data = toolData[toolName];
+            const detailsDiv = document.getElementById('toolDetails');
+
+            let html = `
+                <div class="detail-section">
+                    <h4>定義</h4>
+                    <p>${data.description}</p>
+                </div>
+
+                <div class="detail-section">
+                    <h4>主要優勢</h4>
+                    <ul>
+                        ${data.优势.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="detail-section">
+                    <h4>主要缺點</h4>
+                    <ul>
+                        ${data.缺点.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="detail-section">
+                    <h4>實例應用</h4>
+                    <ul>
+                        ${data.案例.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="detail-section">
+                    <h4>效能評估</h4>
+                    <div class="rating">
+                        <span class="rating-label">政策效率</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" style="width: ${data.效率}%">${data.效率}%</div>
+                        </div>
+                    </div>
+                    <div class="rating">
+                        <span class="rating-label">公平性</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" style="width: ${data.公平性}%">${data.公平性}%</div>
+                        </div>
+                    </div>
+                    <div class="rating">
+                        <span class="rating-label">可持續性</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" style="width: ${data.可持续性}%">${data.可持续性}%</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            detailsDiv.innerHTML = html;
+            detailsDiv.classList.add('active');
+
+            // 捲動到詳細信息
+            setTimeout(() => {
+                detailsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 默認選擇第一個工具
+            selectTool('补贴');
+        });
+    </script>
+</body>
+</html>

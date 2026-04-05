@@ -250,6 +250,130 @@ Shein案例從多個角度展示了ESG與供應鏈倫理的反面：
 
 ---
 
-> **最後更新日期：** 2026年4月5日
+## Case 5：Interface地毯公司Mission Zero計畫 — 從污染者到循環經濟先鋒
+
+**背景**
+
+Interface是全球最大的商用地毯與模塊化地板製造商，年銷售額超過10億美元，為全球超過100個國家的企業與公共建築供應地毯。但在1990年代，Interface面臨一個深刻的倫理危機：作為製造業者，公司大量消耗原油（地毯纖維源於石油）、產生紡織廢棄物、製造污染。CEO Ray Anderson問了一個根本性問題：「我們對地球做了什麼？」
+
+**事件經過**
+
+**1994年：Mission Zero宣言**
+
+Ray Anderson發起「Mission Zero」計畫，目標在2020年前實現「零環境足跡」——不再傷害地球。這不是漸進式改善，而是徹底轉型。
+
+**轉型的四大支柱**
+
+**1. 材料革新與生物基地毯**
+- 開發來自再生農業與回收的纖維，取代石油基纖維
+- ReEntry計畫：回收舊地毯，拆散纖維與後墊，用於製造新地毯或其他產品
+- PQ (Perceived Quality) 指標：確保回收地毯品質與新品無異
+
+**2. 能源轉型**
+- 投資可再生能源（太陽能、風力）供應製造廠
+- 2020年前達成100%可再生能源目標（已在多個廠實現）
+- 減少單位產品的能源消耗60%
+
+**3. 循環商業模式革新**
+- 推出「服務租賃模式」：企業不買地毯，而是按年租。Interface保留地毯所有權，負責維護、清洗、維修。使用完後回收。
+- 激勵Interface設計耐用、易於維修與回收的產品
+- 消費者（建築業）成本可控，環保意識提升
+
+**4. 透明與第三方認證**
+- 年度「環境足跡報告」披露詳細的環境數據（碳排、水耗、廢棄物等）
+- Cradle to Cradle認證，證明地毯設計與製造的循環性
+- 邀請NGO監督與評論
+
+**成果（到2023年）**
+- 減少溫室氣體排放96%（相對於1996年基準）
+- 節約用水96%
+- 廢棄物從垃圾填埋場減少99.9%（幾乎零廢棄物）
+- ReEntry計畫回收超過1.5億磅舊地毯纖維
+- 銷售持續成長，利潤也成長，證明環保與商業成功並非矛盾
+
+**Ray Anderson的遺產與文化**
+Ray Anderson於2011年去世，但Mission Zero精神已融入企業DNA。他在2009年著有《Confessions of a Radical Industrialist》（《激進實業家的告白》），分享了從「污染者」到「環保領袖」的轉變故事。Interface員工與領導層對此使命有深刻承諾。
+
+**與主題的關聯性**
+
+Interface案例深刻展示了循環經濟與企業轉型：
+
+- **從線性到循環的徹底轉型**：Interface曾是典型的線性企業（採取→製造→丟棄），現在是循環經濟的模範，實現了Ellen MacArthur蝴蝶圖的願景
+- **新商業模式的創造**：租賃模式改變了企業與消費者的關係，激勵了長期價值創造而非短期銷售
+- **德行倫理的領導力**：Ray Anderson的個人信念與企業決策的一致性，展示了個人倫理如何轉化為組織變革
+- **環保 + 商業績效**：證明環保投資不是成本負擔，反而能帶來差異化競爭優勢、品牌價值與員工驕傲感
+- **科學基礎目標**：Mission Zero建立在對環保挑戰的深刻認識上，目標具體、可測量、透明
+- **循環經濟的商業機會**：回收業務、新材料研發、服務模式創新都創造了新收入與就業
+- **長期主義的勝利**：Interface堅持30年的環保承諾，最後成為行業領袖，吸引了最優秀的員工與客戶
+
+**參考資料**
+- [Interface Official Website](https://www.interface.com/en/en-US/about)
+- [Mission Zero: Our Environmental Commitment](https://www.interface.com/en/en-US/about/mission-zero)
+- [Ray Anderson: The Business Logic of Sustainability](https://www.ted.com/talks/ray_anderson_the_business_logic_of_sustainability)
+- [Harvard Business Review: Ray Anderson's Legacy](https://hbr.org/2011/09/ray-anderson-1934-2011)
+
+---
+
+## Case 6：Patagonia「Don't Buy This Jacket」活動 — 永續商業模式的品牌承諾
+
+**背景**
+
+除了供應鏈倫理的領導外，Patagonia在永續商業模式上也樹立了典範。2011年，Patagonia做了一個在商業上反直覺的決定：在美國主流報紙刊登全版廣告，標題是「Don't Buy This Jacket」（不要買這件夾克），配圖是該公司最受歡迎的「Common Sense Jacket」。
+
+**事件經過**
+
+**廣告內容**
+
+廣告坦誠披露製造該夾克的環境成本：
+- 生產耗水135加侖
+- 排放10.5磅碳
+- 產生0.4磅紡織廢棄物
+
+廣告接著說：「如果你現有夾克仍可穿著，不要買新的。如果必須買，考慮Worn Wear計畫：修補舊夾克。」
+
+**背後的理念**
+
+該活動體現了Patagonia的激進永續觀點：
+1. **消費最少化**：最環保的衣物就是不買新的，而是充分利用現有衣物
+2. **透明化教育**：消費者應知道購買的真實環境代價
+3. **修補勝過購買**：Patagonia提供終身維修服務，鼓勵消費者修補而非替換
+4. **與盈利衝突但道德優先**：廣告直接勸阻購買，損害短期銷售，但符合企業倫理承諾
+
+**成果與品牌影響**
+
+看似自殺性的行為實際上增強了Patagonia品牌：
+- 消費者深化了對品牌真誠性的認識
+- 願意為「負責任企業」支付溢價
+- 建立了超越產品的品牌忠誠（我支持你的價值觀，不只是購買你的產品）
+- 激勵行業變革：其他品牌開始考慮環保溝通的誠實性
+
+**Worn Wear計畫的循環經濟實踐**
+
+Patagonia建立了完整的逆物流系統：
+- 消費者可將舊衣物寄回
+- Patagonia修補或分類（可穿著的二手販售，不可穿著的纖維回收）
+- 數百萬件衣物通過此計畫延長壽命或回收利用
+- 創造了修補業務與回收產業
+
+**與主題的關聯性**
+
+Patagonia的「Don't Buy This Jacket」活動展示了：
+
+- **循環經濟的消費心理轉變**：從「買更多新東西」到「充分利用現有、需要時修補」
+- **透明與教育的力量**：坦誠環境成本激勵了更負責任的消費決策
+- **品牌真誠性與差異化**：在充斥虛偽環保承諾的市場中，Patagonia的激進誠實成為最強差異化
+- **永續商業模式的獲利**：修補服務、二手銷售、回收業務本身都是有利可圖的商業線
+- **利害關係人共識**：消費者、員工、環保NGO都支持Patagonia，形成強大的利益同盟
+- **德行倫理的體現**：企業的行動與言論完全一致，建立了可信賴的品牌人格
+
+**參考資料**
+- [Patagonia: Don't Buy This Jacket Campaign](https://www.patagonia.com/stories/)
+- [Patagonia Worn Wear Program](https://www.patagoniafootprint.com/worn-wear/)
+- [The New York Times: Patagonia's Sincere Environmental Commitment](https://www.nytimes.com/business/patagonia-ceo-interview.html)
+- [Fortune: Why Patagonia Tells Customers Not to Buy](https://fortune.com/2024/01/12/patagonia-environmental-activism/)
+
+---
+
+> **最後更新日期：** 2026年4月6日
 >
-> **說明：** 本文件中的案例均基於公開報導的真實事件。案例分析為教育目的，不構成任何投資或商業建議。案例旨在說明商業倫理與ESG實踐的多樣性與複雜性。
+> **說明：** 本文件中的案例均基於公開報導的真實事件。案例分析為教育目的，不構成任何投資或商業建議。案例旨在說明商業倫理與ESG實踐，以及循環經濟商業模式的多樣性與複雜性。

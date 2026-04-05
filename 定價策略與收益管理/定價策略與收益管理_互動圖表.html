@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>定價策略與收益管理 - 互動工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .tabs-wrapper {
+            display: flex;
+            border-bottom: 2px solid #f0f0f0;
+            background: #f9f9f9;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 15px;
+            font-family: 'Noto Sans TC', sans-serif;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: white;
+        }
+
+        .tab-button:hover {
+            color: #667eea;
+            background: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Noto Sans TC', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #f0f4f8 100%);
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .result-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .chart-container {
+            margin: 30px 0;
+            background: white;
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .chart-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        .select-group {
+            margin-bottom: 25px;
+        }
+
+        .select-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .select-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Noto Sans TC', sans-serif;
+            cursor: pointer;
+            background-color: white;
+        }
+
+        .select-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .recommendation-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .recommendation-box h3 {
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .recommendation-box p {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .strategy-card {
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .strategy-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+        }
+
+        .strategy-card.selected {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-color: #667eea;
+        }
+
+        .strategy-card h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .strategy-card p {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .info-text {
+            font-size: 13px;
+            color: #666;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        @media (max-width: 768px) {
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .tab-content {
+                padding: 25px 15px;
+            }
+
+            .tabs-wrapper {
+                flex-wrap: wrap;
+            }
+
+            .tab-button {
+                flex: 0 1 50%;
+                padding: 12px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>定價策略與收益管理</h1>
+            <p>互動式計算與決策工具</p>
+        </div>
+
+        <div class="tabs-wrapper">
+            <button class="tab-button active" onclick="switchTab(0)">Tab 1：價格彈性計算器</button>
+            <button class="tab-button" onclick="switchTab(1)">Tab 2：定價策略選擇器</button>
+            <button class="tab-button" onclick="switchTab(2)">Tab 3：收益管理模擬器</button>
+        </div>
+
+        <!-- Tab 1: 價格彈性計算器 -->
+        <div class="tab-content active">
+            <h2 style="color: #667eea; margin-bottom: 20px;">Tab 1：價格彈性計算器</h2>
+
+            <p class="info-text">計算需求價格彈性（PED），幫助您判斷價格變化對銷量的影響。</p>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>原價格（元）</label>
+                    <input type="number" id="priceOriginal" value="100" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label>新價格（元）</label>
+                    <input type="number" id="priceNew" value="110" step="0.1">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>原銷量（單位）</label>
+                    <input type="number" id="quantityOriginal" value="1000" step="1">
+                </div>
+                <div class="input-group">
+                    <label>新銷量（單位）</label>
+                    <input type="number" id="quantityNew" value="950" step="1">
+                </div>
+            </div>
+
+            <button class="button" onclick="calculateElasticity()">計算彈性</button>
+
+            <div id="elasticityResult" class="result-box" style="display: none; margin-top: 30px;">
+                <div class="result-item">
+                    <div class="result-label">需求價格彈性（PED）</div>
+                    <div class="result-value" id="pedValue">--</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">彈性解釋</div>
+                    <div style="color: #666; font-size: 13px; margin-top: 8px;" id="pedExplain">--</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">原收益</div>
+                    <div style="color: #333; font-weight: 600;" id="revenueOriginal">--</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">新收益</div>
+                    <div style="color: #333; font-weight: 600;" id="revenueNew">--</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">收益變化</div>
+                    <div style="color: #333; font-weight: 600;" id="revenueChange">--</div>
+                </div>
+                <div class="recommendation-box">
+                    <h3>建議</h3>
+                    <p id="recommendation">--</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: 定價策略選擇器 -->
+        <div class="tab-content">
+            <h2 style="color: #667eea; margin-bottom: 20px;">Tab 2：定價策略選擇器</h2>
+
+            <p class="info-text">根據您的產品特性，我們推薦最適合的定價策略。</p>
+
+            <div class="select-group">
+                <label>產品類型</label>
+                <select id="productType" onchange="updateStrategyOptions()">
+                    <option value="">請選擇...</option>
+                    <option value="software">軟體/應用</option>
+                    <option value="luxury">奢侈品</option>
+                    <option value="commodity">日用商品</option>
+                    <option value="service">服務（航空/飯店）</option>
+                    <option value="subscription">訂閱制</option>
+                </select>
+            </div>
+
+            <div class="select-group">
+                <label>市場競爭程度</label>
+                <select id="competition">
+                    <option value="">請選擇...</option>
+                    <option value="high">非常激烈（多個競爭對手）</option>
+                    <option value="medium">中等（3-5個主要競爭對手）</option>
+                    <option value="low">有限（領先品牌少）</option>
+                </select>
+            </div>
+
+            <div class="select-group">
+                <label>目標客群對價格的敏感度</label>
+                <select id="priceSensitivity">
+                    <option value="">請選擇...</option>
+                    <option value="high">高度敏感（價格是主要購買因素）</option>
+                    <option value="medium">中等敏感（價格重要但非唯一因素）</option>
+                    <option value="low">低度敏感（品質/品牌更重要）</option>
+                </select>
+            </div>
+
+            <div class="select-group">
+                <label>產品/服務生命週期</label>
+                <select id="lifecycle">
+                    <option value="">請選擇...</option>
+                    <option value="launch">推出期（新產品）</option>
+                    <option value="growth">成長期</option>
+                    <option value="mature">成熟期</option>
+                    <option value="decline">衰退期</option>
+                </select>
+            </div>
+
+            <button class="button" onclick="recommendStrategy()">推薦策略</button>
+
+            <div id="strategyResult" style="margin-top: 30px; display: none;">
+                <div class="result-box">
+                    <div class="result-item" style="border: none; padding: 0;">
+                        <div class="result-label" style="margin-bottom: 15px;">推薦的定價策略</div>
+                        <div id="strategyCards"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: 收益管理模擬器 -->
+        <div class="tab-content">
+            <h2 style="color: #667eea; margin-bottom: 20px;">Tab 3：收益管理模擬器</h2>
+
+            <p class="info-text">模擬不同定價對航班/飯店總收入的影響（假設固定產能）。</p>
+
+            <div class="input-group">
+                <label>產能（座位/房間數）</label>
+                <input type="number" id="capacity" value="150" step="1">
+            </div>
+
+            <div class="input-group">
+                <label>商務客比例（%）</label>
+                <input type="number" id="businessPercentage" value="20" min="0" max="100" step="1">
+            </div>
+
+            <div class="input-group">
+                <label>商務客願付價（元）</label>
+                <input type="number" id="businessWTP" value="400" step="10">
+            </div>
+
+            <div class="input-group">
+                <label>休閒客願付價（元）</label>
+                <input type="number" id="leisureWTP" value="200" step="10">
+            </div>
+
+            <div class="input-group">
+                <label>定價策略</label>
+                <select id="pricingModel" onchange="updatePricingInputs()">
+                    <option value="uniform">統一定價</option>
+                    <option value="tiered">分級定價</option>
+                </select>
+            </div>
+
+            <div id="uniformPricingInputs" style="display: none;">
+                <div class="input-group">
+                    <label>統一價格（元）</label>
+                    <input type="number" id="uniformPrice" value="300" step="10">
+                </div>
+            </div>
+
+            <div id="tieredPricingInputs" style="display: none;">
+                <div class="input-group">
+                    <label>商務艙座位數</label>
+                    <input type="number" id="businessSeats" value="30" step="1">
+                </div>
+                <div class="input-group">
+                    <label>商務艙定價（元）</label>
+                    <input type="number" id="businessPrice" value="350" step="10">
+                </div>
+                <div class="input-group">
+                    <label>經濟艙定價（元）</label>
+                    <input type="number" id="economyPrice" value="180" step="10">
+                </div>
+            </div>
+
+            <button class="button" onclick="simulateRevenue()">運行模擬</button>
+
+            <div id="simulationResult" class="result-box" style="display: none; margin-top: 30px;">
+                <div class="result-item">
+                    <div class="result-label">每班次總收入</div>
+                    <div class="result-value" id="totalRevenue">--</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">月度總收入（30班）</div>
+                    <div class="result-value" id="monthlyRevenue">--</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">平均票價</div>
+                    <div style="color: #333; font-weight: 600;" id="avgPrice">--</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">座位利用率</div>
+                    <div style="color: #333; font-weight: 600;" id="occupancyRate">--</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">模擬詳情</div>
+                    <div style="color: #666; font-size: 13px; margin-top: 8px;" id="simulationDetails">--</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab 切換功能
+        function switchTab(index) {
+            const contents = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+
+            contents.forEach(content => content.classList.remove('active'));
+            buttons.forEach(button => button.classList.remove('active'));
+
+            contents[index].classList.add('active');
+            buttons[index].classList.add('active');
+        }
+
+        // Tab 1: 計算彈性
+        function calculateElasticity() {
+            const pOrig = parseFloat(document.getElementById('priceOriginal').value);
+            const pNew = parseFloat(document.getElementById('priceNew').value);
+            const qOrig = parseFloat(document.getElementById('quantityOriginal').value);
+            const qNew = parseFloat(document.getElementById('quantityNew').value);
+
+            if (!pOrig || !pNew || !qOrig || !qNew) {
+                alert('請輸入所有數值');
+                return;
+            }
+
+            const priceChange = (pNew - pOrig) / pOrig;
+            const quantityChange = (qNew - qOrig) / qOrig;
+            const ped = quantityChange / priceChange;
+
+            const revenueOrig = pOrig * qOrig;
+            const revenueNew = pNew * qNew;
+            const revenueChange = revenueNew - revenueOrig;
+            const revenueChangePercent = (revenueChange / revenueOrig * 100).toFixed(1);
+
+            let explanation = '';
+            let recommendation = '';
+
+            if (Math.abs(ped) < 1) {
+                explanation = `缺乏彈性（|PED| = ${Math.abs(ped).toFixed(2)} < 1）：需求對價格變化不敏感。`;
+                recommendation = `消費者對價格變化反應遲鈍。您可以進一步提價以增加收益，因為銷量下降幅度小於價格提升幅度。`;
+            } else if (Math.abs(ped) === 1) {
+                explanation = `單位彈性（|PED| = 1）：需求與價格成比例變化。`;
+                recommendation = `價格變化對收益影響有限。考慮提升產品差異化與品牌價值，降低價格敏感度。`;
+            } else {
+                explanation = `富有彈性（|PED| = ${Math.abs(ped).toFixed(2)} > 1）：需求對價格變化敏感。`;
+                recommendation = `消費者對價格變化反應敏銳。降價能顯著刺激銷量增長。若要提價，需謹慎評估市場反應，或通過差異化產品抵消價格上升。`;
+            }
+
+            document.getElementById('pedValue').textContent = ped.toFixed(2);
+            document.getElementById('pedExplain').textContent = explanation;
+            document.getElementById('revenueOriginal').textContent = `${revenueOrig.toLocaleString('zh-TW')} 元`;
+            document.getElementById('revenueNew').textContent = `${revenueNew.toLocaleString('zh-TW')} 元`;
+            document.getElementById('revenueChange').textContent = `${revenueChange > 0 ? '+' : ''}${revenueChange.toLocaleString('zh-TW')} 元（${revenueChangePercent > 0 ? '+' : ''}${revenueChangePercent}%）`;
+            document.getElementById('recommendation').textContent = recommendation;
+
+            document.getElementById('elasticityResult').style.display = 'block';
+        }
+
+        // Tab 2: 推薦策略
+        function updateStrategyOptions() {
+            // 可擴展的策略推薦邏輯
+        }
+
+        function recommendStrategy() {
+            const productType = document.getElementById('productType').value;
+            const competition = document.getElementById('competition').value;
+            const sensitivity = document.getElementById('priceSensitivity').value;
+            const lifecycle = document.getElementById('lifecycle').value;
+
+            if (!productType || !competition || !sensitivity || !lifecycle) {
+                alert('請填寫所有選項');
+                return;
+            }
+
+            const strategies = getRecommendedStrategies(productType, competition, sensitivity, lifecycle);
+
+            let html = '';
+            strategies.forEach(strategy => {
+                html += `
+                    <div class="strategy-card">
+                        <h4>${strategy.name}</h4>
+                        <p>${strategy.description}</p>
+                    </div>
+                `;
+            });
+
+            document.getElementById('strategyCards').innerHTML = html;
+            document.getElementById('strategyResult').style.display = 'block';
+        }
+
+        function getRecommendedStrategies(type, comp, sens, life) {
+            const strategies = {
+                software: [
+                    { name: '分級訂閱制', description: '提供基礎版、專業版、企業版，針對不同用戶群體實施差別定價。適合軟體產品的持續營收模式。' },
+                    { name: 'Freemium模式', description: '免費基礎版 + 付費高級版。吸引大量用戶，通過高級功能轉換部分付費客戶。' },
+                    { name: '用量制定價', description: '根據使用量（API調用、存儲容量）計費，靈活滿足不同規模客戶。' }
+                ],
+                luxury: [
+                    { name: '價值基礎定價', description: '根據品牌價值、設計、材質等因素定價，而非成本加成。追求利潤最大化而非銷量。' },
+                    { name: '價格錨定', description: '通過展示高端產品線，提升整體品牌形象，為高價產品創造合理化。' },
+                    { name: '限量策略', description: '限制產量與銷售渠道，維持產品稀缺性與高價地位。' }
+                ],
+                commodity: [
+                    { name: '成本領導 + 低價策略', description: '優化供應鏈與營運成本，通過天天低價（EDLP）贏得市場份額。' },
+                    { name: '競爭導向定價', description: '密切追蹤競爭對手價格，實施微幅價格調整以維持競爭力。' },
+                    { name: '尾數定價', description: '將價格設為 .99 結尾，利用消費者心理偏差提升銷量。' }
+                ],
+                service: [
+                    { name: '收益管理 + 動態定價', description: '根據需求與庫存實時調整價格。航空與飯店的標準做法。' },
+                    { name: '分級與差別定價', description: '區分商務客 vs 休閒客，提供不同艙位/房型與價格。' },
+                    { name: '提前預訂折扣', description: '早訂低價、臨時高價，激勵提前規劃，優化座位/房間配置。' }
+                ],
+                subscription: [
+                    { name: '分級訂閱', description: '多個價格點（基礎、標準、高級），滿足不同用戶需求。Netflix模式。' },
+                    { name: '年度優惠', description: '年度支付享受折扣，提升客戶粘性與預測性收入。' },
+                    { name: '免費試用 + 升級促進', description: '免費試用期激勵用戶體驗，通過功能限制促進付費升級。' }
+                ]
+            };
+
+            return strategies[type] || [];
+        }
+
+        // Tab 3: 收益管理模擬
+        function updatePricingInputs() {
+            const model = document.getElementById('pricingModel').value;
+            document.getElementById('uniformPricingInputs').style.display = model === 'uniform' ? 'block' : 'none';
+            document.getElementById('tieredPricingInputs').style.display = model === 'tiered' ? 'block' : 'none';
+        }
+
+        function simulateRevenue() {
+            const capacity = parseFloat(document.getElementById('capacity').value);
+            const businessPct = parseFloat(document.getElementById('businessPercentage').value) / 100;
+            const businessWTP = parseFloat(document.getElementById('businessWTP').value);
+            const leisureWTP = parseFloat(document.getElementById('leisureWTP').value);
+            const model = document.getElementById('pricingModel').value;
+
+            if (!capacity || businessPct === undefined || !businessWTP || !leisureWTP) {
+                alert('請輸入所有數值');
+                return;
+            }
+
+            let totalRevenue = 0;
+            let occupancy = 0;
+            let details = '';
+
+            if (model === 'uniform') {
+                const price = parseFloat(document.getElementById('uniformPrice').value);
+                const businessCustomers = capacity * businessPct;
+                const leisureCustomers = capacity * (1 - businessPct);
+
+                totalRevenue = capacity * price;
+                occupancy = 100;
+
+                details = `統一價格 ${price} 元。商務客 ${Math.round(businessCustomers)} 人 × ${price} 元 = ${(businessCustomers * price).toLocaleString('zh-TW')} 元；休閒客 ${Math.round(leisureCustomers)} 人 × ${price} 元 = ${(leisureCustomers * price).toLocaleString('zh-TW')} 元。`;
+            } else {
+                const businessSeats = parseFloat(document.getElementById('businessSeats').value);
+                const economySeats = capacity - businessSeats;
+                const businessPrice = parseFloat(document.getElementById('businessPrice').value);
+                const economyPrice = parseFloat(document.getElementById('economyPrice').value);
+
+                const businessCustomers = Math.min(capacity * businessPct, businessSeats);
+                const leisureCustomers = Math.min(capacity * (1 - businessPct), economySeats);
+
+                totalRevenue = (businessCustomers * businessPrice) + (leisureCustomers * economyPrice);
+                occupancy = ((businessCustomers + leisureCustomers) / capacity * 100);
+
+                details = `商務艙 ${businessSeats} 座 @ ${businessPrice} 元，實際售出 ${Math.round(businessCustomers)} 張 = ${(businessCustomers * businessPrice).toLocaleString('zh-TW')} 元；經濟艙 ${economySeats} 座 @ ${economyPrice} 元，實際售出 ${Math.round(leisureCustomers)} 張 = ${(leisureCustomers * economyPrice).toLocaleString('zh-TW')} 元。`;
+            }
+
+            const monthlyRevenue = totalRevenue * 30;
+            const avgPrice = totalRevenue / (capacity * businessPct + capacity * (1 - businessPct));
+
+            document.getElementById('totalRevenue').textContent = `${totalRevenue.toLocaleString('zh-TW')} 元`;
+            document.getElementById('monthlyRevenue').textContent = `${monthlyRevenue.toLocaleString('zh-TW')} 元`;
+            document.getElementById('avgPrice').textContent = `${avgPrice.toFixed(0)} 元`;
+            document.getElementById('occupancyRate').textContent = `${occupancy.toFixed(1)}%`;
+            document.getElementById('simulationDetails').textContent = details;
+
+            document.getElementById('simulationResult').style.display = 'block';
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStrategyOptions();
+            updatePricingInputs();
+        });
+    </script>
+</body>
+</html>

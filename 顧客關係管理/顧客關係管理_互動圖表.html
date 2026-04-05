@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顧客關係管理 - 互動圖表工具</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #f0f0f0;
+            background: #f9f9f9;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 18px 20px;
+            border: none;
+            background: #f9f9f9;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .tab-button:hover {
+            background: #f0f0f0;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: 'Noto Sans TC', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button.calc-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        button.calc-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .result-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            margin: 12px 0;
+            font-size: 1.1em;
+        }
+
+        .result-item strong {
+            color: #333;
+        }
+
+        .result-value {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .row.full {
+            grid-template-columns: 1fr;
+        }
+
+        h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .success {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .warning {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        .footer {
+            background: #f9f9f9;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            border-top: 1px solid #eee;
+        }
+
+        .strategy-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .recommendation-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>顧客關係管理 互動圖表工具</h1>
+            <p>CLV計算器｜RFM分析工具｜CRM選型建議器</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab(0)">CLV 計算器</button>
+            <button class="tab-button" onclick="switchTab(1)">RFM 分析工具</button>
+            <button class="tab-button" onclick="switchTab(2)">CRM 選型建議器</button>
+        </div>
+
+        <!-- Tab 1: CLV Calculator -->
+        <div class="tab-content active" id="tab-0">
+            <h3>客戶終身價值（CLV）計算器</h3>
+            <p style="margin-bottom: 20px; color: #666;">計算一位客戶在整個關係期間內為企業帶來的淨利潤</p>
+
+            <div class="info-box">
+                <strong>💡 使用提示：</strong>根據實際數據填入各項參數，工具會自動計算CLV與獲客成本比值，幫助評估商業可持續性。
+            </div>
+
+            <div class="row">
+                <div>
+                    <div class="form-group">
+                        <label>平均交易金額（元）</label>
+                        <input type="number" id="clv-transaction" placeholder="例如：500" value="500">
+                    </div>
+                    <div class="form-group">
+                        <label>年度購買頻率（次）</label>
+                        <input type="number" id="clv-frequency" placeholder="例如：12" value="12">
+                    </div>
+                    <div class="form-group">
+                        <label>淨利潤率（%）</label>
+                        <input type="number" id="clv-margin" placeholder="例如：25" value="25">
+                    </div>
+                </div>
+                <div>
+                    <div class="form-group">
+                        <label>預期客戶關係（年）</label>
+                        <input type="number" id="clv-period" placeholder="例如：5" value="5">
+                    </div>
+                    <div class="form-group">
+                        <label>客戶獲取成本（元）</label>
+                        <input type="number" id="clv-cac" placeholder="例如：200" value="200">
+                    </div>
+                    <div class="form-group">
+                        <label>年度留存率（%）</label>
+                        <input type="number" id="clv-retention" placeholder="例如：90" value="90">
+                    </div>
+                </div>
+            </div>
+
+            <button class="calc-button" onclick="calculateCLV()">計算 CLV</button>
+
+            <div id="clv-result"></div>
+        </div>
+
+        <!-- Tab 2: RFM Analysis -->
+        <div class="tab-content" id="tab-1">
+            <h3>RFM 分析工具</h3>
+            <p style="margin-bottom: 20px; color: #666;">通過 R（最近消費）、F（消費頻率）、M（消費金額）三個維度評估客戶價值</p>
+
+            <div class="info-box">
+                <strong>💡 使用提示：</strong>填入客戶的消費數據，工具會自動計算RFM等級並提供客戶分群建議。
+            </div>
+
+            <div class="row">
+                <div>
+                    <div class="form-group">
+                        <label>最近購買距今（天）</label>
+                        <input type="number" id="rfm-recency" placeholder="例如：30" value="30">
+                    </div>
+                    <div class="form-group">
+                        <label>過去12個月購買次數</label>
+                        <input type="number" id="rfm-frequency" placeholder="例如：8" value="8">
+                    </div>
+                </div>
+                <div>
+                    <div class="form-group">
+                        <label>過去12個月消費金額（元）</label>
+                        <input type="number" id="rfm-monetary" placeholder="例如：5000" value="5000">
+                    </div>
+                    <div style="height: 20px;"></div>
+                </div>
+            </div>
+
+            <button class="calc-button" onclick="calculateRFM()">分析 RFM</button>
+
+            <div id="rfm-result"></div>
+        </div>
+
+        <!-- Tab 3: CRM Selection -->
+        <div class="tab-content" id="tab-2">
+            <h3>CRM 選型建議器</h3>
+            <p style="margin-bottom: 20px; color: #666;">根據企業規模、預算、需求等因素，推薦最適合的CRM平台</p>
+
+            <div class="info-box">
+                <strong>💡 使用提示：</strong>如實填入企業情況，工具會分析並推薦最符合需求的CRM平台。
+            </div>
+
+            <div class="row">
+                <div>
+                    <div class="form-group">
+                        <label>企業規模（員工數）</label>
+                        <select id="crm-size">
+                            <option value="small">小型（1-50人）</option>
+                            <option value="medium" selected>中型（51-500人）</option>
+                            <option value="large">大型（500+人）</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>月度預算（元）</label>
+                        <select id="crm-budget">
+                            <option value="tight">緊張（&lt;$2,000）</option>
+                            <option value="moderate" selected>中等（$2,000-$10,000）</option>
+                            <option value="high">充足（$10,000+）</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <div class="form-group">
+                        <label>業務複雜度</label>
+                        <select id="crm-complexity">
+                            <option value="simple" selected>簡單（基本銷售/客服）</option>
+                            <option value="moderate">中等（跨部門協作）</option>
+                            <option value="complex">複雜（多行業、多渠道）</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>技術能力</label>
+                        <select id="crm-tech">
+                            <option value="low" selected>低（需簡單易用）</option>
+                            <option value="medium">中（能接受定制）</option>
+                            <option value="high">高（可自主開發）</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button class="calc-button" onclick="calculateCRMSelection()">獲得建議</button>
+
+            <div id="crm-result"></div>
+        </div>
+
+        <div class="footer">
+            顧客關係管理 互動工具 © 2026
+        </div>
+    </div>
+
+    <script>
+        function switchTab(index) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById('tab-' + index).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function calculateCLV() {
+            const transaction = parseFloat(document.getElementById('clv-transaction').value);
+            const frequency = parseFloat(document.getElementById('clv-frequency').value);
+            const margin = parseFloat(document.getElementById('clv-margin').value) / 100;
+            const period = parseFloat(document.getElementById('clv-period').value);
+            const cac = parseFloat(document.getElementById('clv-cac').value);
+            const retention = parseFloat(document.getElementById('clv-retention').value) / 100;
+
+            if (!transaction || !frequency || !margin || !period || !cac || !retention) {
+                alert('請填入所有必要數據');
+                return;
+            }
+
+            // Calculate simple CLV
+            const annualValue = transaction * frequency * margin;
+            const simpleCLV = annualValue * period - cac;
+
+            // Calculate with retention (compound)
+            let retentionCLV = 0;
+            for (let year = 1; year <= period; year++) {
+                const survivalRate = Math.pow(retention, year);
+                retentionCLV += (annualValue * survivalRate);
+            }
+            retentionCLV -= cac;
+
+            // Calculate ratio
+            const ratio = simpleCLV / cac;
+            const retentionRatio = retentionCLV / cac;
+
+            let healthStatus = '';
+            let healthColor = '';
+            if (retentionRatio >= 3) {
+                healthStatus = '健康 ✓';
+                healthColor = '#27ae60';
+            } else if (retentionRatio >= 1) {
+                healthStatus = '一般 ⚠';
+                healthColor = '#f39c12';
+            } else {
+                healthStatus = '不健康 ✗';
+                healthColor = '#e74c3c';
+            }
+
+            const result = `
+                <div class="result-box" style="margin-top: 30px;">
+                    <div class="result-item">
+                        <strong>簡化計算 CLV：</strong><br>
+                        <span class="result-value">NT$ ${simpleCLV.toFixed(0)}</span>
+                        <br><small>公式：平均交易額 × 購買頻率 × 淨利率 × 關係年限 - 獲客成本</small>
+                    </div>
+
+                    <div class="result-item" style="margin-top: 15px;">
+                        <strong>考慮留存率的精確 CLV：</strong><br>
+                        <span class="result-value">NT$ ${retentionCLV.toFixed(0)}</span>
+                        <br><small>年度留存率：${(retention*100).toFixed(0)}%，累積計算各年貢獻</small>
+                    </div>
+
+                    <div class="strategy-box">
+                        <strong>🎯 商業健康評估：</strong><br>
+                        CLV:CAC 比值 = <span style="color: ${healthColor}; font-weight: 700; font-size: 1.2em;">${retentionRatio.toFixed(2)}:1</span><br>
+                        狀態：<span style="color: ${healthColor}; font-weight: 700;">${healthStatus}</span><br>
+                        <br>
+                        <small>
+                        ${retentionRatio >= 3 ? '✓ 商業模式健康。可考慮提升獲客投入，加快增長' :
+                          retentionRatio >= 1 ? '⚠ 需優化。應提升客戶留存率或降低服務成本' :
+                          '✗ 需緊急改善。需提升單客價值或降低獲客成本'}
+                        </small>
+                    </div>
+
+                    <div class="recommendation-box">
+                        <strong>💡 優化建議：</strong><br>
+                        • 健康的 CLV:CAC 比值應 ≥ 3:1（表示客戶價值是獲客成本的3倍以上）<br>
+                        • 提升 CLV 可通過：增加購買頻率、提升交易額、改善淨利率、延長關係期<br>
+                        • 降低 CAC 可通過：優化營銷效率、口碑與推薦、提升轉化率
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('clv-result').innerHTML = result;
+        }
+
+        function calculateRFM() {
+            const recency = parseInt(document.getElementById('rfm-recency').value);
+            const frequency = parseInt(document.getElementById('rfm-frequency').value);
+            const monetary = parseInt(document.getElementById('rfm-monetary').value);
+
+            if (!recency || !frequency || !monetary) {
+                alert('請填入所有必要數據');
+                return;
+            }
+
+            // Determine levels (these are example thresholds, adjust based on your data)
+            let rLevel = recency <= 30 ? 'H' : (recency <= 90 ? 'M' : 'L');
+            let fLevel = frequency >= 8 ? 'H' : (frequency >= 4 ? 'M' : 'L');
+            let mLevel = monetary >= 5000 ? 'H' : (monetary >= 2000 ? 'M' : 'L');
+
+            const segment = rLevel + fLevel + mLevel;
+
+            // Segment mapping
+            const mapping = {
+                'HHH': { name: '金牌客戶', color: '#27ae60', desc: '最近購買、頻繁購買、高消費', strategy: '重點維護。提供VIP服務、優先推薦新品、邀請參與活動、定期增值服務' },
+                'HHL': { name: '潛力客戶', color: '#3498db', desc: '最近購買、頻繁購買、消費不高', strategy: '重點培養。推薦高價產品、提升客單價、組織會員升等計畫' },
+                'HLH': { name: '大額客戶', color: '#e74c3c', desc: '最近購買、購買不頻、高消費', strategy: '重點挖掘。理解購買周期、提供個性化服務、推動高價產品交叉銷售' },
+                'HLL': { name: '一般客戶', color: '#f39c12', desc: '最近購買、購買不頻、消費不高', strategy: '逐步引導。改善購買體驗、提供激勵、提升粘度' },
+                'LHH': { name: '忠實客戶', color: '#2980b9', desc: '久未購買、頻繁購買、高消費', strategy: '喚醒活動。可能轉向競品，需要特別關注和重新激活' },
+                'LHL': { name: '活躍客戶', color: '#9b59b6', desc: '久未購買、頻繁購買、消費不高', strategy: '溫和刺激。發送歡迎回歸優惠、新品推薦、定期提醒' },
+                'LLH': { name: '睡眠客戶', color: '#c0392b', desc: '久未購買、購買不頻、高消費', strategy: '優先喚醒。曾高消費客戶，優惠力度大、主動聯繫、深入了解流失原因' },
+                'LLL': { name: '流失客戶', color: '#95a5a6', desc: '久未購買、購買不頻、消費不高', strategy: '清理或放棄。投入最小，除非有機會才進行喚醒' }
+            };
+
+            const seg = mapping[segment];
+            const segmentName = seg.name;
+            const description = seg.desc;
+            const strategy = seg.strategy;
+            const color = seg.color;
+
+            const result = `
+                <div class="result-box" style="border-left-color: ${color}; background: rgba(0,0,0,0.02); margin-top: 30px;">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="width: 50px; height: 50px; background: ${color}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; margin-right: 15px; font-size: 1.4em;">
+                            ${segment}
+                        </div>
+                        <div>
+                            <div class="result-value" style="margin: 0; font-size: 1.4em;">${segmentName}</div>
+                            <div style="font-size: 0.9em; color: #666;">${description}</div>
+                        </div>
+                    </div>
+                    <div class="strategy-box">
+                        <strong>🎯 推薦策略：</strong><br>
+                        ${strategy}
+                    </div>
+                    <div class="result-item" style="margin-top: 15px;">
+                        <strong>📊 詳細分析：</strong><br>
+                        R值（${recency}天）${rLevel === 'H' ? '✓ 最近活躍' : rLevel === 'M' ? '◐ 中等活躍' : '⚠ 久未活動'} |
+                        F值（${frequency}次）${fLevel === 'H' ? '✓ 頻繁購買' : fLevel === 'M' ? '◐ 中等購買' : '⚠ 購買不頻'} |
+                        M值（NT$${monetary.toFixed(0)}）${mLevel === 'H' ? '✓ 高消費' : mLevel === 'M' ? '◐ 中等消費' : '⚠ 低消費'}
+                    </div>
+                    <div class="recommendation-box">
+                        <strong>💡 RFM分析說明：</strong><br>
+                        • R（Recency）：最近購買距今越短越好，表示客戶越活躍<br>
+                        • F（Frequency）：購買次數越多越好，表示客戶粘度越強<br>
+                        • M（Monetary）：消費金額越高越好，表示客戶價值越大<br>
+                        • 綜合三個維度可準確評估客戶真實價值
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('rfm-result').innerHTML = result;
+        }
+
+        function calculateCRMSelection() {
+            const size = document.getElementById('crm-size').value;
+            const budget = document.getElementById('crm-budget').value;
+            const complexity = document.getElementById('crm-complexity').value;
+            const tech = document.getElementById('crm-tech').value;
+
+            // Scoring system
+            let score = { salesforce: 0, hubspot: 0, zoho: 0, dynamics: 0 };
+
+            // Size factor
+            if (size === 'small') {
+                score.hubspot += 3;
+                score.zoho += 3;
+                score.salesforce += 0;
+                score.dynamics += 0;
+            } else if (size === 'medium') {
+                score.hubspot += 2;
+                score.salesforce += 2;
+                score.zoho += 2;
+                score.dynamics += 1;
+            } else {
+                score.salesforce += 3;
+                score.dynamics += 2;
+                score.hubspot += 1;
+                score.zoho += 0;
+            }
+
+            // Budget factor
+            if (budget === 'tight') {
+                score.zoho += 3;
+                score.hubspot += 2;
+                score.salesforce += 0;
+                score.dynamics += 0;
+            } else if (budget === 'moderate') {
+                score.hubspot += 3;
+                score.zoho += 2;
+                score.salesforce += 1;
+                score.dynamics += 1;
+            } else {
+                score.salesforce += 3;
+                score.dynamics += 2;
+                score.hubspot += 1;
+                score.zoho += 0;
+            }
+
+            // Complexity factor
+            if (complexity === 'simple') {
+                score.hubspot += 3;
+                score.zoho += 2;
+                score.salesforce += 1;
+                score.dynamics += 0;
+            } else if (complexity === 'moderate') {
+                score.salesforce += 2;
+                score.hubspot += 2;
+                score.zoho += 1;
+                score.dynamics += 1;
+            } else {
+                score.salesforce += 3;
+                score.dynamics += 2;
+                score.hubspot += 0;
+                score.zoho += 0;
+            }
+
+            // Tech factor
+            if (tech === 'low') {
+                score.hubspot += 3;
+                score.zoho += 2;
+                score.salesforce += 0;
+                score.dynamics += 0;
+            } else if (tech === 'medium') {
+                score.salesforce += 2;
+                score.hubspot += 1;
+                score.zoho += 2;
+                score.dynamics += 1;
+            } else {
+                score.salesforce += 3;
+                score.dynamics += 2;
+                score.zoho += 1;
+                score.hubspot += 0;
+            }
+
+            // Find top recommendation
+            let recommendation = '';
+            let alternatives = '';
+
+            const platforms = [
+                { name: 'Salesforce', score: score.salesforce, desc: '全球領導者，功能最全面，適合複雜業務需求', price: '月費$165-$330/用戶', color: '#667eea' },
+                { name: 'HubSpot', score: score.hubspot, desc: '易用性最佳，All-in-one套件，適合中小企業', price: '月費$0-$1200（取決於套件）', color: '#ff6b6b' },
+                { name: 'Zoho CRM', score: score.zoho, desc: '性價比最高，功能紮實，適合預算有限企業', price: '月費$12-$45/用戶', color: '#51cf66' },
+                { name: 'Microsoft Dynamics 365', score: score.dynamics, desc: '與Office整合深，適合微軟生態用戶', price: '月費$65-$210/用戶', color: '#4a90e2' }
+            ];
+
+            // Sort by score
+            platforms.sort((a, b) => b.score - a.score);
+
+            recommendation = `
+                <div class="recommendation-box" style="margin-top: 30px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);">
+                    <h4 style="margin-bottom: 15px; color: #333; font-size: 1.2em;">🎯 推薦方案：${platforms[0].name}</h4>
+                    <div style="border-left: 4px solid ${platforms[0].color}; padding-left: 15px;">
+                        <div style="margin: 10px 0;">
+                            <strong>特點：</strong> ${platforms[0].desc}
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <strong>價格：</strong> ${platforms[0].price}
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <strong>適合度評分：</strong> ${platforms[0].score}/12分
+                        </div>
+                    </div>
+                </div>
+
+                <div class="strategy-box" style="margin-top: 20px;">
+                    <h4 style="margin-bottom: 10px; color: #333;">💡 其他選項：</h4>
+                    ${platforms.slice(1, 4).map(p => `
+                        <div style="padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
+                            <strong>${p.name}</strong> (評分: ${p.score}/12) - ${p.desc}
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="result-box" style="margin-top: 20px;">
+                    <strong>📋 選型建議說明：</strong><br><br>
+                    <strong>Salesforce</strong><br>
+                    • 優勢：功能最全、行業方案多、生態完善<br>
+                    • 劣勢：成本高、學習陡峭、實施周期長<br>
+                    • 適合：大型企業、複雜業務<br><br>
+
+                    <strong>HubSpot</strong><br>
+                    • 優勢：易用、All-in-one、有免費版本<br>
+                    • 劣勢：功能深度不如Salesforce、定制空間有限<br>
+                    • 適合：初創、中小企業、快速增長<br><br>
+
+                    <strong>Zoho CRM</strong><br>
+                    • 優勢：性價比高、功能紮實、本地化好<br>
+                    • 劣勢：品牌認知度低、社群規模小<br>
+                    • 適合：預算敏感的中小企業<br><br>
+
+                    <strong>Microsoft Dynamics 365</strong><br>
+                    • 優勢：與Office深度整合、企業級安全<br>
+                    • 劣勢：定價複雜、實施周期長<br>
+                    • 適合：微軟生態深度依賴的企業
+                </div>
+            `;
+
+            document.getElementById('crm-result').innerHTML = recommendation;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('.tab-button').classList.add('active');
+        });
+    </script>
+</body>
+</html>

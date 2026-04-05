@@ -713,6 +713,7 @@
             <button class="tab-button" onclick="switchTab(1)">波特五力模型</button>
             <button class="tab-button" onclick="switchTab(2)">商業模式畫布</button>
             <button class="tab-button" onclick="switchTab(3)">策略比較</button>
+            <button class="tab-button" onclick="switchTab(4)">商業模式比較器</button>
         </div>
 
         <div class="content">
@@ -1027,6 +1028,43 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Tab 5: 商業模式比較器 -->
+            <div class="tab-content" id="tab4">
+                <h2 style="margin-bottom: 30px; color: #667eea;">商業模式比較器</h2>
+                <p style="margin-bottom: 30px; color: #4a5568;">選擇一個或多個商業模式進行對比分析。</p>
+
+                <div style="margin-bottom: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 0.95em; cursor: pointer;">
+                        <input type="checkbox" onchange="updateComparison()" data-model="subscription" style="cursor: pointer; width: 18px; height: 18px;">
+                        <span>訂閱制 (Subscription)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 0.95em; cursor: pointer;">
+                        <input type="checkbox" onchange="updateComparison()" data-model="platform" style="cursor: pointer; width: 18px; height: 18px;">
+                        <span>平台模式 (Platform)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 0.95em; cursor: pointer;">
+                        <input type="checkbox" onchange="updateComparison()" data-model="franchise" style="cursor: pointer; width: 18px; height: 18px;">
+                        <span>加盟模式 (Franchising)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 0.95em; cursor: pointer;">
+                        <input type="checkbox" onchange="updateComparison()" data-model="freemium" style="cursor: pointer; width: 18px; height: 18px;">
+                        <span>免費增值 (Freemium)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 0.95em; cursor: pointer;">
+                        <input type="checkbox" onchange="updateComparison()" data-model="dtc" style="cursor: pointer; width: 18px; height: 18px;">
+                        <span>直銷模式 (DTC)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 0.95em; cursor: pointer;">
+                        <input type="checkbox" onchange="updateComparison()" data-model="razor" style="cursor: pointer; width: 18px; height: 18px;">
+                        <span>刮鬍刀模式 (Razor)</span>
+                    </label>
+                </div>
+
+                <div id="comparisonResults" style="margin-top: 30px;">
+                    <p style="color: #718096; font-style: italic;">請選擇至少一個商業模式進行比較...</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1193,6 +1231,194 @@
 
         function closePorterDetail() {
             document.getElementById('porterDetail').classList.remove('show');
+        }
+
+        // 商業模式比較器數據
+        const businessModels = {
+            subscription: {
+                name: '訂閱制模式',
+                icon: '🔄',
+                特點: ['經常性收入', '可預測現金流', '高客戶終身價值', '需持續創新'],
+                收入結構: ['月費/年費', '分級定價', '增值服務費'],
+                優勢: ['穩定營收', '客戶粘性強', '好估值'],
+                劣勢: ['客戶流失率敏感', '初期獲客成本高', '需要持續服務投入'],
+                適用條件: ['可重複使用/消費', '持續提供價值', '高留存率'],
+                典型公司: ['Netflix', 'Adobe', 'Spotify', 'Salesforce'],
+                風險: ['高競爭', 'Churn風險', '市場飽和']
+            },
+            platform: {
+                name: '平台模式',
+                icon: '🌐',
+                特點: ['雙邊市場', '網絡效應強', '規模效應顯著', '生態化運營'],
+                收入結構: ['佣金費', '廣告費', '增值服務'],
+                優勢: ['網絡效應護城河', '邊際成本低', '極高利潤'],
+                劣勢: ['冷啟動困難', '監管風險高', '生態治理複雜'],
+                適用條件: ['多邊參與者', '網絡效應強', '交易需撮合'],
+                典型公司: ['Uber', 'Facebook', 'Amazon Marketplace', '微信'],
+                風險: ['反壟斷審查', '監管限制', '內容責任']
+            },
+            franchise: {
+                name: '加盟模式',
+                icon: '🏪',
+                特點: ['快速擴張', '低資本投入', '品牌複製', '營運標準化'],
+                收入結構: ['加盟金', '權利金', '廣告基金', '房地產費用'],
+                優勢: ['快速擴張', '資本輕量', '加盟主承擔投資'],
+                劣勢: ['品質控制難', '加盟主依賴', '品牌風險'],
+                適用條件: ['商業模式可複製', '品牌強', '營運流程標準化'],
+                典型公司: ['McDonald\'s', '7-Eleven', 'Starbucks', '全聯'],
+                風險: ['加盟主不滿', '標準差異', '品牌侵害']
+            },
+            freemium: {
+                name: '免費增值模式',
+                icon: '🎁',
+                特點: ['免費基礎版', '付費進階版', '快速用戶增長', '低轉化率'],
+                收入結構: ['高級版費用', '廣告費', '增值功能費'],
+                優勢: ['快速用戶增長', '低獲客成本', '網絡效應'],
+                劣勢: ['轉化率低', '基礎設施成本高', '用戶期待免費'],
+                適用條件: ['網絡效應強', '免費版邊際成本低', '明確付費功能'],
+                典型公司: ['Spotify', 'Dropbox', 'LinkedIn', '手機遊戲'],
+                風險: ['轉化率不足', '伺服器成本高', '用戶期望管理']
+            },
+            dtc: {
+                name: '直銷模式',
+                icon: '🚚',
+                特點: ['繞過中間商', '直接消費者', '高邊際利潤', '品牌完全控制'],
+                收入結構: ['產品銷售', '會員費', '內容/數據服務'],
+                優勢: ['高邊際利潤', '品牌完全控制', '消費者數據'],
+                劣勢: ['CAC高', '物流成本高', '退貨率高'],
+                適用條件: ['消費者可直購', '品牌差異強', '物流便利'],
+                典型公司: ['Warby Parker', 'Dollar Shave Club', 'Allbirds'],
+                風險: ['行銷成本高', '物流壓力', '資本需求大']
+            },
+            razor: {
+                name: '刮鬍刀模式',
+                icon: '⚔️',
+                特點: ['主產品低價', '耗材高利潤', '高轉換成本', '客戶粘性強'],
+                收入結構: ['主產品利潤低', '耗材利潤高', '長期客戶價值'],
+                優勢: ['高利潤', '強客戶粘性', '長期現金流'],
+                劣勢: ['耗材市場飽和', '消費者反彈', '替代品威脅'],
+                適用條件: ['主產品+耗材清晰', '耗材重複率高', '難以替代'],
+                典型公司: ['HP墨盒', 'Gillette刮鬍刀', '遊戲虛寶'],
+                風險: ['山寨耗材', '消費者抗議', '市場飽和']
+            }
+        };
+
+        function updateComparison() {
+            const checkboxes = document.querySelectorAll('input[data-model]');
+            const selected = Array.from(checkboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.dataset.model);
+
+            const resultsDiv = document.getElementById('comparisonResults');
+
+            if (selected.length === 0) {
+                resultsDiv.innerHTML = '<p style="color: #718096; font-style: italic;">請選擇至少一個商業模式進行比較...</p>';
+                return;
+            }
+
+            let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">';
+
+            selected.forEach(modelKey => {
+                const model = businessModels[modelKey];
+                html += `
+                    <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); padding: 25px; border-radius: 12px; border-left: 4px solid #667eea;">
+                        <h3 style="margin-bottom: 15px; color: #667eea; font-size: 1.3em;">${model.icon} ${model.name}</h3>
+
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: #4a5568; margin-bottom: 8px;">📈 收入結構</h4>
+                            <ul style="list-style: none; padding: 0; font-size: 0.9em; color: #2d3748;">
+                                ${model.收入結構.map(item => `<li style="padding: 4px 0; padding-left: 20px; position: relative;">
+                                    <span style="position: absolute; left: 0;">•</span>${item}
+                                </li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: #10b981; margin-bottom: 8px;">✅ 優勢</h4>
+                            <ul style="list-style: none; padding: 0; font-size: 0.9em; color: #2d3748;">
+                                ${model.優勢.map(item => `<li style="padding: 4px 0; padding-left: 20px; position: relative;">
+                                    <span style="position: absolute; left: 0; color: #10b981;">✓</span>${item}
+                                </li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: #ef4444; margin-bottom: 8px;">⚠️ 劣勢</h4>
+                            <ul style="list-style: none; padding: 0; font-size: 0.9em; color: #2d3748;">
+                                ${model.劣勢.map(item => `<li style="padding: 4px 0; padding-left: 20px; position: relative;">
+                                    <span style="position: absolute; left: 0; color: #ef4444;">✕</span>${item}
+                                </li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: #f59e0b; margin-bottom: 8px;">🎯 適用條件</h4>
+                            <ul style="list-style: none; padding: 0; font-size: 0.9em; color: #2d3748;">
+                                ${model.適用條件.map(item => `<li style="padding: 4px 0; padding-left: 20px; position: relative;">
+                                    <span style="position: absolute; left: 0;">→</span>${item}
+                                </li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 15px;">
+                            <h4 style="color: #3b82f6; margin-bottom: 8px;">💼 典型公司</h4>
+                            <p style="font-size: 0.9em; color: #2d3748; margin: 0;">${model.典型公司.join(', ')}</p>
+                        </div>
+
+                        <div>
+                            <h4 style="color: #ef4444; margin-bottom: 8px;">⚡ 核心風險</h4>
+                            <ul style="list-style: none; padding: 0; font-size: 0.9em; color: #2d3748;">
+                                ${model.風險.map(item => `<li style="padding: 4px 0; padding-left: 20px; position: relative;">
+                                    <span style="position: absolute; left: 0;">•</span>${item}
+                                </li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+
+            if (selected.length > 1) {
+                html += `
+                    <div style="margin-top: 40px; padding: 30px; background: #f0f4f8; border-radius: 12px;">
+                        <h3 style="color: #667eea; margin-bottom: 20px;">📊 快速對比總結</h3>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+                            <thead>
+                                <tr style="background: white;">
+                                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #667eea;">模式</th>
+                                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #667eea;">初期資本</th>
+                                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #667eea;">擴張速度</th>
+                                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #667eea;">利潤潛力</th>
+                                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #667eea;">護城河強度</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${selected.map(modelKey => {
+                                    const model = businessModels[modelKey];
+                                    const metrics = {
+                                        subscription: ['中等', '中等', '中等', '中等'],
+                                        platform: ['低', '快', '極高', '極強'],
+                                        franchise: ['低', '極快', '中高', '中'],
+                                        freemium: ['中等', '極快', '中等', '中等'],
+                                        dtc: ['中高', '中等', '高', '中'],
+                                        razor: ['低', '中等', '極高', '高']
+                                    };
+                                    return `<tr style="border-bottom: 1px solid #e2e8f0;">
+                                        <td style="padding: 12px; font-weight: 600;">${model.icon} ${model.name}</td>
+                                        <td style="padding: 12px;">${metrics[modelKey][0]}</td>
+                                        <td style="padding: 12px;">${metrics[modelKey][1]}</td>
+                                        <td style="padding: 12px;">${metrics[modelKey][2]}</td>
+                                        <td style="padding: 12px;">${metrics[modelKey][3]}</td>
+                                    </tr>`;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            resultsDiv.innerHTML = html;
         }
 
         // BMC Details

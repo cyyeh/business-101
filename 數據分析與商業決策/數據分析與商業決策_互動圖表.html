@@ -543,6 +543,7 @@
             <button class="tab-button" onclick="switchTab('rfm')">RFM 分析</button>
             <button class="tab-button" onclick="switchTab('funnel')">漏斗分析</button>
             <button class="tab-button" onclick="switchTab('chart')">圖表選擇器</button>
+            <button class="tab-button" onclick="switchTab('security')">資安成本計算器</button>
         </div>
 
         <div class="content">
@@ -915,10 +916,140 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 資安成本計算器 -->
+            <div id="security" class="tab-content">
+                <h2 style="margin-bottom: 30px; color: #2d3748;">資訊安全成本計算器</h2>
+
+                <div class="info-box">
+                    <strong>說明：</strong>
+                    使用此工具評估資安事件的潛在成本與投資回報率。根據企業規模、數據敏感性和現有防護水平進行風險量化。
+                </div>
+
+                <div class="kpi-dashboard" style="margin-bottom: 40px;">
+                    <div style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(220, 38, 38, 0.05) 100%); padding: 25px; border-radius: 12px; border-left: 4px solid #ef4444;">
+                        <h3 style="color: #dc2626; margin-bottom: 15px;">年度期望損失（ALE）計算</h3>
+                        <p style="color: #7f1d1d; margin-bottom: 15px;"><strong>ALE = 資產價值 × 暴露因子 × 年度發生概率</strong></p>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; color: #2d3748; font-weight: 600;">資產價值（年營收或關鍵數據庫估值）</label>
+                                <input type="number" id="assetValue" placeholder="例如: 50000000" value="50000000" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.95em;">
+                                <small style="color: #718096;">（單位：元）</small>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; color: #2d3748; font-weight: 600;">暴露因子（資料外洩損失比例）</label>
+                                <select id="exposureFactor" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.95em;">
+                                    <option value="0.05">低風險（5% - 小規模外洩）</option>
+                                    <option value="0.20">中風險（20% - 部分數據外洩）</option>
+                                    <option value="0.50" selected>高風險（50% - 大規模外洩）</option>
+                                    <option value="1.00">極端風險（100% - 全部數據外洩）</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; color: #2d3748; font-weight: 600;">年度發生概率（%）</label>
+                                <input type="number" id="annualProbability" placeholder="例如: 0.5" value="0.5" step="0.1" min="0" max="100" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.95em;">
+                                <small style="color: #718096;">（0-100，基於行業與防護水平）</small>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; color: #2d3748; font-weight: 600;">控制成本（年度安全投資）</label>
+                                <input type="number" id="controlCost" placeholder="例如: 1000000" value="1000000" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.95em;">
+                                <small style="color: #718096;">（安全工具、培訓、人員成本）</small>
+                            </div>
+                        </div>
+
+                        <button onclick="calculateSecurityROI()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 30px; border-radius: 24px; cursor: pointer; font-size: 1em; font-weight: 600; transition: all 0.3s ease;">計算 ALE 與 ROI</button>
+                    </div>
+                </div>
+
+                <div id="securityResult" style="display: none;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                        <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(220, 38, 38, 0.05) 100%); padding: 25px; border-radius: 12px; border-left: 4px solid #ef4444; text-align: center;">
+                            <div style="font-size: 0.9em; color: #718096; margin-bottom: 10px; font-weight: 600;">年度期望損失</div>
+                            <div id="aleValue" style="font-size: 2em; color: #dc2626; font-weight: 700; margin-bottom: 5px;">¥0</div>
+                            <small style="color: #7f1d1d;">預期年損失</small>
+                        </div>
+                        <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(217, 119, 6, 0.05) 100%); padding: 25px; border-radius: 12px; border-left: 4px solid #f59e0b; text-align: center;">
+                            <div style="font-size: 0.9em; color: #718096; margin-bottom: 10px; font-weight: 600;">損失減少</div>
+                            <div id="lossReduction" style="font-size: 2em; color: #92400e; font-weight: 700; margin-bottom: 5px;">¥0</div>
+                            <small style="color: #92400e;">控制後的預期損失降幅</small>
+                        </div>
+                        <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.05) 100%); padding: 25px; border-radius: 12px; border-left: 4px solid #10b981; text-align: center;">
+                            <div style="font-size: 0.9em; color: #718096; margin-bottom: 10px; font-weight: 600;">安全投資 ROI</div>
+                            <div id="roiValue" style="font-size: 2em; color: #059669; font-weight: 700; margin-bottom: 5px;">0%</div>
+                            <small style="color: #065f46;">投資回報率</small>
+                        </div>
+                    </div>
+
+                    <div style="background: white; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 25px;">
+                        <h3 style="color: #2d3748; margin-bottom: 15px;">分析結果與建議</h3>
+                        <div id="securityInsight" style="color: #4a5568; line-height: 1.8;"></div>
+                    </div>
+
+                    <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(29, 78, 216, 0.05) 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #3b82f6;">
+                        <h4 style="color: #1e40af; margin-bottom: 10px;">💡 最佳實踐</h4>
+                        <ul style="color: #1e3a8a; margin-left: 20px;">
+                            <li>若 ROI > 100%，安全投資非常值得</li>
+                            <li>應根據風險等級優先化控制措施（高風險優先）</li>
+                            <li>定期進行風險重新評估，調整投資策略</li>
+                            <li>考慮資安保險作為對極端事件的補充保護</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
+        function calculateSecurityROI() {
+            const assetValue = parseFloat(document.getElementById('assetValue').value);
+            const exposureFactor = parseFloat(document.getElementById('exposureFactor').value);
+            const annualProbability = parseFloat(document.getElementById('annualProbability').value) / 100;
+            const controlCost = parseFloat(document.getElementById('controlCost').value);
+
+            // 計算無控制情況下的 ALE
+            const aleWithoutControl = assetValue * exposureFactor * annualProbability;
+
+            // 假設控制措施能減少 60% 的風險發生概率
+            const reducedProbability = annualProbability * 0.4;
+            const aleWithControl = assetValue * exposureFactor * reducedProbability;
+
+            // 損失減少額
+            const lossReduction = aleWithoutControl - aleWithControl;
+
+            // ROI 計算：(損失減少 - 控制成本) / 控制成本 * 100%
+            const roi = ((lossReduction - controlCost) / controlCost) * 100;
+
+            // 更新結果顯示
+            document.getElementById('aleValue').textContent = '¥' + aleWithoutControl.toLocaleString('zh-TW', {maximumFractionDigits: 0});
+            document.getElementById('lossReduction').textContent = '¥' + lossReduction.toLocaleString('zh-TW', {maximumFractionDigits: 0});
+            document.getElementById('roiValue').textContent = roi.toFixed(1) + '%';
+
+            // 生成洞察分析
+            let insight = `<strong>風險分析：</strong><br>`;
+            insight += `• 年度期望損失（無控制）：¥${aleWithoutControl.toLocaleString('zh-TW', {maximumFractionDigits: 0})}<br>`;
+            insight += `• 實施控制後期望損失：¥${aleWithControl.toLocaleString('zh-TW', {maximumFractionDigits: 0})}<br>`;
+            insight += `• 年度損失減少：¥${lossReduction.toLocaleString('zh-TW', {maximumFractionDigits: 0})}<br>`;
+            insight += `• 安全投資成本：¥${controlCost.toLocaleString('zh-TW', {maximumFractionDigits: 0})}<br><br>`;
+
+            insight += `<strong>決策建議：</strong><br>`;
+            if (roi > 300) {
+                insight += `✅ <strong style="color: #059669;">強烈推薦投資</strong>。ROI 超過 300%，這是高回報的防護投資。`;
+            } else if (roi > 100) {
+                insight += `✅ <strong style="color: #059669;">推薦投資</strong>。ROI 超過 100%，損失減少遠超投資成本。`;
+            } else if (roi > 0) {
+                insight += `⚠️ <strong style="color: #d97706;">謹慎考慮</strong>。ROI 為正，但回報率有限。建議結合其他因素（聲譽風險、法律合規）決策。`;
+            } else {
+                insight += `❌ <strong style="color: #dc2626;">不推薦單獨投資</strong>。ROI 為負，說明投資成本高於一年內的損失減少。但仍應考慮多年累積效益與合規要求。`;
+            }
+
+            document.getElementById('securityInsight').innerHTML = insight;
+            document.getElementById('securityResult').style.display = 'block';
+        }
+
         function switchTab(tabName) {
             const tabs = document.querySelectorAll('.tab-content');
             const buttons = document.querySelectorAll('.tab-button');

@@ -507,6 +507,7 @@
             <button class="tab-button" onclick="switchTab('stakeholder-matrix')">利害關係人矩陣</button>
             <button class="tab-button" onclick="switchTab('carbon-calculator')">碳足跡計算器</button>
             <button class="tab-button" onclick="switchTab('investment-strategy')">ESG投資策略</button>
+            <button class="tab-button" onclick="switchTab('circular-economy')">循環經濟蝴蝶圖</button>
             <button class="tab-button" onclick="switchTab('maturity-model')">ESG成熟度模型</button>
         </div>
 
@@ -797,6 +798,128 @@
                 </div>
             </div>
 
+            <!-- Circular Economy Tab -->
+            <div id="circular-economy" class="tab-content">
+                <div class="info-box">
+                    <strong>循環經濟蝴蝶圖</strong>展示如何將廢棄物轉化為資源，建立永續的生產與消費系統。
+                </div>
+
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h3>Ellen MacArthur基金會的循環經濟蝴蝶圖</h3>
+                    <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                        <p style="color: #047857; font-weight: bold; margin-bottom: 12px;">
+                            🦋 循環經濟 = 生物循環 + 技術循環
+                        </p>
+                        <p style="color: #666; font-size: 0.95em;">
+                            左翅（生物循環）：可生物降解的材料回歸土壤<br/>
+                            右翅（技術循環）：金屬、塑膠等無限回收利用
+                        </p>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                    <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; border-left: 4px solid #10b981;">
+                        <h4 style="color: #047857; margin-bottom: 12px;">🌱 生物循環（左翅）</h4>
+                        <p style="color: #666; font-size: 0.9em; margin-bottom: 12px;">
+                            <strong>材料:</strong> 棉、羊毛、紙、樹木、生物塑膠等
+                        </p>
+                        <p style="color: #666; font-size: 0.9em; margin-bottom: 12px;">
+                            <strong>設計原則:</strong>
+                        </p>
+                        <ul style="color: #666; font-size: 0.9em; padding-left: 20px;">
+                            <li>100% 可生物降解</li>
+                            <li>避免有害化學物質</li>
+                            <li>回歸土壤成為養分</li>
+                        </ul>
+                        <p style="color: #666; font-size: 0.9em; margin-top: 12px;">
+                            <strong>案例:</strong> Patagonia有機棉衣物可堆肥、Allbirds羊毛運動鞋
+                        </p>
+                    </div>
+
+                    <div style="background: #eff6ff; padding: 20px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                        <h4 style="color: #1e40af; margin-bottom: 12px;">♻️ 技術循環（右翅）</h4>
+                        <p style="color: #666; font-size: 0.9em; margin-bottom: 12px;">
+                            <strong>材料:</strong> 金屬、玻璃、高品質塑膠等
+                        </p>
+                        <p style="color: #666; font-size: 0.9em; margin-bottom: 12px;">
+                            <strong>設計原則:</strong>
+                        </p>
+                        <ul style="color: #666; font-size: 0.9em; padding-left: 20px;">
+                            <li>易於拆卸分類</li>
+                            <li>無限次回收利用</li>
+                            <li>零廢棄物目標</li>
+                        </ul>
+                        <p style="color: #666; font-size: 0.9em; margin-top: 12px;">
+                            <strong>案例:</strong> Fairphone模塊化手機、Interface地毯回收計畫
+                        </p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 30px;">
+                    <h4 style="margin-bottom: 16px;">永續商業模式比較</h4>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+                        <thead>
+                            <tr style="background: #f3f4f6;">
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #d1d5db;">商業模式</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #d1d5db;">概念</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #d1d5db;">環保效益</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #d1d5db;">企業動力</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #e5e7eb;">
+                                <td style="padding: 12px;"><strong>產品即服務（PaaS）</strong></td>
+                                <td style="padding: 12px;">企業保有所有權，消費者租服務</td>
+                                <td style="padding: 12px;">企業激勵製造耐用、易維修產品</td>
+                                <td style="padding: 12px;">保留產品可回收利用</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e5e7eb;">
+                                <td style="padding: 12px;"><strong>共享經濟</strong></td>
+                                <td style="padding: 12px;">多個使用者共享單一產品</td>
+                                <td style="padding: 12px;">減少製造業規模</td>
+                                <td style="padding: 12px;">提高單個產品利用率</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e5e7eb;">
+                                <td style="padding: 12px;"><strong>再製造</strong></td>
+                                <td style="padding: 12px;">回收舊產品，更新零件後重賣</td>
+                                <td style="padding: 12px;">節省70-80%製造能源</td>
+                                <td style="padding: 12px;">成本低於新製造30-50%</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px;"><strong>逆物流回收</strong></td>
+                                <td style="padding: 12px;">建立系統回收使用過的產品與包裝</td>
+                                <td style="padding: 12px;">轉化廢棄物為新資源</td>
+                                <td style="padding: 12px;">取代昂貴的原料採購</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="background: #fef3c7; padding: 20px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                    <h4 style="color: #b45309; margin-bottom: 12px;">⚠️ 漂綠與真實循環的區別</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div>
+                            <p style="color: #991b1b; font-weight: bold; margin-bottom: 8px;">❌ 漂綠案例</p>
+                            <ul style="color: #666; font-size: 0.9em; padding-left: 20px; line-height: 1.6;">
+                                <li>宣稱「回收計畫」但回收率低於5%</li>
+                                <li>購買碳抵消聲稱「碳中和」但自身未減碳</li>
+                                <li>紙質包裝外層但內層仍是塑膠</li>
+                                <li>自編ESG報告，無第三方驗證</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p style="color: #047857; font-weight: bold; margin-bottom: 8px;">✓ 真實循環</p>
+                            <ul style="color: #666; font-size: 0.9em; padding-left: 20px; line-height: 1.6;">
+                                <li>詳細披露回收率與目標進度</li>
+                                <li>優先進行實質減碳，抵消僅補不足</li>
+                                <li>整個生命週期設計易於循環</li>
+                                <li>第三方認證（Cradle to Cradle等）</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Maturity Model Tab -->
             <div id="maturity-model" class="tab-content">
                 <div class="info-box">
@@ -892,7 +1015,7 @@
         </div>
 
         <div class="footer-note">
-            互動圖表工具 | 商業倫理與ESG學習平台 | 更新於 2026年4月5日
+            互動圖表工具 | 商業倫理與ESG與循環經濟學習平台 | 更新於 2026年4月6日
         </div>
     </div>
 

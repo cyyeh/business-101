@@ -143,7 +143,6 @@
 
     /* Reader */
     .reader { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-    .reader.section-divider { padding-top: 2rem; }
     .tabs {
       display: flex;
       gap: .25rem;
@@ -227,6 +226,171 @@
     footer a { color: var(--primary-light); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
 
+    /* Global Search */
+    .search-wrapper {
+      max-width: 600px;
+      margin: 1.25rem auto 0;
+      padding: 0 2rem;
+      position: relative;
+    }
+    .search-input-box {
+      display: flex;
+      align-items: center;
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: .5rem 1rem;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .search-input-box:focus-within {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(44,82,130,.15);
+    }
+    .search-input-box svg {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      color: var(--text-light);
+      margin-right: .6rem;
+    }
+    .search-input-box input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      font-family: inherit;
+      color: var(--text);
+      background: transparent;
+    }
+    .search-input-box input::placeholder { color: var(--text-light); }
+    .search-input-box .search-clear {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: var(--text-light);
+      padding: 0 .25rem;
+      display: none;
+      line-height: 1;
+    }
+    .search-input-box .search-clear:hover { color: var(--text); }
+    .search-input-box .index-status {
+      flex-shrink: 0;
+      font-size: .72rem;
+      color: var(--text-light);
+      white-space: nowrap;
+      margin-left: .35rem;
+      transition: opacity .5s;
+    }
+    .search-results-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 2rem;
+      right: 2rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0 0 var(--radius) var(--radius);
+      box-shadow: var(--shadow-lg);
+      max-height: 420px;
+      overflow-y: auto;
+      z-index: 100;
+      display: none;
+    }
+    .search-results-dropdown.visible { display: block; }
+    .search-result-item {
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      padding: .75rem 1rem;
+      text-decoration: none;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      transition: background .15s;
+      cursor: pointer;
+    }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: #edf2f7; }
+    .search-result-item .result-icon {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .8rem;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 2px;
+    }
+    .search-result-item .result-icon.topic-icon { background: var(--primary-light); }
+    .search-result-item .result-icon.cross-icon { background: var(--accent2); }
+    .search-result-item .result-icon.glossary-icon { background: #38a169; }
+    .search-result-item .result-info { flex: 1; min-width: 0; }
+    .search-result-item .result-title {
+      font-weight: 600;
+      font-size: .95rem;
+      margin-bottom: .15rem;
+    }
+    .search-result-item .result-title mark {
+      background: #fefcbf;
+      color: var(--text);
+      border-radius: 2px;
+      padding: 0 1px;
+    }
+    .search-result-item .result-desc {
+      font-size: .82rem;
+      color: var(--text-light);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .search-result-item .result-desc mark {
+      background: #fefcbf;
+      color: var(--text-light);
+      border-radius: 2px;
+      padding: 0 1px;
+    }
+    .search-result-item .result-badges {
+      display: flex;
+      gap: .3rem;
+      margin-top: .35rem;
+      flex-wrap: wrap;
+    }
+    .search-result-item .result-badges .badge { font-size: .7rem; }
+    .search-result-item .result-badges .badge.content-badge {
+      background: #ebf8ff;
+      border-color: #90cdf4;
+      color: #2b6cb0;
+    }
+    .search-result-item .result-desc.result-snippet {
+      white-space: normal;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.5;
+    }
+    .search-result-item .result-badges .badge.glossary-badge {
+      background: #f0fff4;
+      border-color: #9ae6b4;
+      color: #276749;
+    }
+    .search-no-result {
+      padding: 1.5rem 1rem;
+      text-align: center;
+      color: var(--text-light);
+      font-size: .95rem;
+    }
+    .search-hint {
+      padding: .5rem 1rem;
+      text-align: right;
+      color: var(--text-light);
+      font-size: .78rem;
+      border-top: 1px solid var(--border);
+    }
+
     /* Error */
     .error { text-align: center; color: #e53e3e; padding: 2rem; }
 
@@ -242,7 +406,7 @@
       header .subtitle { font-size: .95rem; }
       .nav-tabs { padding: .75rem .75rem 0; gap: .25rem; }
       .nav-tab { padding: .6rem 1rem; font-size: .95rem; }
-      .home { padding: 0 .75rem .75rem; }
+      .home { padding: .75rem .75rem .75rem; }
       .grid { grid-template-columns: 1fr; gap: .75rem; }
       .card { padding: 1.15rem; }
       .card h2 { font-size: 1.05rem; }
@@ -258,6 +422,8 @@
       .content-box iframe { height: 60vh; }
       .content-box blockquote { padding: .4rem .75rem; }
       footer { padding: 1.25rem; }
+      .search-wrapper { padding: 0 .75rem; margin-top: .75rem; }
+      .search-results-dropdown { left: .75rem; right: .75rem; max-height: 320px; }
     }
   </style>
 </head>
@@ -267,6 +433,9 @@
   <script>
     let topicSections = [];
     let crossSections = [];
+    let glossaryEntries = []; // { term, english, definition, category }
+    let contentIndex = [];    // { topicTitle, linkText, linkType, url, content, isCross }
+    let indexReady = false;
     let currentTabIdx = 0;
     let activeHomeTab = 'roadmap'; // 'roadmap', 'topics', 'cross', or 'glossary'
 
@@ -314,6 +483,354 @@
         }
       }
       return { topics, cross };
+    }
+
+    /* ---- Parse glossary markdown into entries ---- */
+    function parseGlossary(md) {
+      const entries = [];
+      let currentCategory = '';
+      for (const line of md.split('\n')) {
+        const h2 = line.match(/^##\s+(.+)/);
+        if (h2) { currentCategory = h2[1].trim(); continue; }
+        // Match table rows: | 術語 | English | 定義 |
+        const row = line.match(/^\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|$/);
+        if (row) {
+          const [, term, english, definition] = row;
+          // Skip header row
+          if (term === '術語' || term.match(/^-+$/)) continue;
+          if (english.match(/^-+$/)) continue;
+          entries.push({
+            term: term.trim(),
+            english: english.trim(),
+            definition: definition.trim(),
+            category: currentCategory
+          });
+        }
+      }
+      return entries;
+    }
+
+    /* ---- Search bar HTML snippet ---- */
+    function searchBarHTML() {
+      return `<div class="search-wrapper" id="search-wrapper">
+        <div class="search-input-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="search-input" placeholder="搜尋主題、術語、關鍵字…" autocomplete="off" />
+          <button class="search-clear" id="search-clear" title="清除">&times;</button>
+          <span id="index-status" class="index-status">${indexReady ? '' : '索引中…'}</span>
+        </div>
+        <div class="search-results-dropdown" id="search-dropdown"></div>
+      </div>`;
+    }
+
+    /* ---- Highlight matching text ---- */
+    function highlightMatch(text, query) {
+      if (!query) return text;
+      const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(${escaped})`, 'gi');
+      return text.replace(regex, '<mark>$1</mark>');
+    }
+
+    /* ---- Extract a text snippet around the match ---- */
+    function extractSnippet(content, query, maxLen = 100) {
+      // Strip markdown syntax for cleaner snippets
+      const plain = content
+        .replace(/^#{1,6}\s+/gm, '')
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+        .replace(/[*_~`>|]/g, '')
+        .replace(/\n{2,}/g, '\n')
+        .replace(/---+/g, '');
+      const idx = plain.toLowerCase().indexOf(query.toLowerCase());
+      if (idx === -1) return '';
+      const start = Math.max(0, idx - 30);
+      const end = Math.min(plain.length, idx + query.length + maxLen - 30);
+      let snippet = plain.slice(start, end).replace(/\n/g, ' ').trim();
+      if (start > 0) snippet = '…' + snippet;
+      if (end < plain.length) snippet += '…';
+      return snippet;
+    }
+
+    /* ---- Perform search across all topics, glossary, and full-text content ---- */
+    function performSearch(query) {
+      if (!query || query.trim().length === 0) return [];
+      const q = query.trim().toLowerCase();
+      const results = [];
+      const seenTopics = new Set(); // track topics already added to avoid duplicates
+
+      // 1. Search topics & cross-topics (title + description)
+      const allTopics = [
+        ...topicSections.map(t => ({ ...t, isCross: false })),
+        ...crossSections.map(t => ({ ...t, isCross: true }))
+      ];
+
+      for (const topic of allTopics) {
+        const titleMatch = topic.title.toLowerCase().includes(q);
+        const descMatches = [];
+        const badgeLabels = [];
+
+        for (const link of topic.links) {
+          const desc = stripMdLinks(link.description || '');
+          if (desc.toLowerCase().includes(q)) {
+            descMatches.push(desc);
+          }
+          badgeLabels.push(tabLabel(link));
+          if (link.text.toLowerCase().includes(q) && !titleMatch) {
+            descMatches.push(link.text);
+          }
+        }
+
+        if (titleMatch || descMatches.length > 0) {
+          const pro = topic.links.find(l => l.type === 'professional' || l.type === 'cross');
+          const rawDesc = pro ? stripMdLinks(pro.description.replace(/^專業版[，,]\s*/, '')) : stripMdLinks(topic.links[0]?.description || '');
+          results.push({
+            resultType: 'topic',
+            title: topic.title,
+            description: rawDesc,
+            isCross: topic.isCross,
+            badges: badgeLabels,
+            titleMatch,
+            descMatch: descMatches.length > 0 ? descMatches[0] : null
+          });
+          seenTopics.add(topic.title);
+        }
+      }
+
+      // 2. Search glossary entries
+      for (const entry of glossaryEntries) {
+        const termMatch = entry.term.toLowerCase().includes(q);
+        const englishMatch = entry.english.toLowerCase().includes(q);
+        const defMatch = entry.definition.toLowerCase().includes(q);
+        const catMatch = entry.category.toLowerCase().includes(q);
+
+        if (termMatch || englishMatch || defMatch || catMatch) {
+          results.push({
+            resultType: 'glossary',
+            title: entry.term,
+            english: entry.english,
+            description: entry.definition,
+            category: entry.category,
+            titleMatch: termMatch || englishMatch
+          });
+        }
+      }
+
+      // 3. Search full-text content index
+      if (indexReady || contentIndex.length > 0) {
+        for (const item of contentIndex) {
+          if (!item.content.toLowerCase().includes(q)) continue;
+
+          // If the parent topic is already in results, add content match info
+          const existingTopic = results.find(r => r.resultType === 'topic' && r.title === item.topicTitle);
+          if (existingTopic) {
+            // Enrich existing topic result with content snippet if it doesn't have one
+            if (!existingTopic.contentSnippet) {
+              existingTopic.contentSnippet = extractSnippet(item.content, q);
+              existingTopic.contentMatchType = item.linkType;
+            }
+            continue;
+          }
+
+          // Check if we already added a content result for this topic
+          const key = item.topicTitle + '::' + item.linkType;
+          if (seenTopics.has(item.topicTitle)) continue;
+
+          const snippet = extractSnippet(item.content, q);
+          results.push({
+            resultType: 'content',
+            title: item.topicTitle,
+            linkText: item.linkText,
+            linkType: item.linkType,
+            url: item.url,
+            isCross: item.isCross,
+            snippet,
+            titleMatch: false
+          });
+          seenTopics.add(item.topicTitle);
+        }
+      }
+
+      // Sort priority: topic title match > glossary term match > topic desc match > content match
+      results.sort((a, b) => {
+        const order = { topic: 0, glossary: 1, content: 2 };
+        // Title/term matches first within each type
+        if (a.titleMatch && !b.titleMatch) return -1;
+        if (!a.titleMatch && b.titleMatch) return 1;
+        // Then by type
+        const ao = order[a.resultType] ?? 3;
+        const bo = order[b.resultType] ?? 3;
+        if (ao !== bo) return ao - bo;
+        return a.title.length - b.title.length;
+      });
+
+      return results;
+    }
+
+    /* ---- Render search results dropdown ---- */
+    function renderSearchResults(results, query) {
+      const dropdown = document.getElementById('search-dropdown');
+      if (!dropdown) return;
+
+      if (results.length === 0) {
+        const indexMsg = indexReady ? '' : '<br><span style="font-size:.82rem">（全文索引建立中，稍後可搜尋更多內容）</span>';
+        dropdown.innerHTML = `<div class="search-no-result">找不到「${query}」相關的結果${indexMsg}</div>`;
+        dropdown.classList.add('visible');
+        return;
+      }
+
+      const items = results.map(r => {
+        if (r.resultType === 'glossary') {
+          const title = highlightMatch(r.title, query);
+          const english = highlightMatch(r.english, query);
+          const desc = highlightMatch(r.description, query);
+          return `<a class="search-result-item" href="#" data-glossary-term="${r.title}">
+            <div class="result-icon glossary-icon">詞</div>
+            <div class="result-info">
+              <div class="result-title">${title} <span style="font-weight:400;color:var(--text-light);font-size:.85rem">${english}</span></div>
+              <div class="result-desc">${desc}</div>
+              <div class="result-badges"><span class="badge glossary-badge">${r.category}</span></div>
+            </div>
+          </a>`;
+        }
+        if (r.resultType === 'content') {
+          // Full-text content match (topic not matched by title/desc)
+          const iconClass = r.isCross ? 'cross-icon' : 'topic-icon';
+          const iconText = r.isCross ? '跨' : '文';
+          const title = highlightMatch(r.title, query);
+          const snippet = highlightMatch(r.snippet, query);
+          const typeLabel = tabLabel({ type: r.linkType });
+          return `<a class="search-result-item" href="#${encodeURIComponent(r.title)}">
+            <div class="result-icon ${iconClass}">${iconText}</div>
+            <div class="result-info">
+              <div class="result-title">${title}</div>
+              <div class="result-desc result-snippet">${snippet}</div>
+              <div class="result-badges"><span class="badge content-badge">${typeLabel}內文匹配</span></div>
+            </div>
+          </a>`;
+        }
+        // Topic or cross-topic result (title/desc match)
+        const iconClass = r.isCross ? 'cross-icon' : 'topic-icon';
+        const iconText = r.isCross ? '跨' : '題';
+        const title = highlightMatch(r.title, query);
+        const desc = highlightMatch(r.contentSnippet || r.description, query);
+        const badges = r.badges ? r.badges.map(b => `<span class="badge">${b}</span>`).join('') : '';
+        const snippetExtra = r.contentSnippet ? `<div class="result-badges"><span class="badge content-badge">${tabLabel({ type: r.contentMatchType })}內文匹配</span></div>` : '';
+        return `<a class="search-result-item" href="#${encodeURIComponent(r.title)}">
+          <div class="result-icon ${iconClass}">${iconText}</div>
+          <div class="result-info">
+            <div class="result-title">${title}</div>
+            <div class="result-desc">${desc}</div>
+            <div class="result-badges">${badges}</div>
+            ${snippetExtra}
+          </div>
+        </a>`;
+      }).join('');
+
+      dropdown.innerHTML = items + `<div class="search-hint">共 ${results.length} 筆結果，點擊前往</div>`;
+      dropdown.classList.add('visible');
+    }
+
+    /* ---- Bind search events ---- */
+    function bindSearchEvents() {
+      const input = document.getElementById('search-input');
+      const clearBtn = document.getElementById('search-clear');
+      const dropdown = document.getElementById('search-dropdown');
+      if (!input) return;
+
+      let debounceTimer;
+      input.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        const val = input.value;
+        clearBtn.style.display = val.length > 0 ? 'block' : 'none';
+        debounceTimer = setTimeout(() => {
+          if (val.trim().length === 0) {
+            dropdown.classList.remove('visible');
+            return;
+          }
+          const results = performSearch(val);
+          renderSearchResults(results, val.trim());
+        }, 200);
+      });
+
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        clearBtn.style.display = 'none';
+        dropdown.classList.remove('visible');
+        input.focus();
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        const wrapper = document.getElementById('search-wrapper');
+        if (wrapper && !wrapper.contains(e.target)) {
+          dropdown.classList.remove('visible');
+        }
+      });
+
+      // Close dropdown on Escape
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          dropdown.classList.remove('visible');
+          input.blur();
+        }
+      });
+
+      // Navigate on clicking result
+      dropdown.addEventListener('click', (e) => {
+        const item = e.target.closest('.search-result-item');
+        if (!item) return;
+
+        dropdown.classList.remove('visible');
+        input.value = '';
+        clearBtn.style.display = 'none';
+
+        // Handle glossary term click: switch to glossary tab and scroll to term
+        const glossaryTerm = item.dataset.glossaryTerm;
+        if (glossaryTerm) {
+          e.preventDefault();
+          location.hash = '';
+          activeHomeTab = 'glossary';
+          renderHome();
+          // Wait for glossary to load, then scroll to the matching term
+          const waitForGlossary = setInterval(() => {
+            const glossaryBox = document.getElementById('glossary-content');
+            if (!glossaryBox || glossaryBox.classList.contains('loading')) return;
+            clearInterval(waitForGlossary);
+            // Find the term in rendered table cells
+            const cells = glossaryBox.querySelectorAll('td');
+            for (const cell of cells) {
+              if (cell.textContent.trim() === glossaryTerm) {
+                const row = cell.closest('tr');
+                if (row) {
+                  row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  row.style.transition = 'background .3s';
+                  row.style.background = '#fefcbf';
+                  setTimeout(() => { row.style.background = ''; }, 2500);
+                }
+                break;
+              }
+            }
+          }, 100);
+        }
+      });
+    }
+
+    /* ---- Convert internal .md links to SPA hash navigation ---- */
+    function convertInternalLinks(container) {
+      const allTopics = [...topicSections, ...crossSections];
+      container.querySelectorAll('a[href]').forEach(a => {
+        const href = decodeURIComponent(a.getAttribute('href'));
+        // Match links like ../主題名/檔名.md or ./主題名/檔名.md
+        const mdMatch = href.match(/\.\.?\/([^/]+)\/[^/]+\.md$/);
+        if (mdMatch) {
+          const dirName = mdMatch[1];
+          const topic = allTopics.find(t => t.title === dirName);
+          if (topic) {
+            a.href = '#' + encodeURIComponent(topic.title);
+            a.style.color = 'var(--primary-light)';
+            a.style.textDecoration = 'underline';
+          }
+        }
+      });
     }
 
     /* ---- Strip markdown link syntax from text: [text](url) → text ---- */
@@ -385,6 +902,7 @@
         <header>
           <h1>Business 101</h1>
           <p class="subtitle">商業與金融基礎知識學習筆記</p>
+          ${searchBarHTML()}
         </header>
         <div class="nav-tabs">
           <button class="nav-tab${isRoadmap ? ' active roadmap' : ' roadmap'}" data-tab="roadmap">
@@ -411,6 +929,8 @@
           renderHome();
         });
       });
+
+      bindSearchEvents();
 
       // Load roadmap markdown if on roadmap tab
       if (isRoadmap) {
@@ -463,6 +983,7 @@
         const md = await res.text();
         el.className = 'content-box';
         el.innerHTML = marked.parse(md);
+        convertInternalLinks(el);
       } catch (e) {
         el.className = 'content-box error';
         el.textContent = '載入失敗，請重新整理頁面。';
@@ -483,6 +1004,7 @@
         <header>
           <a class="back" href="#" data-back="${topic.isCross ? 'cross' : 'topics'}">${backLabel}</a>
           <h1>${topic.title}</h1>
+          ${searchBarHTML()}
         </header>
         <main class="reader">
           ${topic.links.length > 1 ? `<div class="tabs">${tabs}</div>` : ''}
@@ -507,6 +1029,8 @@
         });
       });
 
+      bindSearchEvents();
+
       await loadContent(topic.links[currentTabIdx]);
     }
 
@@ -528,6 +1052,7 @@
         const md = await res.text();
         el.className = 'content-box';
         el.innerHTML = marked.parse(md);
+        convertInternalLinks(el);
       } catch (e) {
         el.className = 'content-box error';
         el.textContent = '載入失敗，請重新整理頁面。';
@@ -549,16 +1074,89 @@
       }
     }
 
+    /* ---- Build full-text index in background ---- */
+    async function buildContentIndex() {
+      const allTopics = [
+        ...topicSections.map(t => ({ ...t, isCross: false })),
+        ...crossSections.map(t => ({ ...t, isCross: true }))
+      ];
+
+      // Collect all markdown links (skip .html interactive files)
+      const tasks = [];
+      for (const topic of allTopics) {
+        for (const link of topic.links) {
+          if (link.url.endsWith('.html')) continue;
+          tasks.push({ topicTitle: topic.title, link, isCross: topic.isCross });
+        }
+      }
+
+      // Fetch in batches of 10 to avoid overwhelming the server
+      const batchSize = 10;
+      for (let i = 0; i < tasks.length; i += batchSize) {
+        const batch = tasks.slice(i, i + batchSize);
+        const results = await Promise.allSettled(
+          batch.map(async (task) => {
+            const res = await fetch(encodeURI(task.link.url));
+            if (!res.ok) return null;
+            const text = await res.text();
+            return {
+              topicTitle: task.topicTitle,
+              linkText: task.link.text,
+              linkType: task.link.type,
+              url: task.link.url,
+              isCross: task.isCross,
+              content: text
+            };
+          })
+        );
+        for (const r of results) {
+          if (r.status === 'fulfilled' && r.value) {
+            contentIndex.push(r.value);
+          }
+        }
+        // Update indexing status indicator
+        updateIndexStatus(Math.min(i + batchSize, tasks.length), tasks.length);
+      }
+
+      indexReady = true;
+      updateIndexStatus(tasks.length, tasks.length);
+    }
+
+    /* ---- Update index status indicator ---- */
+    function updateIndexStatus(done, total) {
+      const el = document.getElementById('index-status');
+      if (!el) return;
+      if (done >= total) {
+        el.textContent = '全文索引就緒';
+        el.style.color = '#38a169';
+        setTimeout(() => { el.style.opacity = '0'; }, 1500);
+      } else {
+        el.textContent = `建立索引中 ${done}/${total}`;
+      }
+    }
+
     /* ---- Init ---- */
     async function init() {
       try {
-        const res = await fetch('README.md');
-        const md = await res.text();
+        const [readmeRes, glossaryRes] = await Promise.all([
+          fetch('README.md'),
+          fetch(encodeURI('術語總表.md'))
+        ]);
+        const md = await readmeRes.text();
         const parsed = parseReadme(md);
         topicSections = parsed.topics;
         crossSections = parsed.cross;
+
+        if (glossaryRes.ok) {
+          const glossaryMd = await glossaryRes.text();
+          glossaryEntries = parseGlossary(glossaryMd);
+        }
+
         window.addEventListener('hashchange', route);
         route();
+
+        // Start background indexing after page is rendered
+        buildContentIndex();
       } catch (e) {
         document.getElementById('app').innerHTML =
           '<div class="error" style="padding:4rem">無法載入內容，請確認 README.md 存在。</div>';
