@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案管理互動工具集</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            background: #f5f5f5;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 1em;
+            font-weight: bold;
+            color: #333;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .tab-button:hover {
+            background: #e8e8e8;
+        }
+
+        .tab-button.active {
+            background: white;
+            border-bottom-color: #667eea;
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .output-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            min-height: 300px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+        }
+
+        .gantt-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .gantt-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gantt-label {
+            width: 120px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .gantt-timeline {
+            flex: 1;
+            height: 40px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            position: relative;
+            overflow: visible;
+        }
+
+        .gantt-bar {
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 5px;
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .gantt-bar:hover {
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transform: scaleY(1.1);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .kanban-column {
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 400px;
+        }
+
+        .kanban-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            color: #333;
+        }
+
+        .kanban-card {
+            background: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            cursor: move;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .kanban-card:hover {
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .risk-matrix {
+            margin-top: 20px;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 100px repeat(3, 1fr);
+            gap: 2px;
+            margin-top: 10px;
+        }
+
+        .matrix-cell {
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #ddd;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+        }
+
+        .matrix-header {
+            background: #667eea;
+            color: white;
+        }
+
+        .matrix-low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .matrix-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .matrix-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .table-style {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .table-style th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .table-style td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table-style tr:hover {
+            background: #f5f5f5;
+        }
+
+        .text-success {
+            color: #28a745;
+        }
+
+        .text-danger {
+            color: #dc3545;
+        }
+
+        .text-warning {
+            color: #ffc107;
+        }
+
+        .formula {
+            background: #f0f0f0;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: #f5f5f5;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9em;
+            border-top: 1px solid #ddd;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kanban-board {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .tab-button {
+                min-width: 150px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>專案管理互動工具集</h1>
+            <p>五種專案管理工具的實踐應用</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab(0)">甘特圖建構器</button>
+            <button class="tab-button" onclick="switchTab(1)">關鍵路徑分析</button>
+            <button class="tab-button" onclick="switchTab(2)">實獲值儀表板</button>
+            <button class="tab-button" onclick="switchTab(3)">敏捷Sprint看板</button>
+            <button class="tab-button" onclick="switchTab(4)">風險評估矩陣</button>
+        </div>
+
+        <!-- Tab 1: 甘特圖建構器 -->
+        <div class="tab-content active">
+            <h2 class="section-title">甘特圖建構器</h2>
+            <p>輸入任務信息，自動生成專業甘特圖</p>
+
+            <div class="input-group">
+                <label>任務名稱</label>
+                <input type="text" id="taskName" placeholder="例如：需求分析">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="input-group">
+                    <label>開始周（1-12）</label>
+                    <input type="number" id="startWeek" min="1" max="12" value="1">
+                </div>
+                <div class="input-group">
+                    <label>持續周數</label>
+                    <input type="number" id="duration" min="1" max="12" value="2">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button onclick="addGanttTask()">新增任務</button>
+                <button onclick="clearGanttTasks()" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">清除所有</button>
+            </div>
+
+            <div class="chart-container">
+                <h3 style="margin-bottom: 20px; color: #333;">專案進度表</h3>
+                <div class="gantt-chart" id="ganttChart"></div>
+            </div>
+
+            <div class="output-box" id="ganttInfo"></div>
+        </div>
+
+        <!-- Tab 2: 關鍵路徑分析 -->
+        <div class="tab-content">
+            <h2 class="section-title">關鍵路徑法（CPM）分析器</h2>
+            <p>輸入活動及依賴關係，計算關鍵路徑和浮動時間</p>
+
+            <div class="input-group">
+                <label>活動名稱</label>
+                <input type="text" id="actName" placeholder="例如：A">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                <div class="input-group">
+                    <label>持續期（天）</label>
+                    <input type="number" id="duration_cpm" min="1" value="5">
+                </div>
+                <div class="input-group">
+                    <label>前置活動</label>
+                    <input type="text" id="predecessor" placeholder="例如：A,B（留空表示無）">
+                </div>
+                <div class="input-group">
+                    <label>成本（萬元）</label>
+                    <input type="number" id="cost_cpm" min="0" value="10">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button onclick="addCPMActivity()">新增活動</button>
+                <button onclick="calculateCPM()">計算關鍵路徑</button>
+                <button onclick="clearCPMActivities()" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">清除</button>
+            </div>
+
+            <div class="output-box" id="cpmOutput">
+                <table class="table-style" id="cpmTable">
+                    <thead>
+                        <tr>
+                            <th>活動</th>
+                            <th>前置</th>
+                            <th>持續期</th>
+                            <th>最早開始</th>
+                            <th>最早完成</th>
+                            <th>最遲開始</th>
+                            <th>最遲完成</th>
+                            <th>浮動時間</th>
+                            <th>關鍵</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cpmTableBody"></tbody>
+                </table>
+                <div id="cpmResult" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+
+        <!-- Tab 3: 實獲值管理儀表板 -->
+        <div class="tab-content">
+            <h2 class="section-title">實獲值管理（EVM）儀表板</h2>
+            <p>監控專案進度和成本績效</p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                <div class="input-group">
+                    <label>計劃價值（PV, 萬元）</label>
+                    <input type="number" id="pv_evm" min="0" value="100">
+                </div>
+                <div class="input-group">
+                    <label>實獲值（EV, 萬元）</label>
+                    <input type="number" id="ev_evm" min="0" value="80">
+                </div>
+                <div class="input-group">
+                    <label>實際成本（AC, 萬元）</label>
+                    <input type="number" id="ac_evm" min="0" value="90">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="input-group">
+                    <label>完成時預算（BAC, 萬元）</label>
+                    <input type="number" id="bac_evm" min="0" value="500">
+                </div>
+                <div class="input-group">
+                    <label>計劃完成時間（月）</label>
+                    <input type="number" id="planDuration_evm" min="1" value="12">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button onclick="calculateEVM()">計算績效指標</button>
+                <button onclick="clearEVM()" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">清除</button>
+            </div>
+
+            <div class="output-box" id="evmOutput">
+                <div class="dashboard-grid" id="evmDashboard"></div>
+                <div id="evmAnalysis" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+
+        <!-- Tab 4: 敏捷Sprint看板 -->
+        <div class="tab-content">
+            <h2 class="section-title">敏捷Sprint看板模擬</h2>
+            <p>拖拽卡片在各列之間移動，模擬敏捷開發流程</p>
+
+            <div class="input-group">
+                <label>新建故事/任務</label>
+                <input type="text" id="newTask" placeholder="例如：實現登入功能">
+            </div>
+
+            <div class="button-group">
+                <button onclick="addKanbanTask()">新增任務到待做</button>
+                <button onclick="resetKanban()" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">重置看板</button>
+            </div>
+
+            <div class="kanban-board" id="kanbanBoard">
+                <div class="kanban-column">
+                    <div class="kanban-title">待做（To Do）</div>
+                    <div id="kanban-todo" ondrop="allowDrop(event)" ondragover="allowDragOver(event)"></div>
+                </div>
+                <div class="kanban-column">
+                    <div class="kanban-title">進行中（Doing）</div>
+                    <div id="kanban-doing" ondrop="allowDrop(event)" ondragover="allowDragOver(event)"></div>
+                </div>
+                <div class="kanban-column">
+                    <div class="kanban-title">完成（Done）</div>
+                    <div id="kanban-done" ondrop="allowDrop(event)" ondragover="allowDragOver(event)"></div>
+                </div>
+            </div>
+
+            <div class="output-box" id="kanbanStats" style="margin-top: 20px;">
+                <h3>Sprint 統計</h3>
+                <p id="kanbanMetrics"></p>
+            </div>
+        </div>
+
+        <!-- Tab 5: 風險評估矩陣 -->
+        <div class="tab-content">
+            <h2 class="section-title">專案風險評估矩陣</h2>
+            <p>識別、評估和追蹤專案風險</p>
+
+            <div class="input-group">
+                <label>風險描述</label>
+                <input type="text" id="riskDesc" placeholder="例如：關鍵技術人員離職">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="input-group">
+                    <label>發生概率</label>
+                    <select id="riskProb">
+                        <option value="1">低（20%）</option>
+                        <option value="2">中（50%）</option>
+                        <option value="3">高（80%）</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>影響程度</label>
+                    <select id="riskImpact">
+                        <option value="1">低</option>
+                        <option value="2">中</option>
+                        <option value="3">高</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>應對策略</label>
+                <select id="riskStrategy">
+                    <option value="避免">避免（Avoid）</option>
+                    <option value="減輕">減輕（Mitigate）</option>
+                    <option value="轉移">轉移（Transfer）</option>
+                    <option value="接受">接受（Accept）</option>
+                </select>
+            </div>
+
+            <div class="button-group">
+                <button onclick="addRisk()">新增風險</button>
+                <button onclick="clearRisks()" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">清除所有</button>
+            </div>
+
+            <div class="output-box">
+                <h3 style="margin-bottom: 20px;">風險評估矩陣</h3>
+                <div class="risk-matrix">
+                    <div class="matrix-grid">
+                        <div class="matrix-cell matrix-header"></div>
+                        <div class="matrix-cell matrix-header">概率低</div>
+                        <div class="matrix-cell matrix-header">概率中</div>
+                        <div class="matrix-cell matrix-header">概率高</div>
+
+                        <div class="matrix-cell matrix-header">影響高</div>
+                        <div class="matrix-cell matrix-medium" id="risk-1-3">中等</div>
+                        <div class="matrix-cell matrix-high" id="risk-2-3">高</div>
+                        <div class="matrix-cell matrix-high" id="risk-3-3">極高</div>
+
+                        <div class="matrix-cell matrix-header">影響中</div>
+                        <div class="matrix-cell matrix-low" id="risk-1-2">低</div>
+                        <div class="matrix-cell matrix-medium" id="risk-2-2">中等</div>
+                        <div class="matrix-cell matrix-high" id="risk-3-2">高</div>
+
+                        <div class="matrix-cell matrix-header">影響低</div>
+                        <div class="matrix-cell matrix-low" id="risk-1-1">低</div>
+                        <div class="matrix-cell matrix-low" id="risk-2-1">低</div>
+                        <div class="matrix-cell matrix-medium" id="risk-3-1">中等</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">風險登記簿</h3>
+                <table class="table-style">
+                    <thead>
+                        <tr>
+                            <th>風險描述</th>
+                            <th>優先級</th>
+                            <th>應對策略</th>
+                            <th>狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody id="riskTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>專案管理互動工具集 | 用於教學和實踐用途</p>
+        </div>
+    </div>
+
+    <script>
+        // 全局數據結構
+        let ganttTasks = [];
+        let cpmActivities = [];
+        let riskRegister = [];
+        let taskCounter = 0;
+
+        // Tab 切換
+        function switchTab(index) {
+            const contents = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+            contents.forEach((c, i) => {
+                c.classList.toggle('active', i === index);
+            });
+            buttons.forEach((b, i) => {
+                b.classList.toggle('active', i === index);
+            });
+        }
+
+        // ===== Tab 1: 甘特圖 =====
+        function addGanttTask() {
+            const name = document.getElementById('taskName').value;
+            const start = parseInt(document.getElementById('startWeek').value);
+            const duration = parseInt(document.getElementById('duration').value);
+
+            if (!name) {
+                alert('請輸入任務名稱');
+                return;
+            }
+
+            ganttTasks.push({
+                id: ganttTasks.length,
+                name: name,
+                start: start,
+                duration: duration
+            });
+
+            document.getElementById('taskName').value = '';
+            renderGanttChart();
+        }
+
+        function renderGanttChart() {
+            const chart = document.getElementById('ganttChart');
+            chart.innerHTML = '';
+
+            ganttTasks.forEach(task => {
+                const row = document.createElement('div');
+                row.className = 'gantt-row';
+
+                const label = document.createElement('div');
+                label.className = 'gantt-label';
+                label.textContent = task.name;
+
+                const timeline = document.createElement('div');
+                timeline.className = 'gantt-timeline';
+
+                const bar = document.createElement('div');
+                bar.className = 'gantt-bar';
+                const leftPercent = ((task.start - 1) / 12) * 100;
+                const widthPercent = (task.duration / 12) * 100;
+                bar.style.left = leftPercent + '%';
+                bar.style.width = widthPercent + '%';
+                bar.textContent = task.name;
+
+                timeline.appendChild(bar);
+                row.appendChild(label);
+                row.appendChild(timeline);
+                chart.appendChild(row);
+            });
+
+            updateGanttInfo();
+        }
+
+        function updateGanttInfo() {
+            const info = document.getElementById('ganttInfo');
+            const totalDuration = ganttTasks.length > 0 ?
+                Math.max(...ganttTasks.map(t => t.start + t.duration - 1)) : 0;
+
+            info.innerHTML = `
+                <h3>甘特圖統計</h3>
+                <p><strong>總任務數：</strong> ${ganttTasks.length}</p>
+                <p><strong>預計完成時間：</strong> 第 ${totalDuration} 周</p>
+                <p><strong>任務清單：</strong></p>
+                <ul>
+                    ${ganttTasks.map(t =>
+                        `<li>${t.name}（第 ${t.start}-${t.start + t.duration - 1} 周）</li>`
+                    ).join('')}
+                </ul>
+            `;
+        }
+
+        function clearGanttTasks() {
+            ganttTasks = [];
+            document.getElementById('ganttChart').innerHTML = '';
+            document.getElementById('ganttInfo').innerHTML = '';
+        }
+
+        // ===== Tab 2: CPM =====
+        function addCPMActivity() {
+            const name = document.getElementById('actName').value;
+            const duration = parseInt(document.getElementById('duration_cpm').value);
+            const predecessor = document.getElementById('predecessor').value || '';
+            const cost = parseInt(document.getElementById('cost_cpm').value);
+
+            if (!name) {
+                alert('請輸入活動名稱');
+                return;
+            }
+
+            cpmActivities.push({
+                name: name,
+                duration: duration,
+                predecessor: predecessor.split(',').map(p => p.trim()).filter(p => p),
+                cost: cost
+            });
+
+            document.getElementById('actName').value = '';
+            document.getElementById('duration_cpm').value = '5';
+            document.getElementById('predecessor').value = '';
+            document.getElementById('cost_cpm').value = '10';
+        }
+
+        function calculateCPM() {
+            if (cpmActivities.length === 0) {
+                alert('請先新增活動');
+                return;
+            }
+
+            // 前向傳遞
+            cpmActivities.forEach(act => {
+                if (act.predecessor.length === 0) {
+                    act.es = 0;
+                    act.ef = act.duration;
+                } else {
+                    act.es = Math.max(...act.predecessor.map(pred => {
+                        const predAct = cpmActivities.find(a => a.name === pred);
+                        return predAct ? predAct.ef : 0;
+                    }));
+                    act.ef = act.es + act.duration;
+                }
+            });
+
+            const projectEnd = Math.max(...cpmActivities.map(a => a.ef));
+
+            // 後向傳遞
+            cpmActivities.forEach(act => {
+                const dependent = cpmActivities.filter(a => a.predecessor.includes(act.name));
+                if (dependent.length === 0) {
+                    act.lf = projectEnd;
+                    act.ls = projectEnd - act.duration;
+                } else {
+                    act.lf = Math.min(...dependent.map(d => d.ls));
+                    act.ls = act.lf - act.duration;
+                }
+                act.float = act.ls - act.es;
+                act.isCritical = act.float === 0;
+            });
+
+            renderCPMTable(projectEnd);
+        }
+
+        function renderCPMTable(projectEnd) {
+            const tbody = document.getElementById('cpmTableBody');
+            tbody.innerHTML = '';
+
+            cpmActivities.forEach(act => {
+                const row = document.createElement('tr');
+                if (act.isCritical) {
+                    row.style.backgroundColor = '#ffcccc';
+                    row.style.fontWeight = 'bold';
+                }
+
+                row.innerHTML = `
+                    <td>${act.name}</td>
+                    <td>${act.predecessor.join(',') || '-'}</td>
+                    <td>${act.duration}</td>
+                    <td>${act.es}</td>
+                    <td>${act.ef}</td>
+                    <td>${act.ls}</td>
+                    <td>${act.lf}</td>
+                    <td>${act.float}</td>
+                    <td>${act.isCritical ? '✓ 是' : '否'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            const criticalPath = cpmActivities.filter(a => a.isCritical).map(a => a.name).join(' → ');
+            const result = document.getElementById('cpmResult');
+            result.innerHTML = `
+                <h3>計算結果</h3>
+                <p><strong>項目最短完成時間：</strong> ${projectEnd} 天</p>
+                <p><strong>關鍵路徑：</strong> ${criticalPath}</p>
+                <p><strong>總成本：</strong> ${cpmActivities.reduce((sum, a) => sum + a.cost, 0)} 萬元</p>
+            `;
+        }
+
+        function clearCPMActivities() {
+            cpmActivities = [];
+            document.getElementById('cpmTableBody').innerHTML = '';
+            document.getElementById('cpmResult').innerHTML = '';
+        }
+
+        // ===== Tab 3: EVM =====
+        function calculateEVM() {
+            const pv = parseInt(document.getElementById('pv_evm').value);
+            const ev = parseInt(document.getElementById('ev_evm').value);
+            const ac = parseInt(document.getElementById('ac_evm').value);
+            const bac = parseInt(document.getElementById('bac_evm').value);
+            const planDuration = parseInt(document.getElementById('planDuration_evm').value);
+
+            const sv = ev - pv;
+            const spi = pv > 0 ? (ev / pv).toFixed(3) : 0;
+            const cv = ev - ac;
+            const cpi = ac > 0 ? (ev / ac).toFixed(3) : 0;
+            const completion = ((ev / bac) * 100).toFixed(1);
+            const eac = bac / cpi;
+            const costVariance = eac - bac;
+            const scheduleVariance = (planDuration / spi).toFixed(1);
+
+            const dashboard = document.getElementById('evmDashboard');
+            dashboard.innerHTML = `
+                <div class="metric-card">
+                    <div class="metric-label">進度績效指數 (SPI)</div>
+                    <div class="metric-value" style="color: ${spi < 1 ? '#ff6b6b' : '#51cf66'}">${spi}</div>
+                    <div class="metric-label">${spi < 1 ? '進度滯後' : '進度領先'}</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">成本績效指數 (CPI)</div>
+                    <div class="metric-value" style="color: ${cpi < 1 ? '#ff6b6b' : '#51cf66'}">${cpi}</div>
+                    <div class="metric-label">${cpi < 1 ? '成本超支' : '成本節約'}</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">進度差異 (SV)</div>
+                    <div class="metric-value" style="color: ${sv < 0 ? '#ff6b6b' : '#51cf66'}">${sv}</div>
+                    <div class="metric-label">萬元</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">成本差異 (CV)</div>
+                    <div class="metric-value" style="color: ${cv < 0 ? '#ff6b6b' : '#51cf66'}">${cv}</div>
+                    <div class="metric-label">萬元</div>
+                </div>
+            `;
+
+            const analysis = document.getElementById('evmAnalysis');
+            analysis.innerHTML = `
+                <h3>詳細分析</h3>
+                <table class="table-style">
+                    <tr>
+                        <td><strong>完成百分比</strong></td>
+                        <td>${completion}%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>完成時估計成本 (EAC)</strong></td>
+                        <td>${eac.toFixed(0)} 萬元</td>
+                    </tr>
+                    <tr>
+                        <td><strong>成本超支預測</strong></td>
+                        <td style="color: ${costVariance > 0 ? '#ff6b6b' : '#51cf66'}">
+                            ${costVariance > 0 ? '+' : ''}${costVariance.toFixed(0)} 萬元
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>預計完成時間</strong></td>
+                        <td>${scheduleVariance} 個月</td>
+                    </tr>
+                    <tr>
+                        <td><strong>項目狀態</strong></td>
+                        <td style="font-weight: bold; color: ${spi < 0.9 || cpi < 0.9 ? '#ff6b6b' : '#51cf66'}">
+                            ${spi < 0.9 || cpi < 0.9 ? '⚠️ 需要關注' : '✓ 正常'}
+                        </td>
+                    </tr>
+                </table>
+            `;
+        }
+
+        function clearEVM() {
+            document.getElementById('pv_evm').value = '100';
+            document.getElementById('ev_evm').value = '80';
+            document.getElementById('ac_evm').value = '90';
+            document.getElementById('bac_evm').value = '500';
+            document.getElementById('planDuration_evm').value = '12';
+            document.getElementById('evmDashboard').innerHTML = '';
+            document.getElementById('evmAnalysis').innerHTML = '';
+        }
+
+        // ===== Tab 4: Kanban =====
+        function addKanbanTask() {
+            const task = document.getElementById('newTask').value;
+            if (!task) {
+                alert('請輸入任務描述');
+                return;
+            }
+
+            const card = document.createElement('div');
+            card.className = 'kanban-card';
+            card.draggable = true;
+            card.id = 'task-' + (taskCounter++);
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between;">
+                    <span>${task}</span>
+                    <span style="cursor: pointer; color: #dc3545;" onclick="this.parentElement.parentElement.remove(); updateKanbanStats();">×</span>
+                </div>
+            `;
+            card.ondragstart = function(e) {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', this.innerHTML);
+            };
+
+            document.getElementById('kanban-todo').appendChild(card);
+            document.getElementById('newTask').value = '';
+            updateKanbanStats();
+        }
+
+        function allowDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function allowDrop(e) {
+            e.preventDefault();
+            const dragged = document.querySelector('[draggable="true"]');
+            if (dragged && e.target.className.includes('kanban')) {
+                e.target.appendChild(dragged);
+                updateKanbanStats();
+            }
+        }
+
+        function updateKanbanStats() {
+            const todo = document.getElementById('kanban-todo').children.length;
+            const doing = document.getElementById('kanban-doing').children.length;
+            const done = document.getElementById('kanban-done').children.length;
+            const total = todo + doing + done;
+
+            document.getElementById('kanbanMetrics').innerHTML = `
+                <strong>待做：</strong> ${todo} 項 |
+                <strong>進行中：</strong> ${doing} 項 |
+                <strong>已完成：</strong> ${done} 項 |
+                <strong>完成率：</strong> ${total > 0 ? ((done / total) * 100).toFixed(0) : 0}%
+            `;
+        }
+
+        function resetKanban() {
+            document.getElementById('kanban-todo').innerHTML = '';
+            document.getElementById('kanban-doing').innerHTML = '';
+            document.getElementById('kanban-done').innerHTML = '';
+            document.getElementById('newTask').value = '';
+            updateKanbanStats();
+        }
+
+        // ===== Tab 5: 風險矩陣 =====
+        function addRisk() {
+            const desc = document.getElementById('riskDesc').value;
+            const prob = parseInt(document.getElementById('riskProb').value);
+            const impact = parseInt(document.getElementById('riskImpact').value);
+            const strategy = document.getElementById('riskStrategy').value;
+
+            if (!desc) {
+                alert('請輸入風險描述');
+                return;
+            }
+
+            const priority = prob * impact;
+            let priorityLabel = '低';
+            if (priority >= 6) priorityLabel = '極高';
+            else if (priority >= 5) priorityLabel = '高';
+            else if (priority >= 3) priorityLabel = '中等';
+
+            riskRegister.push({
+                description: desc,
+                probability: prob,
+                impact: impact,
+                priority: priorityLabel,
+                strategy: strategy,
+                id: riskRegister.length
+            });
+
+            document.getElementById('riskDesc').value = '';
+            document.getElementById('riskProb').value = '1';
+            document.getElementById('riskImpact').value = '1';
+
+            renderRiskTable();
+            updateRiskMatrix();
+        }
+
+        function renderRiskTable() {
+            const tbody = document.getElementById('riskTableBody');
+            tbody.innerHTML = '';
+
+            riskRegister.forEach(risk => {
+                const row = document.createElement('tr');
+                let bgColor = '#d4edda';
+                if (risk.priority === '高') bgColor = '#f8d7da';
+                if (risk.priority === '極高') bgColor = '#f5c6cb';
+
+                row.style.backgroundColor = bgColor;
+                row.innerHTML = `
+                    <td>${risk.description}</td>
+                    <td><strong>${risk.priority}</strong></td>
+                    <td>${risk.strategy}</td>
+                    <td>
+                        <button onclick="removeRisk(${risk.id})" style="background: #dc3545; padding: 5px 10px; font-size: 0.8em;">
+                            移除
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function removeRisk(id) {
+            riskRegister = riskRegister.filter(r => r.id !== id);
+            renderRiskTable();
+            updateRiskMatrix();
+        }
+
+        function updateRiskMatrix() {
+            // 重置所有單元格
+            for (let p = 1; p <= 3; p++) {
+                for (let i = 1; i <= 3; i++) {
+                    const cell = document.getElementById(`risk-${p}-${i}`);
+                    const priority = p * i;
+                    let label = '低';
+                    let bgClass = 'matrix-low';
+                    if (priority >= 6) {
+                        label = '極高';
+                        bgClass = 'matrix-high';
+                    } else if (priority >= 5) {
+                        label = '高';
+                        bgClass = 'matrix-high';
+                    } else if (priority >= 3) {
+                        label = '中等';
+                        bgClass = 'matrix-medium';
+                    }
+
+                    const riskCount = riskRegister.filter(r => r.probability === p && r.impact === i).length;
+                    cell.className = `matrix-cell ${bgClass}`;
+                    cell.innerHTML = `${label}<br>(${riskCount})`;
+                }
+            }
+        }
+
+        function clearRisks() {
+            riskRegister = [];
+            document.getElementById('riskTableBody').innerHTML = '';
+            updateRiskMatrix();
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateKanbanStats();
+            updateRiskMatrix();
+        });
+    </script>
+</body>
+</html>

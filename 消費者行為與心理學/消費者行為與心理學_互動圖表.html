@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消費者行為與心理學 - 互動工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+        }
+
+        .tab-button:hover {
+            background: #e9ecef;
+            color: #667eea;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-weight: bold;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .flow-chart {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .flow-box {
+            flex: 1;
+            min-width: 150px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .flow-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .flow-box.step-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .flow-box.step-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .flow-box.step-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .flow-box.step-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+
+        .arrow {
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .bias-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .bias-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .bias-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .bias-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .bias-card p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .bias-example {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            color: #764ba2;
+            font-style: italic;
+            font-size: 0.95em;
+        }
+
+        .simulator-box {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px dashed #667eea;
+        }
+
+        .input-group {
+            margin: 20px 0;
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            color: #333;
+            min-width: 120px;
+        }
+
+        .input-group input,
+        .input-group select {
+            padding: 10px 15px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            font-size: 1em;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .input-group button {
+            padding: 10px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            transition: transform 0.3s ease;
+        }
+
+        .input-group button:hover {
+            transform: scale(1.05);
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1em;
+            text-align: center;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .slider-container {
+            margin: 20px 0;
+        }
+
+        .slider-container label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+        }
+
+        .slider-container input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            border: none;
+        }
+
+        .value-display {
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .segmentation-option {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .segmentation-option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+            transform: translateX(10px);
+        }
+
+        .segmentation-option h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .segmentation-option p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 0.3s ease;
+        }
+
+        .motivation-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .motivation-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .motivation-item:hover {
+            background: #f8f9ff;
+            transform: translateX(5px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .motivation-item.selected {
+            background: #f0f5ff;
+            border-left-color: #764ba2;
+            font-weight: bold;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-button {
+                flex: 0 1 45%;
+                font-size: 0.9em;
+            }
+
+            .tab-content {
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 1.5em;
+            }
+
+            .flow-chart {
+                flex-direction: column;
+            }
+
+            .arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>消費者行為與心理學</h1>
+            <p>互動工具和模擬器 - 深入理解消費者心理</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab(0)">決策流程圖</button>
+            <button class="tab-button" onclick="switchTab(1)">認知偏誤百科</button>
+            <button class="tab-button" onclick="switchTab(2)">定價心理學</button>
+            <button class="tab-button" onclick="switchTab(3)">消費者區隔</button>
+            <button class="tab-button" onclick="switchTab(4)">購買動機</button>
+        </div>
+
+        <!-- Tab 1: 消費者決策流程圖 -->
+        <div id="tab0" class="tab-content active">
+            <h2 class="section-title">消費者決策流程圖 - 五階段模型</h2>
+
+            <p style="color: #666; margin-bottom: 20px; font-size: 1.05em;">
+                消費者的購買決定遵循五個關鍵階段。點擊下面的每個階段了解詳細信息。
+            </p>
+
+            <div class="flow-chart">
+                <div class="flow-box" onclick="showStageDetail(1)">
+                    <div style="font-size: 1.5em; margin-bottom: 10px;">🎯</div>
+                    <div>階段 1: 問題認知</div>
+                    <div style="font-size: 0.8em; opacity: 0.9; margin-top: 5px;">發現問題</div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-box step-2" onclick="showStageDetail(2)">
+                    <div style="font-size: 1.5em; margin-bottom: 10px;">🔍</div>
+                    <div>階段 2: 資訊搜尋</div>
+                    <div style="font-size: 0.8em; opacity: 0.9; margin-top: 5px;">蒐集信息</div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-box step-3" onclick="showStageDetail(3)">
+                    <div style="font-size: 1.5em; margin-bottom: 10px;">⚖️</div>
+                    <div>階段 3: 方案評估</div>
+                    <div style="font-size: 0.8em; opacity: 0.9; margin-top: 5px;">比較選項</div>
+                </div>
+            </div>
+
+            <div class="flow-chart">
+                <div class="flow-box step-4" onclick="showStageDetail(4)">
+                    <div style="font-size: 1.5em; margin-bottom: 10px;">💳</div>
+                    <div>階段 4: 購買決策</div>
+                    <div style="font-size: 0.8em; opacity: 0.9; margin-top: 5px;">做出決定</div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-box step-5" onclick="showStageDetail(5)">
+                    <div style="font-size: 1.5em; margin-bottom: 10px;">⭐</div>
+                    <div>階段 5: 購後行為</div>
+                    <div style="font-size: 0.8em; opacity: 0.9; margin-top: 5px;">評估滿意度</div>
+                </div>
+            </div>
+
+            <div id="stageDetail" style="background: #f0f5ff; padding: 25px; border-radius: 10px; margin-top: 30px; display: none;">
+                <h3 id="stageName" style="color: #667eea; margin-bottom: 15px; font-size: 1.3em;"></h3>
+                <p id="stageDescription" style="color: #555; line-height: 1.8; margin-bottom: 15px;"></p>
+                <div style="background: white; padding: 15px; border-radius: 5px; margin-top: 15px;">
+                    <strong>心理學應用:</strong>
+                    <div id="stagePsychology" style="color: #666; margin-top: 10px; line-height: 1.6;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: 認知偏誤百科 -->
+        <div id="tab1" class="tab-content">
+            <h2 class="section-title">認知偏誤百科</h2>
+
+            <p style="color: #666; margin-bottom: 20px; font-size: 1.05em;">
+                點擊下面的任何偏誤了解其定義、例子和營銷應用。
+            </p>
+
+            <div class="bias-grid">
+                <div class="bias-card" onclick="showBias('anchoring')">
+                    <h3>錨定效應</h3>
+                    <p>過度依賴第一個信息作為參考</p>
+                    <div class="bias-example" id="bias-anchoring" style="display: none;">
+                        例: 「原價 $100，現價 $50」讓消費者認為節省了 $50，增加購買意願
+                    </div>
+                </div>
+
+                <div class="bias-card" onclick="showBias('scarcity')">
+                    <h3>稀缺性效應</h3>
+                    <p>稀缺資源被認為更有價值</p>
+                    <div class="bias-example" id="bias-scarcity" style="display: none;">
+                        例: 「僅剩 3 件」激發消費者的購買緊急感
+                    </div>
+                </div>
+
+                <div class="bias-card" onclick="showBias('social')">
+                    <h3>社會認同</h3>
+                    <p>假設他人的行為是正確的</p>
+                    <div class="bias-example" id="bias-social" style="display: none;">
+                        例: 「10,000 人已購買」使消費者認為產品一定不錯
+                    </div>
+                </div>
+
+                <div class="bias-card" onclick="showBias('sunk')">
+                    <h3>沉沒成本謬誤</h3>
+                    <p>基於已花費的成本做決定</p>
+                    <div class="bias-example" id="bias-sunk" style="display: none;">
+                        例: 因為已付健身房會費就繼續續費，即使不使用
+                    </div>
+                </div>
+
+                <div class="bias-card" onclick="showBias('loss')">
+                    <h3>損失趨避</h3>
+                    <p>避免損失的動力強於獲得的動力</p>
+                    <div class="bias-example" id="bias-loss" style="display: none;">
+                        例: 「不購買將失去保障」比「購買可獲得保障」更有效
+                    </div>
+                </div>
+
+                <div class="bias-card" onclick="showBias('framing')">
+                    <h3>框架效應</h3>
+                    <p>信息呈現方式影響決策</p>
+                    <div class="bias-example" id="bias-framing" style="display: none;">
+                        例: 「保存 30% 成功率」vs「30% 失敗」導致不同的風險認知
+                    </div>
+                </div>
+
+                <div class="bias-card" onclick="showBias('halo')">
+                    <h3>月暈效應</h3>
+                    <p>一個特徵影響整體評價</p>
+                    <div class="bias-example" id="bias-halo" style="display: none;">
+                        例: 漂亮的包裝讓消費者認為產品質量高
+                    </div>
+                </div>
+
+                <div class="bias-card" onclick="showBias('confirmation')">
+                    <h3>確認偏誤</h3>
+                    <p>尋求支持既有信念的信息</p>
+                    <div class="bias-example" id="bias-confirmation" style="display: none;">
+                        例: 只閱讀支持某品牌的評論，忽視批評
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: 定價心理學模擬器 -->
+        <div id="tab2" class="tab-content">
+            <h2 class="section-title">定價心理學模擬器</h2>
+
+            <p style="color: #666; margin-bottom: 20px; font-size: 1.05em;">
+                調整下面的定價和框架，查看如何影響消費者認知和購買意願。
+            </p>
+
+            <div class="simulator-box">
+                <h3 style="color: #667eea; margin-bottom: 20px;">場景：咖啡杯售價</h3>
+
+                <div class="input-group">
+                    <label>顯示價格:</label>
+                    <input type="number" id="priceInput" value="29.99" step="0.01" min="0">
+                    <span style="font-weight: bold; color: #667eea; font-size: 1.1em;">$<span id="displayPrice">29.99</span></span>
+                </div>
+
+                <div class="input-group">
+                    <label>標明原價:</label>
+                    <input type="number" id="originalInput" value="49.99" step="0.01" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label>框架:</label>
+                    <select id="framingSelect" onchange="updateFraming()">
+                        <option value="exact">精確價格 ($29.99)</option>
+                        <option value="rounding">四捨五入 ($30)</option>
+                        <option value="monthly">月度金額 ($2.50/月)</option>
+                        <option value="discount">折扣百分比 (40% OFF)</option>
+                    </select>
+                </div>
+
+                <button onclick="calculatePricing()">計算購買意願</button>
+            </div>
+
+            <div id="pricingResult" class="result-box">
+                <div style="text-align: left; max-width: 600px; margin: 0 auto;">
+                    <h3 style="margin-bottom: 15px;">分析結果:</h3>
+                    <div id="resultContent" style="text-align: left;"></div>
+                </div>
+            </div>
+
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 30px;">
+                <h3 style="color: #667eea; margin-bottom: 15px;">定價心理學洞察:</h3>
+                <ul style="color: #555; line-height: 1.8; margin-left: 20px;">
+                    <li><strong>$X.99 定價：</strong>大腦將 $29.99 認知為「20 多元」而非「30」，大幅降低購買心理抵抗</li>
+                    <li><strong>原價框架：</strong>展示「原價 $50」強調折扣，增加「划算感」，提高轉化率</li>
+                    <li><strong>月度定價：</strong>「$2.50/月」感覺比「$30 一次」更便宜，降低心理負擔</li>
+                    <li><strong>百分比折扣：</strong>「40% OFF」比「$20 折扣」看起來更吸引，激發購買慾望</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tab 4: 消費者區隔分析器 -->
+        <div id="tab3" class="tab-content">
+            <h2 class="section-title">消費者區隔分析器</h2>
+
+            <p style="color: #666; margin-bottom: 20px; font-size: 1.05em;">
+                選擇最符合你的消費者檔案。系統將分析其特徵和營銷策略。
+            </p>
+
+            <div onclick="analyzeSegment('price')" class="segmentation-option">
+                <h3>💰 價格敏感型消費者</h3>
+                <p><strong>特徵：</strong>對價格極其敏感，總是尋求最優惠、最便宜的選項</p>
+                <p><strong>心理學驅動因素：</strong>損失趨避（害怕浪費金錢）、成本-效益計算</p>
+                <p><strong>最有效的營銷策略：</strong>折扣、比價工具、金額表示（「每月只要 $X」）、免費運費</p>
+            </div>
+
+            <div onclick="analyzeSegment('status')" class="segmentation-option">
+                <h3>🏆 地位象徵型消費者</h3>
+                <p><strong>特徵：</strong>追求奢侈品牌和高級感，將消費用作身份展示</p>
+                <p><strong>心理學驅動因素：</strong>地位追求、月暈效應、品牌認同</p>
+                <p><strong>最有效的營銷策略：</strong>品牌背書、限量版、VIP 會員、高價定位、名人代言</p>
+            </div>
+
+            <div onclick="analyzeSegment('experiential')" class="segmentation-option">
+                <h3>🎯 體驗追求型消費者</h3>
+                <p><strong>特徵：</strong>追求獨特體驗和回憶，願意為經歷付費</p>
+                <p><strong>心理學驅動因素：</strong>情感行銷、社會認同、自我實現</p>
+                <p><strong>最有效的營銷策略：</strong>故事敘述、社群建設、客戶故事分享、互動體驗</p>
+            </div>
+
+            <div onclick="analyzeSegment('rational')" class="segmentation-option">
+                <h3>🧠 理性決策型消費者</h3>
+                <p><strong>特徵：</strong>進行深度研究，基於事實和數據做決定</p>
+                <p><strong>心理學驅動因素：</strong>認知、信息搜尋、詳細比較</p>
+                <p><strong>最有效的營銷策略：</strong>詳細規格、比較工具、科學證據、用戶評論、7 天試用</p>
+            </div>
+
+            <div onclick="analyzeSegment('social')" class="segmentation-option">
+                <h3>👥 社交驅動型消費者</h3>
+                <p><strong>特徵：</strong>受朋友和社群影響，跟隨社交媒體趨勢</p>
+                <p><strong>心理學驅動因素：</strong>社會認同、從眾行為、FOMO</p>
+                <p><strong>最有效的營銷策略：</strong>社群媒體、用戶生成內容、限時優惠、朋友推薦獎勵</p>
+            </div>
+
+            <div id="segmentResult" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 25px; border-radius: 10px; margin-top: 30px; display: none;">
+                <h3 id="segmentName" style="color: #667eea; margin-bottom: 15px; font-size: 1.2em;"></h3>
+                <div id="segmentAnalysis" style="color: #555; line-height: 1.8;"></div>
+            </div>
+        </div>
+
+        <!-- Tab 5: 購買動機分析器 -->
+        <div id="tab4" class="tab-content">
+            <h2 class="section-title">購買動機分析器</h2>
+
+            <p style="color: #666; margin-bottom: 20px; font-size: 1.05em;">
+                根據馬斯洛需求層次理論，消費者的購買動機來自五個層次的需求。
+                點擊下面的動機，了解如何將其應用到營銷中。
+            </p>
+
+            <div class="motivation-list">
+                <div class="motivation-item" onclick="analyzeMotive('physiological')">
+                    <div style="font-size: 1.2em; margin-bottom: 10px;">1️⃣ 生理需求（Physiological）</div>
+                    <div style="color: #888; font-size: 0.95em;">食物、水、睡眠等基本生存需求</div>
+                </div>
+
+                <div class="motivation-item" onclick="analyzeMotive('safety')">
+                    <div style="font-size: 1.2em; margin-bottom: 10px;">2️⃣ 安全需求（Safety）</div>
+                    <div style="color: #888; font-size: 0.95em;">安全、保護、穩定、健康</div>
+                </div>
+
+                <div class="motivation-item" onclick="analyzeMotive('social')">
+                    <div style="font-size: 1.2em; margin-bottom: 10px;">3️⃣ 社交需求（Social）</div>
+                    <div style="color: #888; font-size: 0.95em;">愛、友誼、歸屬感、社區</div>
+                </div>
+
+                <div class="motivation-item" onclick="analyzeMotive('esteem')">
+                    <div style="font-size: 1.2em; margin-bottom: 10px;">4️⃣ 尊重需求（Esteem）</div>
+                    <div style="color: #888; font-size: 0.95em;">自尊、成就、地位、認可</div>
+                </div>
+
+                <div class="motivation-item" onclick="analyzeMotive('selfactualization')">
+                    <div style="font-size: 1.2em; margin-bottom: 10px;">5️⃣ 自我實現（Self-actualization）</div>
+                    <div style="color: #888; font-size: 0.95em;">個人成長、潛力實現、自我表達</div>
+                </div>
+            </div>
+
+            <div id="motiveResult" style="background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); color: white; padding: 25px; border-radius: 10px; margin-top: 30px; display: none;">
+                <h3 id="motiveName" style="margin-bottom: 15px; font-size: 1.3em;"></h3>
+                <div id="motiveAnalysis" style="line-height: 1.8; margin-bottom: 20px;"></div>
+
+                <div style="background: rgba(255, 255, 255, 0.2); padding: 15px; border-radius: 8px; margin-top: 15px;">
+                    <strong>營銷應用示例:</strong>
+                    <ul id="motiveExamples" style="margin-top: 10px; margin-left: 20px; line-height: 1.8;"></ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>消費者行為與心理學互動工具 | 用於教育和研究目的</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">點擊圖表、卡片或選項以探索更多信息</p>
+        </div>
+    </div>
+
+    <script>
+        const stageData = {
+            1: {
+                name: '階段 1: 問題認知',
+                description: '消費者意識到目前狀態與期望狀態之間存在差異。這可能源於內部觸發（如飢餓）或外部觸發（如廣告）。',
+                psychology: '行銷啟示：通過廣告和信息激發潛在需求，強調消費者目前狀態的痛點，為常規更新提醒消費者。'
+            },
+            2: {
+                name: '階段 2: 資訊搜尋',
+                description: '消費者主動搜尋相關信息以評估解決方案。包括內部搜尋（回憶過往經驗）和外部搜尋（詢問朋友、網路搜尋、閱讀評論）。',
+                psychology: '行銷啟示：確保品牌在搜尋結果中可見（SEO），提供有價值的內容，收集和展示用戶評論，提供產品比較工具。'
+            },
+            3: {
+                name: '階段 3: 方案評估',
+                description: '消費者根據多個屬性評估替代方案，並根據個人的決策規則做出選擇。不同消費者使用不同的評估標準和權重。',
+                psychology: '行銷啟示：強調產品的獨特優勢，使用對比工具幫助決策，針對高涉入產品提供詳細信息。'
+            },
+            4: {
+                name: '階段 4: 購買決策',
+                description: '消費者基於評估結果做出購買決定。但購買意圖與實際購買存在差異，受情態變化、風險認知、不可預見情況影響。',
+                psychology: '行銷啟示：消除購買摩擦（簡化結賬），降低感知風險（免費試用、退貨保證），利用時間限制和稀缺性加速決策。'
+            },
+            5: {
+                name: '階段 5: 購後行為',
+                description: '購買完成後，消費者評估購買決定是否正確。滿意度取決於實際績效與期望值的差異。這影響重複購買和口碑。',
+                psychology: '行銷啟示：設定正確的期望，提供優質客服，建立品牌社群，鼓勵用戶評論，處理購後失調。'
+            }
+        };
+
+        const biasData = {
+            'anchoring': '過度依賴第一個接收到的信息作為評估參考',
+            'scarcity': '稀缺的資源被認為比豐裕的資源更有價值',
+            'social': '消費者假設他人的行為反映了正確的行為方式',
+            'sunk': '基於已花費的無法收回的成本做決定',
+            'loss': '損失帶來的痛苦感約為等額收益快樂感的 2-2.5 倍',
+            'framing': '同一信息以不同方式呈現時，會影響決策',
+            'halo': '一個突出特徵會影響對其他特徵的整體評價',
+            'confirmation': '尋求支持既有信念的信息，忽視相反證據'
+        };
+
+        const segmentData = {
+            'price': {
+                name: '💰 價格敏感型消費者',
+                analysis: `<strong>購買決策特徵:</strong><br>
+                • 總是尋求最優惠的價格，經常跨平台比較<br>
+                • 對促銷、折扣、免費運費敏感<br>
+                • 購買決策快速，以價格為主要決定因素<br>
+                <br><strong>心理學原理:</strong><br>
+                • 損失趨避: 害怕「花太多錢」的損失<br>
+                • 錨定效應: 第一個看到的價格成為參考點<br>
+                <br><strong>營銷策略:</strong><br>
+                • 強調「最低價格保證」<br>
+                • 使用 $X.99 定價策略<br>
+                • 突出折扣百分比和節省金額<br>
+                • 提供月度或分期支付選項`
+            },
+            'status': {
+                name: '🏆 地位象徵型消費者',
+                analysis: `<strong>購買決策特徵:</strong><br>
+                • 購買昂貴產品以展示身份和品味<br>
+                • 強烈的品牌忠誠度，願意為溢價買單<br>
+                • 受名人代言和品牌聲譽影響<br>
+                <br><strong>心理學原理:</strong><br>
+                • 月暈效應: 品牌知名度 → 產品質量高<br>
+                • 品牌認同: 產品代表自我身份<br>
+                <br><strong>營銷策略:</strong><br>
+                • 強調品牌遺產和獨特性<br>
+                • 提供限量版和獨家產品<br>
+                • VIP 會員計畫和特殊待遇<br>
+                • 與高端品牌和名人合作`
+            },
+            'experiential': {
+                name: '🎯 體驗追求型消費者',
+                analysis: `<strong>購買決策特徵:</strong><br>
+                • 購買不是為了物品本身，而是為了體驗和回憶<br>
+                • 願意為獨特、難忘的體驗支付更高價格<br>
+                • 積極分享購物和使用體驗到社群媒體<br>
+                <br><strong>心理學原理:</strong><br>
+                • 情感行銷: 故事和連接感比產品特性重要<br>
+                • 社會認同: 體驗在社群中的驗證<br>
+                <br><strong>營銷策略:</strong><br>
+                • 講述品牌故事和消費者故事<br>
+                • 創建沉浸式、難忘的購物體驗<br>
+                • 鼓勵用戶生成內容（UGC）<br>
+                • 構建品牌社群和實踐活動`
+            },
+            'rational': {
+                name: '🧠 理性決策型消費者',
+                analysis: `<strong>購買決策特徵:</strong><br>
+                • 進行詳細研究，閱讀評論和規格<br>
+                • 購買決策時間長，但一旦決定就堅持<br>
+                • 對產品品質、性能、性價比最為關注<br>
+                <br><strong>心理學原理:</strong><br>
+                • 系統 2 思維: 深思熟慮、分析性決策<br>
+                • 信息搜尋: 需要充分信息才感到自信<br>
+                <br><strong>營銷策略:</strong><br>
+                • 提供詳細的產品規格和技術信息<br>
+                • 發布對比工具和決策框架<br>
+                • 展示科學證據和研究支持<br>
+                • 提供免費試用和 7 天無條件退貨`
+            },
+            'social': {
+                name: '👥 社交驅動型消費者',
+                analysis: `<strong>購買決策特徵:</strong><br>
+                • 受朋友推薦和社群媒體趨勢影響<br>
+                • 容易產生 FOMO（害怕錯過），衝動購買<br>
+                • 購買後積極分享，尋求社群認可<br>
+                <br><strong>心理學原理:</strong><br>
+                • 社會認同: 他人的購買選擇影響自己<br>
+                • 從眾行為: 跟隨群體的趨勢<br>
+                <br><strong>營銷策略:</strong><br>
+                • 在 Instagram、TikTok、小紅書活躍<br>
+                • 邀請朋友推薦的獎勵計畫<br>
+                • 展示「X 人已購買」和實時購買通知<br>
+                • 與微影響者和普通用戶合作`
+            }
+        };
+
+        const motiveData = {
+            'physiological': {
+                name: '1️⃣ 生理需求',
+                analysis: '食物、水、睡眠等基本生存需求。這是最基本的動機層次，但商業應用廣泛。',
+                examples: [
+                    '食品品牌: 強調新鮮、營養、美味（激發食慾）',
+                    '飲料品牌: 「解渴」、「提神」功能突出',
+                    '睡眠產品: 強調舒適度和睡眠品質改善'
+                ]
+            },
+            'safety': {
+                name: '2️⃣ 安全需求',
+                analysis: '安全、保護、穩定、健康。消費者尋求「無風險」的購買體驗和安心的產品使用。',
+                examples: [
+                    '保險產品: 「保護您的家人」、「安心無憂」',
+                    '醫療/健康: 「醫生推薦」、「通過認證」',
+                    '銀行/金融: 「安全、可靠」、「資金保護」'
+                ]
+            },
+            'social': {
+                name: '3️⃣ 社交需求',
+                analysis: '愛、友誼、歸屬感、社區。消費者購買以建立或加強社交連接。',
+                examples: [
+                    '社交應用: 強調「連接朋友」、「與他人分享」',
+                    '咖啡館: 星巴克的「第三空間」概念',
+                    '奶茶品牌: 「和朋友一起」、「約飲茶」'
+                ]
+            },
+            'esteem': {
+                name: '4️⃣ 尊重需求',
+                analysis: '自尊、成就、地位、認可。消費者購買以提升自我形象和獲得社會認可。',
+                examples: [
+                    '奢侈品: 「展示您的品味」、「精英象徵」',
+                    '教育課程: 「實現您的潛力」、「成為更好的自己」',
+                    '健身房: 「變得更強壯」、「變得更自信」'
+                ]
+            },
+            'selfactualization': {
+                name: '5️⃣ 自我實現',
+                analysis: '個人成長、潛力實現、自我表達。最高層次的需求，消費者尋求成為他們想成為的人。',
+                examples: [
+                    '創意工具: 「表達您的創意」、「實現您的藝術潢想」',
+                    '旅遊: 「發現世界」、「開拓視野」',
+                    '個人發展課程: 「成為您最好的自己」、「人生轉變'
+                ]
+            }
+        };
+
+        function switchTab(tabIndex) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(`tab${tabIndex}`).classList.add('active');
+            buttons[tabIndex].classList.add('active');
+        }
+
+        function showStageDetail(stage) {
+            const data = stageData[stage];
+            document.getElementById('stageName').textContent = data.name;
+            document.getElementById('stageDescription').textContent = data.description;
+            document.getElementById('stagePsychology').textContent = data.psychology;
+            document.getElementById('stageDetail').style.display = 'block';
+            document.getElementById('stageDetail').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function showBias(biasType) {
+            const examples = document.querySelectorAll('.bias-example');
+            examples.forEach(ex => ex.style.display = 'none');
+
+            const targetExample = document.getElementById(`bias-${biasType}`);
+            if (targetExample) {
+                targetExample.style.display = 'block';
+            }
+        }
+
+        document.getElementById('priceInput').addEventListener('input', function() {
+            document.getElementById('displayPrice').textContent = this.value;
+        });
+
+        function updateFraming() {
+            // Update based on selected framing
+        }
+
+        function calculatePricing() {
+            const price = parseFloat(document.getElementById('priceInput').value);
+            const original = parseFloat(document.getElementById('originalInput').value);
+            const framing = document.getElementById('framingSelect').value;
+
+            let analysis = '';
+            let buyingIntention = 0;
+
+            if (framing === 'exact') {
+                analysis = `<strong>精確定價策略:</strong><br>
+                消費者看到 $${price.toFixed(2)}，精確認知價格。<br>
+                <strong>購買意願評估:</strong> 中等<br>
+                <strong>原因:</strong> 明確但可能顯得「冷硬」，缺乏心理優勢`;
+                buyingIntention = 50;
+            } else if (framing === 'rounding') {
+                analysis = `<strong>四捨五入策略:</strong><br>
+                消費者看到 $${Math.round(price)}，認知被調整為整數。<br>
+                <strong>購買意願評估:</strong> 低<br>
+                <strong>原因:</strong> $30 看起來比 $29.99 貴，購買心理抵抗增加`;
+                buyingIntention = 40;
+            } else if (framing === 'monthly') {
+                const monthly = (price / 12).toFixed(2);
+                analysis = `<strong>月度定價策略:</strong><br>
+                消費者看到 $${monthly}/月，感知成本大幅降低。<br>
+                <strong>購買意願評估:</strong> 很高<br>
+                <strong>原因:</strong> $${monthly} 遠小於 $${price.toFixed(2)}，心理成本極低<br>
+                <strong>技巧:</strong> 訂閱模式轉化率增加 50-70%`;
+                buyingIntention = 80;
+            } else if (framing === 'discount') {
+                const discount = ((original - price) / original * 100).toFixed(0);
+                analysis = `<strong>折扣百分比策略:</strong><br>
+                消費者看到 ${discount}% OFF（從 $${original.toFixed(2)} 降至 $${price.toFixed(2)}）。<br>
+                <strong>購買意願評估:</strong> 非常高<br>
+                <strong>原因:</strong> 百分比形式強調「節省」，激發稀缺性和損失趨避<br>
+                <strong>技巧:</strong> 轉化率增加 30-40%，特別是在時間限制下`;
+                buyingIntention = 85;
+            }
+
+            document.getElementById('resultContent').innerHTML = analysis +
+                `<br><br><div style="background: white; padding: 15px; border-radius: 5px; margin-top: 15px;">
+                <strong>購買意願指數:</strong><br>
+                <div style="margin-top: 10px;">
+                    <div style="width: 100%; height: 30px; background: #e9ecef; border-radius: 15px; overflow: hidden;">
+                        <div style="width: ${buyingIntention}%; height: 100%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                            ${buyingIntention}%
+                        </div>
+                    </div>
+                </div>
+                </div>`;
+
+            document.getElementById('pricingResult').classList.add('show');
+        }
+
+        function analyzeSegment(segment) {
+            const data = segmentData[segment];
+            document.getElementById('segmentName').textContent = data.name;
+            document.getElementById('segmentAnalysis').innerHTML = data.analysis;
+            document.getElementById('segmentResult').style.display = 'block';
+            document.getElementById('segmentResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function analyzeMotive(motive) {
+            const data = motiveData[motive];
+            const items = document.querySelectorAll('.motivation-item');
+            items.forEach(item => item.classList.remove('selected'));
+
+            event.currentTarget.classList.add('selected');
+
+            document.getElementById('motiveName').textContent = data.name;
+            document.getElementById('motiveAnalysis').textContent = data.analysis;
+
+            const examplesList = document.getElementById('motiveExamples');
+            examplesList.innerHTML = data.examples.map(ex => `<li>${ex}</li>`).join('');
+
+            document.getElementById('motiveResult').style.display = 'block';
+            document.getElementById('motiveResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            showStageDetail(1);
+            showBias('anchoring');
+        });
+    </script>
+</body>
+</html>

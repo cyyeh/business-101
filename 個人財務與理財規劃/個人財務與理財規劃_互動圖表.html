@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>個人財務與理財規劃 - 互動工具</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.0/dist/chart.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #e2e8f0; min-height: 100vh; padding-bottom: 40px; }
+
+  .header { text-align: center; padding: 40px 20px 20px; }
+  .header h1 { font-size: 32px; color: #ffffff; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+  .header p { color: rgba(255,255,255,0.8); font-size: 14px; }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+
+  .tabs { display: flex; justify-content: center; gap: 12px; margin: 30px 0; flex-wrap: wrap; }
+  .tab { padding: 12px 24px; border-radius: 25px; cursor: pointer; font-size: 13px; font-weight: 600; border: 2px solid rgba(255,255,255,0.3); background: transparent; color: #ffffff; transition: all 0.3s; }
+  .tab:hover { border-color: rgba(255,255,255,0.7); transform: translateY(-2px); }
+  .tab.active { background: rgba(255,255,255,0.25); border-color: #ffffff; box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+
+  .scene { display: none; }
+  .scene.active { display: block; }
+
+  .card { background: rgba(15, 23, 42, 0.8); border-radius: 16px; padding: 30px; margin: 20px 0; border: 1px solid rgba(148, 163, 184, 0.2); backdrop-filter: blur(10px); }
+  .card h2 { font-size: 22px; margin-bottom: 20px; color: #60a5fa; }
+  .card p { color: #cbd5e1; line-height: 1.8; margin-bottom: 10px; }
+
+  .chart-container { position: relative; height: 400px; margin: 30px 0; }
+  .chart-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 20px; margin: 20px 0; }
+
+  .calculator { background: rgba(15, 23, 42, 0.8); border-radius: 16px; padding: 30px; margin: 20px 0; border: 1px solid rgba(148, 163, 184, 0.2); }
+  .calc-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 15px 0; }
+  .calc-input { display: flex; flex-direction: column; }
+  .calc-input label { color: #94a3b8; font-size: 13px; margin-bottom: 8px; font-weight: 600; }
+  .calc-input input, .calc-input select { padding: 10px; background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 8px; color: #e2e8f0; }
+  .calc-input input:focus, .calc-input select:focus { outline: none; border-color: #60a5fa; box-shadow: 0 0 10px rgba(96, 165, 250, 0.3); }
+
+  .calc-slider { display: flex; flex-direction: column; }
+  .calc-slider label { color: #94a3b8; font-size: 13px; margin-bottom: 8px; font-weight: 600; }
+  .slider { width: 100%; height: 6px; border-radius: 3px; background: rgba(148, 163, 184, 0.3); outline: none; -webkit-appearance: none; }
+  .slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #60a5fa; cursor: pointer; }
+  .slider::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #60a5fa; cursor: pointer; border: none; }
+
+  .calc-result { background: rgba(96, 165, 250, 0.1); padding: 20px; border-radius: 12px; margin-top: 20px; border-left: 4px solid #60a5fa; }
+  .calc-result-label { color: #94a3b8; font-size: 13px; margin-bottom: 8px; }
+  .calc-result-value { font-size: 28px; font-weight: 700; color: #60a5fa; }
+  .calc-result-desc { color: #cbd5e1; font-size: 12px; margin-top: 5px; }
+
+  .pie-container { position: relative; height: 350px; margin: 20px 0; }
+  .allocation-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
+  .allocation-item { background: rgba(96, 165, 250, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid #60a5fa; text-align: center; }
+  .allocation-item.stocks { border-left-color: #f59e0b; }
+  .allocation-item.bonds { border-left-color: #10b981; }
+  .allocation-item.realestate { border-left-color: #8b5cf6; }
+  .allocation-item.cash { border-left-color: #06b6d4; }
+  .allocation-name { color: #cbd5e1; font-size: 13px; margin-bottom: 5px; }
+  .allocation-value { font-size: 20px; font-weight: 700; color: #60a5fa; }
+
+  .debt-comparison { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin: 20px 0; }
+  .debt-method { background: rgba(96, 165, 250, 0.1); padding: 20px; border-radius: 12px; border: 1px solid rgba(96, 165, 250, 0.3); }
+  .debt-method h3 { color: #60a5fa; margin-bottom: 15px; }
+  .debt-row { display: flex; justify-content: space-between; color: #cbd5e1; padding: 8px 0; border-bottom: 1px solid rgba(148, 163, 184, 0.2); }
+  .debt-row:last-child { border-bottom: none; }
+  .debt-label { color: #94a3b8; font-size: 13px; }
+  .debt-value { font-weight: 600; }
+
+  button { padding: 12px 24px; background: #60a5fa; border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; margin: 10px 5px; }
+  button:hover { background: #3b82f6; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(96, 165, 250, 0.3); }
+  button.secondary { background: rgba(96, 165, 250, 0.2); }
+  button.secondary:hover { background: rgba(96, 165, 250, 0.3); }
+
+  .formula-box { background: rgba(96, 165, 250, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #60a5fa; }
+  .formula-box code { color: #cbd5e1; font-family: 'Courier New', monospace; }
+
+  @media (max-width: 768px) {
+    .header h1 { font-size: 24px; }
+    .chart-row { grid-template-columns: 1fr; }
+    .calc-row { grid-template-columns: 1fr; }
+    .tabs { gap: 8px; }
+    .tab { padding: 10px 16px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>個人財務與理財規劃</h1>
+  <p>互動工具集 | 選擇下方分頁探索 5 大計算工具</p>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('compound')">複利計算器</div>
+    <div class="tab" onclick="switchTab('allocation')">資產配置模擬</div>
+    <div class="tab" onclick="switchTab('retirement')">退休規劃計算</div>
+    <div class="tab" onclick="switchTab('budget')">收支預算規劃</div>
+    <div class="tab" onclick="switchTab('debt')">負債清償比較</div>
+  </div>
+
+  <!-- ========== 複利計算器 ========== -->
+  <div class="scene active" id="scene-compound">
+    <div class="card">
+      <h2>複利計算器</h2>
+      <p>計算投資在複利作用下的增長。使用 72 法則快速估算翻倍時間。</p>
+
+      <div class="calculator">
+        <div class="calc-row">
+          <div class="calc-input">
+            <label>初始本金（元）</label>
+            <input type="number" id="principal" value="1000000" min="0" step="100000">
+          </div>
+          <div class="calc-input">
+            <label>年投資回報率（%）</label>
+            <input type="number" id="rate" value="7" min="0" max="20" step="0.5">
+          </div>
+          <div class="calc-input">
+            <label>投資年數</label>
+            <input type="number" id="years" value="30" min="1" max="60" step="1">
+          </div>
+        </div>
+
+        <button onclick="calculateCompound()">計算</button>
+        <button class="secondary" onclick="calculate72Rule()">72 法則（翻倍年限）</button>
+
+        <div id="compoundResult" class="calc-result" style="display: none;">
+          <div class="calc-result-label">最終資產價值</div>
+          <div class="calc-result-value" id="finalValue">0</div>
+          <div class="calc-result-desc" id="compoundDesc"></div>
+          <div class="calc-result-desc" style="margin-top: 15px;">
+            <strong>72 法則結果：</strong> 以 <span id="ruleRate">7</span>% 年回報，資金約 <span id="doubleYears">10.3</span> 年翻倍
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <strong>公式：</strong><br>
+        FV = PV × (1 + r)^n<br>
+        <code>其中 FV=未來價值, PV=現值, r=年回報率, n=年數</code><br><br>
+        <strong>72 法則：</strong><br>
+        翻倍年限 = 72 ÷ 年回報率(%)
+      </div>
+
+      <div id="compoundChart" class="chart-container">
+        <canvas id="compoundCanvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 資產配置模擬器 ========== -->
+  <div class="scene" id="scene-allocation">
+    <div class="card">
+      <h2>資產配置模擬器</h2>
+      <p>根據年齡與風險承受度調整投資配置。選擇你的目標配置與投資金額，查看如何分配。</p>
+
+      <div class="calculator">
+        <div class="calc-row">
+          <div class="calc-input">
+            <label>你的年齡</label>
+            <input type="number" id="age" value="35" min="18" max="80" step="1">
+          </div>
+          <div class="calc-input">
+            <label>可投資金額（元）</label>
+            <input type="number" id="investAmount" value="1000000" min="0" step="100000">
+          </div>
+          <div class="calc-input">
+            <label>風險類型</label>
+            <select id="riskProfile" onchange="updateAllocation()">
+              <option value="conservative">保守型</option>
+              <option value="balanced" selected>平衡型</option>
+              <option value="aggressive">積極型</option>
+            </select>
+          </div>
+        </div>
+
+        <button onclick="calculateAllocation()">計算我的配置</button>
+
+        <div id="allocationResult" style="display: none;">
+          <div class="allocation-box">
+            <div class="allocation-item stocks">
+              <div class="allocation-name">股票 (國內外)</div>
+              <div class="allocation-value" id="stocksPercent">60%</div>
+              <div class="calc-result-desc" id="stocksAmount">600,000 元</div>
+            </div>
+            <div class="allocation-item bonds">
+              <div class="allocation-name">債券</div>
+              <div class="allocation-value" id="bondsPercent">30%</div>
+              <div class="calc-result-desc" id="bondsAmount">300,000 元</div>
+            </div>
+            <div class="allocation-item realestate">
+              <div class="allocation-name">房地產 / REITs</div>
+              <div class="allocation-value" id="rePercent">10%</div>
+              <div class="calc-result-desc" id="reAmount">100,000 元</div>
+            </div>
+          </div>
+
+          <div class="pie-container">
+            <canvas id="allocationChart"></canvas>
+          </div>
+
+          <div class="calc-result">
+            <div class="calc-result-label">建議說明</div>
+            <div class="calc-result-desc" id="allocationAdvice"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 退休規劃計算器 ========== -->
+  <div class="scene" id="scene-retirement">
+    <div class="card">
+      <h2>退休規劃計算器</h2>
+      <p>計算你需要多少退休本金，以及現在應該存多少。使用 4% 法則。</p>
+
+      <div class="calculator">
+        <div class="calc-row">
+          <div class="calc-input">
+            <label>預期年支出（元）</label>
+            <input type="number" id="expenseYear" value="600000" min="0" step="50000">
+          </div>
+          <div class="calc-input">
+            <label>預期退休年限（年）</label>
+            <input type="number" id="retireYears" value="30" min="5" max="50" step="1">
+          </div>
+          <div class="calc-input">
+            <label>年通膨率（%）</label>
+            <input type="number" id="inflationRate" value="2" min="0" max="10" step="0.5">
+          </div>
+        </div>
+
+        <div class="calc-row">
+          <div class="calc-input">
+            <label>現在距退休年限（年）</label>
+            <input type="number" id="yearsToRetire" value="25" min="1" max="50" step="1">
+          </div>
+          <div class="calc-input">
+            <label>現有積蓄（元）</label>
+            <input type="number" id="currentSavings" value="1000000" min="0" step="100000">
+          </div>
+          <div class="calc-input">
+            <label>年投資回報率（%）</label>
+            <input type="number" id="retireRate" value="6" min="0" max="20" step="0.5">
+          </div>
+        </div>
+
+        <button onclick="calculateRetirement()">計算退休計劃</button>
+
+        <div id="retirementResult" class="calc-result" style="display: none;">
+          <div class="calc-result-label">所需退休本金（考慮通膨）</div>
+          <div class="calc-result-value" id="requiredCapital">0</div>
+          <div class="calc-result-desc" id="retireDesc1"></div>
+
+          <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(148, 163, 184, 0.2);">
+            <div class="calc-result-label">現有積蓄未來價值</div>
+            <div class="calc-result-value" id="futureValue" style="color: #10b981;">0</div>
+            <div class="calc-result-desc" id="retireDesc2"></div>
+          </div>
+
+          <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(148, 163, 184, 0.2);">
+            <div class="calc-result-label">還需要額外存多少</div>
+            <div class="calc-result-value" id="additionalNeeded">0</div>
+            <div class="calc-result-desc" id="retireDesc3"></div>
+          </div>
+
+          <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(148, 163, 184, 0.2);">
+            <div class="calc-result-label">每年應存金額</div>
+            <div class="calc-result-value" id="annualSavings" style="color: #f59e0b;">0</div>
+            <div class="calc-result-desc" id="retireDesc4"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <strong>4% 法則：</strong> 退休本金 = 年支出 ÷ 0.04<br>
+        每年可安全提取初期本金的 4%，30 年內本金不會耗盡<br>
+        <strong>注意：</strong>此法則基於 60% 股票 + 40% 債券配置
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 收支預算規劃器 ========== -->
+  <div class="scene" id="scene-budget">
+    <div class="card">
+      <h2>收支預算規劃器</h2>
+      <p>使用 50-30-20 法則規劃每月預算。輸入月收入，自動計算各類別預算。</p>
+
+      <div class="calculator">
+        <div class="calc-row">
+          <div class="calc-input">
+            <label>月收入（元）</label>
+            <input type="number" id="monthlyIncome" value="50000" min="0" step="5000" onchange="calculateBudget()">
+          </div>
+          <div class="calc-input">
+            <label>選擇預算模式</label>
+            <select id="budgetMode" onchange="calculateBudget()">
+              <option value="classic">經典 50-30-20</option>
+              <option value="aggressive">激進儲蓄 40-25-35</option>
+              <option value="conservative">保守消費 60-25-15</option>
+              <option value="custom">自訂</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="customBudget" style="display: none;">
+          <div class="calc-row">
+            <div class="calc-input">
+              <label>必要開支 (%)：<span id="needsPercent">50</span>%</label>
+              <input type="range" id="needsSlider" min="30" max="70" value="50" onchange="updateCustomBudget()" class="slider">
+            </div>
+            <div class="calc-input">
+              <label>可選開支 (%)：<span id="wantsPercent">30</span>%</label>
+              <input type="range" id="wantsSlider" min="15" max="50" value="30" onchange="updateCustomBudget()" class="slider">
+            </div>
+            <div class="calc-input">
+              <label>儲蓄與投資 (%)：<span id="savingsPercent">20</span>%</label>
+              <input type="range" id="savingsSlider" min="10" max="60" value="20" onchange="updateCustomBudget()" class="slider">
+            </div>
+          </div>
+        </div>
+
+        <button onclick="calculateBudget()">計算我的預算</button>
+
+        <div id="budgetResult" class="calc-result" style="display: none;">
+          <div class="allocation-box">
+            <div class="allocation-item">
+              <div class="allocation-name">必要開支（食、住、行、保險等）</div>
+              <div class="allocation-value" id="needsAmount">0</div>
+              <div class="calc-result-desc" id="needsPercent2">50%</div>
+            </div>
+            <div class="allocation-item">
+              <div class="allocation-name">可選開支（娛樂、餐廳、購物）</div>
+              <div class="allocation-value" id="wantsAmount">0</div>
+              <div class="calc-result-desc" id="wantsPercent2">30%</div>
+            </div>
+            <div class="allocation-item">
+              <div class="allocation-name">儲蓄與投資</div>
+              <div class="allocation-value" id="savingsAmount">0</div>
+              <div class="calc-result-desc" id="savingsPercent2">20%</div>
+            </div>
+          </div>
+
+          <div class="pie-container">
+            <canvas id="budgetChart"></canvas>
+          </div>
+
+          <div class="calc-result">
+            <div class="calc-result-label">預算建議</div>
+            <div class="calc-result-desc" id="budgetAdvice">
+              根據你的預算，建議：
+              <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>每月儲蓄目標能達成財務獨立</li>
+                <li>確保必要開支不會超支</li>
+                <li>保留適當的生活品質預算</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <strong>50-30-20 法則：</strong><br>
+        50% 必要開支（基本生存）<br>
+        30% 可選開支（生活享受）<br>
+        20% 儲蓄與投資（未來安全）<br>
+        <code>可根據個人情況調整，但儲蓄最少應達 15% 以上</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 負債清償比較器 ========== -->
+  <div class="scene" id="scene-debt">
+    <div class="card">
+      <h2>負債清償比較器</h2>
+      <p>比較「雪球法」與「雪崩法」兩種債務清償策略的優缺點。</p>
+
+      <div class="calculator">
+        <div class="calc-row">
+          <div class="calc-input">
+            <label>債務 1 金額（元）</label>
+            <input type="number" id="debt1Amount" value="100000" min="0" step="10000">
+          </div>
+          <div class="calc-input">
+            <label>債務 1 利率（%）</label>
+            <input type="number" id="debt1Rate" value="15" min="0" max="30" step="0.5">
+          </div>
+          <div class="calc-input">
+            <label>月還款額（元）</label>
+            <input type="number" id="monthlyPayment" value="10000" min="0" step="1000">
+          </div>
+        </div>
+
+        <div class="calc-row">
+          <div class="calc-input">
+            <label>債務 2 金額（元）</label>
+            <input type="number" id="debt2Amount" value="50000" min="0" step="10000">
+          </div>
+          <div class="calc-input">
+            <label>債務 2 利率（%）</label>
+            <input type="number" id="debt2Rate" value="10" min="0" max="30" step="0.5">
+          </div>
+          <div class="calc-input">
+            <label></label>
+          </div>
+        </div>
+
+        <button onclick="compareDebtPayoff()">比較清償方案</button>
+
+        <div id="debtResult" style="display: none;">
+          <div class="debt-comparison">
+            <!-- 雪球法 -->
+            <div class="debt-method">
+              <h3>雪球法（先償最小債務）</h3>
+              <div class="debt-row">
+                <div class="debt-label">清償順序</div>
+                <div class="debt-value">先清 50,000 元（小金額）</div>
+              </div>
+              <div class="debt-row">
+                <div class="debt-label">心理優勢</div>
+                <div class="debt-value">快速贏得勝利感，增強信心</div>
+              </div>
+              <div class="debt-row">
+                <div class="debt-label">清償期間</div>
+                <div class="debt-value" id="snowballMonths">12 個月</div>
+              </div>
+              <div class="debt-row">
+                <div class="debt-label">總利息</div>
+                <div class="debt-value" id="snowballInterest">15,000 元</div>
+              </div>
+              <div class="debt-row">
+                <div class="debt-label">適用情況</div>
+                <div class="debt-value">需要心理激勵，多筆小債務</div>
+              </div>
+            </div>
+
+            <!-- 雪崩法 -->
+            <div class="debt-method">
+              <h3>雪崩法（先償高利息債務）</h3>
+              <div class="debt-row">
+                <div class="debt-label">清償順序</div>
+                <div class="debt-value">先清 15% 利率債（高息）</div>
+              </div>
+              <div class="debt-row">
+                <div class="debt-label">經濟效率</div>
+                <div class="debt-value">節省最多利息支出</div>
+              </div>
+              <div class="debt-row">
+                <div class="debt-label">清償期間</div>
+                <div class="debt-value" id="avalancheMonths">14 個月</div>
+              </div>
+              <div class="debt-row">
+                <div class="debt-label">總利息</div>
+                <div class="debt-value" id="avalancheInterest">12,500 元</div>
+              </div>
+              <div class="debt-row">
+                <div class="debt-label">適用情況</div>
+                <div class="debt-value">數學最優，單一高息債務</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="calc-result">
+            <div class="calc-result-label">建議選擇</div>
+            <div class="calc-result-desc" id="debtAdvice">
+              雪崩法在數學上更優（節省 2,500 元利息），但若你容易放棄，雪球法的心理優勢更重要。<br>
+              <strong>最佳方案：混合策略</strong>——先清償最小債務獲得激勵，再集中火力清償高息債務。
+            </div>
+          </div>
+
+          <div class="chart-container" style="margin-top: 20px;">
+            <canvas id="debtChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <strong>雪球法 vs 雪崩法：</strong><br>
+        雪球法：按金額遞增清償（小 → 大），心理激勵但利息多<br>
+        雪崩法：按利率遞減清償（高 → 低），經濟最優但需耐心<br>
+        <code>多數財務顧問推薦雪崩法，但如果心理因素會讓你放棄，雪球法反而更有效</code>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let compoundChart = null;
+let allocationChart = null;
+let budgetChart = null;
+let debtChart = null;
+
+function switchTab(tabName) {
+  // Hide all scenes
+  document.querySelectorAll('.scene').forEach(scene => {
+    scene.classList.remove('active');
+  });
+
+  // Show selected scene
+  document.getElementById('scene-' + tabName).classList.add('active');
+
+  // Update tab styles
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  event.target.classList.add('active');
+}
+
+// ========== 複利計算器 ==========
+function calculateCompound() {
+  const principal = parseFloat(document.getElementById('principal').value);
+  const rate = parseFloat(document.getElementById('rate').value) / 100;
+  const years = parseFloat(document.getElementById('years').value);
+
+  const finalValue = principal * Math.pow(1 + rate, years);
+  const gain = finalValue - principal;
+
+  document.getElementById('finalValue').textContent =
+    'NT$ ' + finalValue.toLocaleString('zh-TW', {maximumFractionDigits: 0});
+  document.getElementById('compoundDesc').textContent =
+    `初始投資 NT$ ${principal.toLocaleString('zh-TW', {maximumFractionDigits: 0})} ，${years} 年後增長至 NT$ ${finalValue.toLocaleString('zh-TW', {maximumFractionDigits: 0})} ，淨獲利 NT$ ${gain.toLocaleString('zh-TW', {maximumFractionDigits: 0})} (${(gain/principal*100).toFixed(1)}% 增長)`;
+
+  document.getElementById('compoundResult').style.display = 'block';
+
+  // Draw chart
+  drawCompoundChart(principal, rate, years);
+}
+
+function calculate72Rule() {
+  const rate = parseFloat(document.getElementById('rate').value);
+  const doubleYears = (72 / rate).toFixed(1);
+
+  document.getElementById('ruleRate').textContent = rate;
+  document.getElementById('doubleYears').textContent = doubleYears;
+  document.getElementById('compoundResult').style.display = 'block';
+}
+
+function drawCompoundChart(principal, rate, years) {
+  const ctx = document.getElementById('compoundCanvas').getContext('2d');
+  const data = [];
+  const labels = [];
+
+  for (let i = 0; i <= years; i++) {
+    data.push(principal * Math.pow(1 + rate, i));
+    labels.push(i.toString() + '年');
+  }
+
+  if (compoundChart) compoundChart.destroy();
+
+  compoundChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: '資產增長',
+        data: data,
+        borderColor: '#60a5fa',
+        backgroundColor: 'rgba(96, 165, 250, 0.1)',
+        tension: 0.1,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: true, labels: { color: '#cbd5e1' } } },
+      scales: {
+        y: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(148, 163, 184, 0.1)' } },
+        x: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(148, 163, 184, 0.1)' } }
+      }
+    }
+  });
+}
+
+// ========== 資產配置模擬器 ==========
+function calculateAllocation() {
+  const age = parseInt(document.getElementById('age').value);
+  const investAmount = parseFloat(document.getElementById('investAmount').value);
+  const riskProfile = document.getElementById('riskProfile').value;
+
+  let stocksPercent, bondsPercent, rePercent;
+
+  if (riskProfile === 'conservative') {
+    if (age < 45) { stocksPercent = 40; bondsPercent = 50; rePercent = 10; }
+    else { stocksPercent = 30; bondsPercent = 60; rePercent = 10; }
+  } else if (riskProfile === 'balanced') {
+    if (age < 45) { stocksPercent = 70; bondsPercent = 25; rePercent = 5; }
+    else if (age < 60) { stocksPercent = 60; bondsPercent = 30; rePercent = 10; }
+    else { stocksPercent = 40; bondsPercent = 45; rePercent = 15; }
+  } else {
+    if (age < 45) { stocksPercent = 85; bondsPercent = 10; rePercent = 5; }
+    else { stocksPercent = 75; bondsPercent = 15; rePercent = 10; }
+  }
+
+  const stocks = investAmount * stocksPercent / 100;
+  const bonds = investAmount * bondsPercent / 100;
+  const re = investAmount * rePercent / 100;
+
+  document.getElementById('stocksPercent').textContent = stocksPercent + '%';
+  document.getElementById('bondsPercent').textContent = bondsPercent + '%';
+  document.getElementById('rePercent').textContent = rePercent + '%';
+  document.getElementById('stocksAmount').textContent =
+    'NT$ ' + stocks.toLocaleString('zh-TW', {maximumFractionDigits: 0});
+  document.getElementById('bondsAmount').textContent =
+    'NT$ ' + bonds.toLocaleString('zh-TW', {maximumFractionDigits: 0});
+  document.getElementById('reAmount').textContent =
+    'NT$ ' + re.toLocaleString('zh-TW', {maximumFractionDigits: 0});
+
+  const advice = riskProfile === 'conservative'
+    ? '保守型配置適合退休人士或風險厭惡者，重點是資本保護而非增長。'
+    : riskProfile === 'balanced'
+    ? '平衡型配置適合大多數投資人，在風險與回報間取得平衡。'
+    : '積極型配置適合年輕投資人，承受波動以追求長期增長。';
+
+  document.getElementById('allocationAdvice').textContent = advice;
+  document.getElementById('allocationResult').style.display = 'block';
+
+  drawAllocationChart(stocksPercent, bondsPercent, rePercent);
+}
+
+function updateAllocation() {
+  if (document.getElementById('investAmount').value) {
+    calculateAllocation();
+  }
+}
+
+function drawAllocationChart(stocks, bonds, re) {
+  const ctx = document.getElementById('allocationChart').getContext('2d');
+
+  if (allocationChart) allocationChart.destroy();
+
+  allocationChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['股票', '債券', '房地產/REITs'],
+      datasets: [{
+        data: [stocks, bonds, re],
+        backgroundColor: ['#f59e0b', '#10b981', '#8b5cf6'],
+        borderColor: 'rgba(15, 23, 42, 0.8)',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#cbd5e1' } },
+        tooltip: { callbacks: { label: ctx => ctx.label + ': ' + ctx.parsed + '%' } }
+      }
+    }
+  });
+}
+
+// ========== 退休規劃計算器 ==========
+function calculateRetirement() {
+  const expenseYear = parseFloat(document.getElementById('expenseYear').value);
+  const retireYears = parseFloat(document.getElementById('retireYears').value);
+  const inflationRate = parseFloat(document.getElementById('inflationRate').value) / 100;
+  const yearsToRetire = parseFloat(document.getElementById('yearsToRetire').value);
+  const currentSavings = parseFloat(document.getElementById('currentSavings').value);
+  const retireRate = parseFloat(document.getElementById('retireRate').value) / 100;
+
+  // 考慮通膨的退休支出
+  const futureExpense = expenseYear * Math.pow(1 + inflationRate, yearsToRetire);
+  const requiredCapital = futureExpense / 0.04; // 4% 法則
+
+  // 現有積蓄的未來價值
+  const futureValue = currentSavings * Math.pow(1 + retireRate, yearsToRetire);
+
+  // 還需要多少
+  const additionalNeeded = Math.max(0, requiredCapital - futureValue);
+
+  // 每年應存多少
+  const annualSavings = additionalNeeded > 0
+    ? additionalNeeded / ((Math.pow(1 + retireRate, yearsToRetire) - 1) / retireRate)
+    : 0;
+
+  document.getElementById('requiredCapital').textContent =
+    'NT$ ' + requiredCapital.toLocaleString('zh-TW', {maximumFractionDigits: 0});
+  document.getElementById('retireDesc1').textContent =
+    `年支出 NT$ ${futureExpense.toLocaleString('zh-TW', {maximumFractionDigits: 0})} (通膨調整後) ÷ 4% = 所需本金`;
+
+  document.getElementById('futureValue').textContent =
+    'NT$ ' + futureValue.toLocaleString('zh-TW', {maximumFractionDigits: 0});
+  document.getElementById('retireDesc2').textContent =
+    `現有 NT$ ${currentSavings.toLocaleString('zh-TW', {maximumFractionDigits: 0})} 於 ${retireRate*100}% 年回報投資 ${yearsToRetire} 年`;
+
+  document.getElementById('additionalNeeded').textContent =
+    'NT$ ' + additionalNeeded.toLocaleString('zh-TW', {maximumFractionDigits: 0});
+
+  document.getElementById('annualSavings').textContent =
+    'NT$ ' + annualSavings.toLocaleString('zh-TW', {maximumFractionDigits: 0});
+  document.getElementById('retireDesc4').textContent =
+    `每年存 NT$ ${annualSavings.toLocaleString('zh-TW', {maximumFractionDigits: 0})} (月存約 NT$ ${(annualSavings/12).toLocaleString('zh-TW', {maximumFractionDigits: 0})})`;
+
+  document.getElementById('retirementResult').style.display = 'block';
+}
+
+// ========== 收支預算規劃器 ==========
+function calculateBudget() {
+  const income = parseFloat(document.getElementById('monthlyIncome').value);
+  const mode = document.getElementById('budgetMode').value;
+
+  let needsPercent, wantsPercent, savingsPercent;
+
+  if (mode === 'classic') {
+    needsPercent = 50; wantsPercent = 30; savingsPercent = 20;
+  } else if (mode === 'aggressive') {
+    needsPercent = 40; wantsPercent = 25; savingsPercent = 35;
+  } else if (mode === 'conservative') {
+    needsPercent = 60; wantsPercent = 25; savingsPercent = 15;
+  } else {
+    needsPercent = parseInt(document.getElementById('needsSlider').value);
+    wantsPercent = parseInt(document.getElementById('wantsSlider').value);
+    savingsPercent = 100 - needsPercent - wantsPercent;
+  }
+
+  document.getElementById('customBudget').style.display = mode === 'custom' ? 'block' : 'none';
+
+  const needs = income * needsPercent / 100;
+  const wants = income * wantsPercent / 100;
+  const savings = income * savingsPercent / 100;
+
+  document.getElementById('needsAmount').textContent =
+    'NT$ ' + needs.toLocaleString('zh-TW', {maximumFractionDigits: 0});
+  document.getElementById('needsPercent2').textContent = needsPercent + '%';
+
+  document.getElementById('wantsAmount').textContent =
+    'NT$ ' + wants.toLocaleString('zh-TW', {maximumFractionDigits: 0});
+  document.getElementById('wantsPercent2').textContent = wantsPercent + '%';
+
+  document.getElementById('savingsAmount').textContent =
+    'NT$ ' + savings.toLocaleString('zh-TW', {maximumFractionDigits: 0});
+  document.getElementById('savingsPercent2').textContent = savingsPercent + '%';
+
+  document.getElementById('budgetResult').style.display = 'block';
+
+  drawBudgetChart(needsPercent, wantsPercent, savingsPercent);
+}
+
+function updateCustomBudget() {
+  const needs = parseInt(document.getElementById('needsSlider').value);
+  const wants = parseInt(document.getElementById('wantsSlider').value);
+  const savings = 100 - needs - wants;
+
+  document.getElementById('needsPercent').textContent = needs;
+  document.getElementById('wantsPercent').textContent = wants;
+  document.getElementById('savingsPercent').textContent = savings;
+
+  document.getElementById('savingsSlider').value = savings;
+
+  if (document.getElementById('monthlyIncome').value) {
+    calculateBudget();
+  }
+}
+
+function drawBudgetChart(needs, wants, savings) {
+  const ctx = document.getElementById('budgetChart').getContext('2d');
+
+  if (budgetChart) budgetChart.destroy();
+
+  budgetChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['必要開支', '可選開支', '儲蓄投資'],
+      datasets: [{
+        data: [needs, wants, savings],
+        backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
+        borderColor: 'rgba(15, 23, 42, 0.8)',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#cbd5e1' } },
+        tooltip: { callbacks: { label: ctx => ctx.label + ': ' + ctx.parsed + '%' } }
+      }
+    }
+  });
+}
+
+// ========== 負債清償比較器 ==========
+function compareDebtPayoff() {
+  const debt1Amount = parseFloat(document.getElementById('debt1Amount').value);
+  const debt1Rate = parseFloat(document.getElementById('debt1Rate').value) / 100 / 12;
+  const debt2Amount = parseFloat(document.getElementById('debt2Amount').value);
+  const debt2Rate = parseFloat(document.getElementById('debt2Rate').value) / 100 / 12;
+  const monthlyPayment = parseFloat(document.getElementById('monthlyPayment').value);
+
+  // 雪球法：先清最小債務
+  let snowballDebt1 = debt1Amount;
+  let snowballDebt2 = debt2Amount;
+  let snowballMonths = 0;
+  let snowballInterest = 0;
+  const snowballPaymentPerDebt1 = monthlyPayment * 0.7; // 70% 力量集中在小債務
+  const snowballPaymentPerDebt2 = monthlyPayment * 0.3;
+
+  while ((snowballDebt1 > 0 || snowballDebt2 > 0) && snowballMonths < 360) {
+    snowballInterest += snowballDebt1 * debt1Rate + snowballDebt2 * debt2Rate;
+
+    snowballDebt1 -= snowballPaymentPerDebt1;
+    if (snowballDebt1 < 0) {
+      snowballDebt2 -= Math.abs(snowballDebt1);
+      snowballDebt1 = 0;
+    }
+
+    snowballDebt2 -= snowballPaymentPerDebt2;
+    if (snowballDebt2 < 0) snowballDebt2 = 0;
+
+    snowballMonths++;
+  }
+
+  // 雪崩法：先清高利息債務
+  let avalancheDebt1 = debt1Amount;
+  let avalancheDebt2 = debt2Amount;
+  let avalancheMonths = 0;
+  let avalancheInterest = 0;
+  const avalanchePaymentPerDebt1 = monthlyPayment * 0.6;
+  const avalanchePaymentPerDebt2 = monthlyPayment * 0.4;
+
+  while ((avalancheDebt1 > 0 || avalancheDebt2 > 0) && avalancheMonths < 360) {
+    avalancheInterest += avalancheDebt1 * debt1Rate + avalancheDebt2 * debt2Rate;
+
+    avalancheDebt1 -= avalanchePaymentPerDebt1;
+    if (avalancheDebt1 < 0) {
+      avalancheDebt2 -= Math.abs(avalancheDebt1);
+      avalancheDebt1 = 0;
+    }
+
+    avalancheDebt2 -= avalanchePaymentPerDebt2;
+    if (avalancheDebt2 < 0) avalancheDebt2 = 0;
+
+    avalancheMonths++;
+  }
+
+  document.getElementById('snowballMonths').textContent = snowballMonths + ' 個月';
+  document.getElementById('snowballInterest').textContent =
+    'NT$ ' + snowballInterest.toLocaleString('zh-TW', {maximumFractionDigits: 0});
+
+  document.getElementById('avalancheMonths').textContent = avalancheMonths + ' 個月';
+  document.getElementById('avalancheInterest').textContent =
+    'NT$ ' + avalancheInterest.toLocaleString('zh-TW', {maximumFractionDigits: 0});
+
+  const savings = snowballInterest - avalancheInterest;
+  document.getElementById('debtAdvice').textContent =
+    `雪崩法可節省 NT$ ${savings.toLocaleString('zh-TW', {maximumFractionDigits: 0})} 利息，但雪球法的心理優勢可能讓你更持之以恆。建議混合策略。`;
+
+  document.getElementById('debtResult').style.display = 'block';
+
+  drawDebtChart(snowballMonths, avalancheMonths, snowballInterest, avalancheInterest);
+}
+
+function drawDebtChart(snowballMonths, avalancheMonths, snowballInterest, avalancheInterest) {
+  const ctx = document.getElementById('debtChart').getContext('2d');
+
+  if (debtChart) debtChart.destroy();
+
+  debtChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['清償月數', '總利息'],
+      datasets: [
+        {
+          label: '雪球法',
+          data: [snowballMonths, snowballInterest / 10000],
+          backgroundColor: '#f59e0b'
+        },
+        {
+          label: '雪崩法',
+          data: [avalancheMonths, avalancheInterest / 10000],
+          backgroundColor: '#10b981'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#cbd5e1' } } },
+      scales: {
+        y: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(148, 163, 184, 0.1)' } },
+        x: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(148, 163, 184, 0.1)' } }
+      }
+    }
+  });
+}
+
+// 初始化
+window.addEventListener('load', () => {
+  calculateCompound();
+});
+</script>
+
+</body>
+</html>

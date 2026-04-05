@@ -308,11 +308,17 @@
           if (url.endsWith('.html')) type = 'interactive';
           if (text.includes('案例') || url.includes('案例')) type = 'casestudy';
           if (text.includes('練習') || url.includes('練習')) type = 'quiz';
+          if (text.includes('進一步學習') || url.includes('進一步學習')) type = 'further';
           if (inCross) type = 'cross';
           cur.links.push({ text: text.trim(), url: url.trim(), description: desc.trim(), type });
         }
       }
       return { topics, cross };
+    }
+
+    /* ---- Strip markdown link syntax from text: [text](url) → text ---- */
+    function stripMdLinks(str) {
+      return str.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
     }
 
     /* ---- Tab label ---- */
@@ -321,6 +327,7 @@
       if (link.type === 'interactive') return '互動圖表';
       if (link.type === 'casestudy') return '案例分析';
       if (link.type === 'quiz') return '練習與自測';
+      if (link.type === 'further') return '進一步學習';
       if (link.type === 'cross') return '整合分析';
       return '專業版';
     }
@@ -338,7 +345,8 @@
 
       const topicCards = topicSections.map(t => {
         const pro = t.links.find(l => l.type === 'professional');
-        const desc = pro ? pro.description.replace(/^專業版[，,]\s*/, '') : t.links[0]?.description || '';
+        const rawDesc = pro ? pro.description.replace(/^專業版[，,]\s*/, '') : t.links[0]?.description || '';
+        const desc = stripMdLinks(rawDesc);
         const badges = t.links.map(l => `<span class="badge">${tabLabel(l)}</span>`).join('');
         return `<a class="card" href="#${encodeURIComponent(t.title)}">
           <h2>${t.title}</h2>
@@ -349,7 +357,7 @@
 
       const crossCards = crossSections.map(t => {
         const link = t.links[0];
-        const desc = link?.description || '';
+        const desc = stripMdLinks(link?.description || '');
         const tags = extractTopicTags(desc);
         const tagBadges = tags.map(tag => `<span class="badge topic-badge">${tag}</span>`).join('');
         return `<a class="card cross-topic" href="#${encodeURIComponent(t.title)}">

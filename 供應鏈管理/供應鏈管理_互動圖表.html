@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>供應鏈管理 - 互動圖表與工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: #f5f5f5;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            color: #333;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        .tab-button:hover {
+            background: #e0e0e0;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom: 3px solid white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .control-group {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .control-group input,
+        .control-group select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .control-group button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+
+        .control-group button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .result-value {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .chart-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .flowchart {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .flowchart-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 8px;
+            min-width: 150px;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .flowchart-arrow {
+            font-size: 2em;
+            color: #667eea;
+            margin: 0 10px;
+        }
+
+        .simulation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-card-value {
+            font-size: 2em;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .stat-card-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .bullwhip-chart {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            margin: 20px 0;
+        }
+
+        svg {
+            width: 100%;
+            height: auto;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+
+            .flowchart {
+                flex-direction: column;
+            }
+
+            .flowchart-arrow {
+                transform: rotate(90deg);
+                margin: 10px 0;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .tab-button {
+                min-width: 120px;
+                padding: 10px;
+                font-size: 0.9em;
+            }
+        }
+
+        .decision-matrix {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .decision-matrix th,
+        .decision-matrix td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .decision-matrix th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        .decision-matrix tr:hover {
+            background: #f5f5f5;
+        }
+
+        .formula-box {
+            background: #f0f4ff;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+
+        .info-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>供應鏈管理 - 互動工具集</h1>
+            <p>5大實用工具，幫助理解供應鏈核心概念</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab(event, 'flowchart')">工具1: 供應鏈流程圖</button>
+            <button class="tab-button" onclick="switchTab(event, 'bullwhip')">工具2: 長鞭效應模擬</button>
+            <button class="tab-button" onclick="switchTab(event, 'safety-stock')">工具3: 安全庫存計算</button>
+            <button class="tab-button" onclick="switchTab(event, 'make-buy')">工具4: Make-or-Buy決策</button>
+            <button class="tab-button" onclick="switchTab(event, 'resilience')">工具5: 韌性評估</button>
+        </div>
+
+        <!-- Tab 1: 供應鏈流程圖 -->
+        <div id="flowchart" class="tab-content active">
+            <h2>供應鏈流程圖 - 從原材料到客戶交付</h2>
+            <p style="margin: 20px 0; color: #666;">互動式供應鏈流程可視化，展示典型製造企業的供應鏈結構。</p>
+
+            <div class="flowchart">
+                <div class="flowchart-box">
+                    <div style="font-size: 1.5em; margin-bottom: 10px;">🌳</div>
+                    原料供應商<br>
+                    <small>石油、鐵礦、木材等</small>
+                </div>
+                <div class="flowchart-arrow">→</div>
+                <div class="flowchart-box">
+                    <div style="font-size: 1.5em; margin-bottom: 10px;">🏭</div>
+                    製造工廠<br>
+                    <small>生產、品質控制</small>
+                </div>
+                <div class="flowchart-arrow">→</div>
+                <div class="flowchart-box">
+                    <div style="font-size: 1.5em; margin-bottom: 10px;">📦</div>
+                    倉儲中心<br>
+                    <small>庫存管理</small>
+                </div>
+                <div class="flowchart-arrow">→</div>
+                <div class="flowchart-box">
+                    <div style="font-size: 1.5em; margin-bottom: 10px;">🚚</div>
+                    配送物流<br>
+                    <small>運輸、配送</small>
+                </div>
+                <div class="flowchart-arrow">→</div>
+                <div class="flowchart-box">
+                    <div style="font-size: 1.5em; margin-bottom: 10px;">🛍️</div>
+                    終端客戶<br>
+                    <small>零售商或消費者</small>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3>供應鏈信息流與資金流</h3>
+                <svg viewBox="0 0 800 400" style="border: 1px solid #ddd; border-radius: 8px;">
+                    <!-- 主流程 -->
+                    <line x1="50" y1="100" x2="750" y2="100" stroke="#667eea" stroke-width="3" marker-end="url(#arrowhead)"/>
+
+                    <!-- 信息流回程 -->
+                    <line x1="750" y1="200" x2="50" y2="200" stroke="#764ba2" stroke-width="3" marker-end="url(#arrowhead-reverse)" stroke-dasharray="5,5"/>
+
+                    <!-- 資金流 -->
+                    <line x1="50" y1="300" x2="750" y2="300" stroke="#ff6b6b" stroke-width="3" marker-end="url(#arrowhead-red)"/>
+
+                    <!-- 標籤 -->
+                    <text x="400" y="85" text-anchor="middle" font-size="14" font-weight="600" fill="#667eea">物流流（產品與原料）</text>
+                    <text x="400" y="215" text-anchor="middle" font-size="14" font-weight="600" fill="#764ba2">信息流（訂單、預測、庫存）</text>
+                    <text x="400" y="315" text-anchor="middle" font-size="14" font-weight="600" fill="#ff6b6b">資金流（付款、發票、融資）</text>
+
+                    <!-- 節點 -->
+                    <circle cx="50" cy="100" r="8" fill="#667eea"/>
+                    <circle cx="220" cy="100" r="8" fill="#667eea"/>
+                    <circle cx="390" cy="100" r="8" fill="#667eea"/>
+                    <circle cx="560" cy="100" r="8" fill="#667eea"/>
+                    <circle cx="750" cy="100" r="8" fill="#667eea"/>
+
+                    <!-- 箭頭定義 -->
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#667eea"/>
+                        </marker>
+                        <marker id="arrowhead-reverse" markerWidth="10" markerHeight="10" refX="1" refY="3" orient="auto">
+                            <polygon points="10 0, 0 3, 10 6" fill="#764ba2"/>
+                        </marker>
+                        <marker id="arrowhead-red" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#ff6b6b"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+
+            <div class="simulation-grid">
+                <div class="stat-card">
+                    <div style="font-size: 1.5em; margin-bottom: 10px;">⏱️</div>
+                    <div class="stat-card-label">平均供應鏈週期</div>
+                    <div class="stat-card-value">30-60天</div>
+                    <small>從訂購到交付</small>
+                </div>
+                <div class="stat-card">
+                    <div style="font-size: 1.5em; margin-bottom: 10px;">📊</div>
+                    <div class="stat-card-label">庫存佔成本比</div>
+                    <div class="stat-card-value">15-30%</div>
+                    <small>典型製造企業</small>
+                </div>
+                <div class="stat-card">
+                    <div style="font-size: 1.5em; margin-bottom: 10px;">💰</div>
+                    <div class="stat-card-label">物流成本比</div>
+                    <div class="stat-card-value">5-15%</div>
+                    <small>產品銷售額佔比</small>
+                </div>
+                <div class="stat-card">
+                    <div style="font-size: 1.5em; margin-bottom: 10px;">🌍</div>
+                    <div class="stat-card-label">全球供應商數</div>
+                    <div class="stat-card-value">100+</div>
+                    <small>大型企業平均</small>
+                </div>
+            </div>
+
+            <div class="info-box">
+                💡 <strong>關鍵概念：</strong>供應鏈的三大流——物流（產品）、信息流（數據）、資金流（金錢）必須協調一致，才能實現高效運作。
+            </div>
+        </div>
+
+        <!-- Tab 2: 長鞭效應模擬 -->
+        <div id="bullwhip" class="tab-content">
+            <h2>長鞭效應模擬器</h2>
+            <p style="margin: 20px 0; color: #666;">模擬供應鏈中信息失真如何導致波動放大</p>
+
+            <div class="control-group">
+                <label>📊 消費者實際月銷量（基線）</label>
+                <input type="number" id="baselineDemand" value="1000" min="100" step="100">
+                <small>單位：件</small>
+
+                <label style="margin-top: 15px;">📈 銷量波動幅度</label>
+                <select id="volatility">
+                    <option value="5">低波動（±5%）</option>
+                    <option value="10" selected>中波動（±10%）</option>
+                    <option value="20">高波動（±20%）</option>
+                    <option value="30">極高波動（±30%）</option>
+                </select>
+
+                <button onclick="simulateBullwhip()">運行模擬</button>
+            </div>
+
+            <div id="bullwhipResult" style="display:none;">
+                <div class="result-box">
+                    <h3>模擬結果 - 各級訂單波動對比</h3>
+                    <div class="bullwhip-chart">
+                        <svg viewBox="0 0 800 300" id="bullwhipChart" style="border-radius: 8px; background: white;"></svg>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <h4>數據總結（12個月模擬）</h4>
+                        <table class="decision-matrix" style="width: 100%; margin-top: 15px;">
+                            <tr>
+                                <th>供應鏈層級</th>
+                                <th>平均訂單量</th>
+                                <th>波動幅度</th>
+                                <th>波動係數</th>
+                                <th>放大倍數</th>
+                            </tr>
+                            <tr>
+                                <td>消費者實際銷售</td>
+                                <td id="bw-consumer" style="color: #667eea; font-weight: 600;">-</td>
+                                <td id="bw-consumer-vol" style="color: #667eea; font-weight: 600;">-</td>
+                                <td id="bw-consumer-coef" style="color: #667eea; font-weight: 600;">1.0x</td>
+                                <td>基準</td>
+                            </tr>
+                            <tr>
+                                <td>零售商訂貨</td>
+                                <td id="bw-retailer" style="color: #764ba2; font-weight: 600;">-</td>
+                                <td id="bw-retailer-vol" style="color: #764ba2; font-weight: 600;">-</td>
+                                <td id="bw-retailer-coef" style="color: #764ba2; font-weight: 600;">-</td>
+                                <td id="bw-retailer-mult">-</td>
+                            </tr>
+                            <tr>
+                                <td>批發商訂貨</td>
+                                <td id="bw-wholesaler" style="color: #ff6b6b; font-weight: 600;">-</td>
+                                <td id="bw-wholesaler-vol" style="color: #ff6b6b; font-weight: 600;">-</td>
+                                <td id="bw-wholesaler-coef" style="color: #ff6b6b; font-weight: 600;">-</td>
+                                <td id="bw-wholesaler-mult">-</td>
+                            </tr>
+                            <tr>
+                                <td>製造商訂貨</td>
+                                <td id="bw-manufacturer" style="color: #ffc107; font-weight: 600;">-</td>
+                                <td id="bw-manufacturer-vol" style="color: #ffc107; font-weight: 600;">-</td>
+                                <td id="bw-manufacturer-coef" style="color: #ffc107; font-weight: 600;">-</td>
+                                <td id="bw-manufacturer-mult">-</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="info-box" style="margin-top: 20px;">
+                        💡 <strong>長鞭效應成因分析：</strong><br>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>每級訂購都包含安全庫存（預留應對不確定性）</li>
+                            <li>經理人員基於訂單預測，而非實際銷售</li>
+                            <li>批量採購推動（最小訂購量大）</li>
+                            <li>價格波動導致消費者囤積</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box" style="margin-top: 20px;">
+                💡 <strong>應對長鞭效應的方案：</strong><br>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>✓ 信息共享：上游直接看POS銷售數據</li>
+                    <li>✓ 供應商管理庫存（VMI）</li>
+                    <li>✓ 減少訂購批量，增加訂購頻率</li>
+                    <li>✓ 穩定定價，減少臨時折扣</li>
+                    <li>✓ 銷售與營運規劃（S&OP）協同</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tab 3: 安全庫存計算 -->
+        <div id="safety-stock" class="tab-content">
+            <h2>安全庫存計算器</h2>
+            <p style="margin: 20px 0; color: #666;">計算在不同服務水平下需要保持的安全庫存量</p>
+
+            <div class="input-row">
+                <div class="control-group">
+                    <label>📊 月需求量（件）</label>
+                    <input type="number" id="monthlyDemand" value="1000" min="10" step="10">
+
+                    <label style="margin-top: 15px;">📈 日需求標準差（件/天）</label>
+                    <input type="number" id="demandStd" value="50" min="1" step="1">
+                </div>
+
+                <div class="control-group">
+                    <label>⏱️ 採購提前期（天）</label>
+                    <input type="number" id="leadTime" value="14" min="1" step="1">
+
+                    <label style="margin-top: 15px;">💾 年度持有成本（元/件）</label>
+                    <input type="number" id="holdingCost" value="20" min="0.1" step="0.1">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>🎯 目標服務水平</label>
+                <select id="serviceLevel" onchange="updateServiceLevel()">
+                    <option value="90">90% - 保守（允許10%缺貨風險）</option>
+                    <option value="95" selected>95% - 標準（允許5%缺貨風險）</option>
+                    <option value="97.5">97.5% - 謹慎（允許2.5%缺貨風險）</option>
+                    <option value="99">99% - 極端（允許1%缺貨風險）</option>
+                </select>
+                <small id="zValue" style="margin-top: 10px; display: block; color: #667eea; font-weight: 600;">Z值：1.65</small>
+
+                <button onclick="calculateSafetyStock()">計算安全庫存</button>
+            </div>
+
+            <div id="safetyStockResult" style="display:none;">
+                <div class="result-box">
+                    <h3>計算結果</h3>
+
+                    <div class="formula-box">
+                        <strong>公式：</strong> 安全庫存 = Z × σ × √L<br>
+                        <strong>說明：</strong> Z(服務水平) × 日需求標準差 × 根號(提前期天數)
+                    </div>
+
+                    <div class="result-row">
+                        <div class="result-label">日平均需求量</div>
+                        <div class="result-value" id="dailyDemand">-</div>
+                    </div>
+
+                    <div class="result-row">
+                        <div class="result-label">提前期內標準差</div>
+                        <div class="result-value" id="leadTimeStd">-</div>
+                    </div>
+
+                    <div class="result-row">
+                        <div class="result-label">安全庫存（件）</div>
+                        <div class="result-value" id="safetyStockValue" style="font-size: 1.5em;">-</div>
+                    </div>
+
+                    <div class="result-row">
+                        <div class="result-label">年度持有成本</div>
+                        <div class="result-value" id="annualHoldingCost">-</div>
+                    </div>
+
+                    <div class="result-row">
+                        <div class="result-label">平均庫存量</div>
+                        <div class="result-value" id="avgInventory">-</div>
+                    </div>
+
+                    <div class="result-row">
+                        <div class="result-label">再訂購點（ROP）</div>
+                        <div class="result-value" id="rop">-</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h4>不同服務水平的成本比較</h4>
+                    <svg viewBox="0 0 800 350" id="costComparisonChart" style="border: 1px solid #ddd; border-radius: 8px;"></svg>
+                </div>
+
+                <div class="info-box" style="margin-top: 20px;">
+                    💡 <strong>決策建議：</strong><br>
+                    <span id="serviceAdvice"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Make-or-Buy決策 -->
+        <div id="make-buy" class="tab-content">
+            <h2>Make-or-Buy 決策分析器</h2>
+            <p style="margin: 20px 0; color: #666;">比較內製與外包的成本效益，幫助做出最優決策</p>
+
+            <div class="input-row">
+                <div class="control-group">
+                    <label>年生產量需求（件）</label>
+                    <input type="number" id="annualVolume" value="100000" min="1000" step="1000">
+
+                    <label style="margin-top: 15px;">內製單位成本（元/件）</label>
+                    <input type="number" id="makeUnitCost" value="50" min="1" step="0.5">
+
+                    <label style="margin-top: 15px;">內製設備投資（萬元）</label>
+                    <input type="number" id="makeCapitalInvest" value="1000" min="0" step="100">
+
+                    <label style="margin-top: 15px;">內製年固定成本（萬元）</label>
+                    <input type="number" id="makeFixedCost" value="100" min="0" step="10">
+                </div>
+
+                <div class="control-group">
+                    <label>外包單位成本（元/件）</label>
+                    <input type="number" id="buyUnitCost" value="55" min="1" step="0.5">
+
+                    <label style="margin-top: 15px;">外包管理成本（萬元/年）</label>
+                    <input type="number" id="buyManagementCost" value="50" min="0" step="10">
+
+                    <label style="margin-top: 15px;">品質風險成本（萬元/年）</label>
+                    <input type="number" id="qualityRiskCost" value="30" min="0" step="10">
+
+                    <label style="margin-top: 15px;">分析年限（年）</label>
+                    <input type="number" id="analysisYears" value="5" min="1" max="10" step="1">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <button onclick="calculateMakeBuy()">進行決策分析</button>
+            </div>
+
+            <div id="makeBuyResult" style="display:none;">
+                <div class="result-box">
+                    <h3>成本比較結果</h3>
+
+                    <table class="decision-matrix" style="width: 100%; margin-top: 15px;">
+                        <tr>
+                            <th>成本項目</th>
+                            <th>內製方案</th>
+                            <th>外包方案</th>
+                            <th>差異</th>
+                        </tr>
+                        <tr>
+                            <td>年度變動成本</td>
+                            <td id="make-variable" style="color: #667eea; font-weight: 600;">-</td>
+                            <td id="buy-variable" style="color: #764ba2; font-weight: 600;">-</td>
+                            <td id="diff-variable">-</td>
+                        </tr>
+                        <tr>
+                            <td>年度固定成本</td>
+                            <td id="make-fixed" style="color: #667eea; font-weight: 600;">-</td>
+                            <td id="buy-fixed" style="color: #764ba2; font-weight: 600;">-</td>
+                            <td id="diff-fixed">-</td>
+                        </tr>
+                        <tr>
+                            <td>年度總成本</td>
+                            <td id="make-total" style="color: #667eea; font-weight: 600; font-size: 1.1em;">-</td>
+                            <td id="buy-total" style="color: #764ba2; font-weight: 600; font-size: 1.1em;">-</td>
+                            <td id="diff-total" style="font-weight: 600;">-</td>
+                        </tr>
+                        <tr style="background: #f0f4ff;">
+                            <td colspan="4" style="text-align: center; font-weight: 600; color: #667eea;" id="recommendation">-</td>
+                        </tr>
+                    </table>
+
+                    <div style="margin-top: 30px;">
+                        <h4>多年累積成本對比</h4>
+                        <svg viewBox="0 0 800 350" id="makeBuyChart" style="border: 1px solid #ddd; border-radius: 8px; margin-top: 15px;"></svg>
+                    </div>
+
+                    <div class="info-box" style="margin-top: 20px;">
+                        💡 <strong>定性因素考慮：</strong><br>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li><strong>內製優勢：</strong>知識產權保護、品質控制、靈活性、成本透明</li>
+                            <li><strong>內製劣勢：</strong>資本投資大、技術升級成本高、產能固定</li>
+                            <li><strong>外包優勢：</strong>降低固定成本、聚焦核心業務、規模經濟</li>
+                            <li><strong>外包劣勢：</strong>失去控制力、供應商依賴、知識產權風險</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 5: 供應鏈韌性評估 -->
+        <div id="resilience" class="tab-content">
+            <h2>供應鏈韌性評估器</h2>
+            <p style="margin: 20px 0; color: #666;">評估企業供應鏈應對風險與中斷的能力</p>
+
+            <div class="control-group">
+                <h3>請根據實際情況評分（1-10分，10分最好）</h3>
+
+                <label style="margin-top: 20px;">1️⃣ 供應商地理分散度</label>
+                <input type="range" id="geographic" min="1" max="10" value="5" oninput="updateResilienceScore()">
+                <small>單一國家(1分) → 全球分散(10分)</small>
+
+                <label style="margin-top: 15px;">2️⃣ 供應商數量多樣化</label>
+                <input type="range" id="suppliers" min="1" max="10" value="5" oninput="updateResilienceScore()">
+                <small>單一供應商(1分) → 5個以上(10分)</small>
+
+                <label style="margin-top: 15px;">3️⃣ 庫存緩衝能力</label>
+                <input type="range" id="inventory" min="1" max="10" value="5" oninput="updateResilienceScore()">
+                <small>零庫存(1分) → 90天安全庫存(10分)</small>
+
+                <label style="margin-top: 15px;">4️⃣ 信息系統透明度</label>
+                <input type="range" id="visibility" min="1" max="10" value="5" oninput="updateResilienceScore()">
+                <small>無可見性(1分) → 實時端對端追蹤(10分)</small>
+
+                <label style="margin-top: 15px;">5️⃣ 應急預案準備</label>
+                <input type="range" id="contingency" min="1" max="10" value="5" oninput="updateResilienceScore()">
+                <small>無預案(1分) → 完整多層次預案(10分)</small>
+
+                <label style="margin-top: 15px;">6️⃣ 供應商財務健康度</label>
+                <input type="range" id="supplierHealth" min="1" max="10" value="5" oninput="updateResilienceScore()">
+                <small>高風險(1分) → 穩定健康(10分)</small>
+
+                <label style="margin-top: 15px;">7️⃣ 配送網路靈活性</label>
+                <input type="range" id="logistics" min="1" max="10" value="5" oninput="updateResilienceScore()">
+                <small>單一通道(1分) → 多路線備份(10分)</small>
+
+                <label style="margin-top: 15px;">8️⃣ 技術與創新能力</label>
+                <input type="range" id="innovation" min="1" max="10" value="5" oninput="updateResilienceScore()">
+                <small>無投資(1分) → 持續創新升級(10分)</small>
+            </div>
+
+            <div id="resilienceResult" style="display:none;">
+                <div class="result-box">
+                    <h3>韌性評估結果</h3>
+
+                    <div class="simulation-grid">
+                        <div class="stat-card">
+                            <div style="font-size: 1.5em; margin-bottom: 10px;">🎯</div>
+                            <div class="stat-card-label">整體韌性評分</div>
+                            <div class="stat-card-value" id="overallScore">-</div>
+                            <small id="scoreLevel"></small>
+                        </div>
+                        <div class="stat-card">
+                            <div style="font-size: 1.5em; margin-bottom: 10px;">⚠️</div>
+                            <div class="stat-card-label">風險等級</div>
+                            <div class="stat-card-value" id="riskLevel">-</div>
+                            <small id="riskColor"></small>
+                        </div>
+                        <div class="stat-card">
+                            <div style="font-size: 1.5em; margin-bottom: 10px;">📈</div>
+                            <div class="stat-card-label">改善潛力</div>
+                            <div class="stat-card-value" id="improvementPotential">-</div>
+                            <small>最高改善空間</small>
+                        </div>
+                        <div class="stat-card">
+                            <div style="font-size: 1.5em; margin-bottom: 10px;">⏱️</div>
+                            <div class="stat-card-label">預計恢復時間</div>
+                            <div class="stat-card-value" id="recoveryTime">-</div>
+                            <small>供應中斷後</small>
+                        </div>
+                    </div>
+
+                    <div class="chart-container" style="margin-top: 30px;">
+                        <h4>各維度韌性對標圖</h4>
+                        <svg viewBox="0 0 800 400" id="resilienceRadar" style="border: 1px solid #ddd; border-radius: 8px;"></svg>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <h4>改善建議（優先順序）</h4>
+                        <div id="recommendations" style="margin-top: 15px;"></div>
+                    </div>
+
+                    <div class="info-box" style="margin-top: 20px;">
+                        💡 <strong>韌性評分標準：</strong><br>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>8-10分：<strong>高度韌性</strong> - 可應對大多數突發情況</li>
+                            <li>6-8分：<strong>中等韌性</strong> - 可應對普通風險，需加強薄弱環節</li>
+                            <li>4-6分：<strong>一般韌性</strong> - 存在明顯薄弱環節，風險較高</li>
+                            <li>低於4分：<strong>低度韌性</strong> - 極易受到供應鏈中斷影響，需緊急改善</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(evt, tabName) {
+            // 隱藏所有內容
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // 移除所有按鈕的active類
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // 顯示當前標籤
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        function simulateBullwhip() {
+            const baseline = parseInt(document.getElementById('baselineDemand').value);
+            const volatility = parseInt(document.getElementById('volatility').value);
+
+            // 生成12個月的模擬數據
+            const months = 12;
+            const consumerDemand = [];
+            const retailerOrders = [];
+            const wholesalerOrders = [];
+            const manufacturerOrders = [];
+
+            // 基於正態分布生成消費者需求
+            for (let i = 0; i < months; i++) {
+                const variation = baseline * (Math.random() * volatility / 50 - volatility / 100);
+                consumerDemand.push(Math.max(0, baseline + variation));
+            }
+
+            // 零售商訂貨（加入安全庫存因素）
+            for (let i = 0; i < months; i++) {
+                const consumerAvg = consumerDemand.reduce((a, b) => a + b) / consumerDemand.length;
+                const safetyStock = consumerAvg * 0.2;
+                const order = consumerDemand[i] + safetyStock - (retailerOrders[i-1] || 0) * 0.1;
+                retailerOrders.push(Math.max(0, order));
+            }
+
+            // 批發商訂貨（波動更大）
+            for (let i = 0; i < months; i++) {
+                const safetyStock = retailerOrders[i] * 0.25;
+                const order = retailerOrders[i] + safetyStock - (wholesalerOrders[i-1] || 0) * 0.1;
+                wholesalerOrders.push(Math.max(0, order));
+            }
+
+            // 製造商訂貨（波動最大）
+            for (let i = 0; i < months; i++) {
+                const safetyStock = wholesalerOrders[i] * 0.3;
+                const order = wholesalerOrders[i] + safetyStock - (manufacturerOrders[i-1] || 0) * 0.1;
+                manufacturerOrders.push(Math.max(0, order));
+            }
+
+            // 計算統計數據
+            const calcStats = (arr) => {
+                const mean = arr.reduce((a, b) => a + b) / arr.length;
+                const std = Math.sqrt(arr.reduce((a, b) => a + Math.pow(b - mean, 2)) / arr.length);
+                return { mean, std, min: Math.min(...arr), max: Math.max(...arr) };
+            };
+
+            const consumerStats = calcStats(consumerDemand);
+            const retailerStats = calcStats(retailerOrders);
+            const wholesalerStats = calcStats(wholesalerOrders);
+            const manufacturerStats = calcStats(manufacturerOrders);
+
+            // 更新結果顯示
+            document.getElementById('bullwhipResult').style.display = 'block';
+
+            document.getElementById('bw-consumer').textContent = Math.round(consumerStats.mean);
+            document.getElementById('bw-consumer-vol').textContent = ((consumerStats.std / consumerStats.mean * 100).toFixed(1) + '%');
+            document.getElementById('bw-consumer-coef').textContent = (consumerStats.std / consumerStats.mean).toFixed(2);
+
+            document.getElementById('bw-retailer').textContent = Math.round(retailerStats.mean);
+            document.getElementById('bw-retailer-vol').textContent = ((retailerStats.std / retailerStats.mean * 100).toFixed(1) + '%');
+            document.getElementById('bw-retailer-coef').textContent = (retailerStats.std / retailerStats.mean).toFixed(2);
+            document.getElementById('bw-retailer-mult').textContent = ((retailerStats.std / consumerStats.std).toFixed(2) + 'x');
+
+            document.getElementById('bw-wholesaler').textContent = Math.round(wholesalerStats.mean);
+            document.getElementById('bw-wholesaler-vol').textContent = ((wholesalerStats.std / wholesalerStats.mean * 100).toFixed(1) + '%');
+            document.getElementById('bw-wholesaler-coef').textContent = (wholesalerStats.std / wholesalerStats.mean).toFixed(2);
+            document.getElementById('bw-wholesaler-mult').textContent = ((wholesalerStats.std / consumerStats.std).toFixed(2) + 'x');
+
+            document.getElementById('bw-manufacturer').textContent = Math.round(manufacturerStats.mean);
+            document.getElementById('bw-manufacturer-vol').textContent = ((manufacturerStats.std / manufacturerStats.mean * 100).toFixed(1) + '%');
+            document.getElementById('bw-manufacturer-coef').textContent = (manufacturerStats.std / manufacturerStats.mean).toFixed(2);
+            document.getElementById('bw-manufacturer-mult').textContent = ((manufacturerStats.std / consumerStats.std).toFixed(2) + 'x');
+
+            // 繪製圖表
+            drawBullwhipChart(consumerDemand, retailerOrders, wholesalerOrders, manufacturerOrders);
+        }
+
+        function drawBullwhipChart(consumer, retailer, wholesaler, manufacturer) {
+            const canvas = document.getElementById('bullwhipChart');
+            canvas.innerHTML = '';
+
+            const width = 800;
+            const height = 300;
+            const padding = 40;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+
+            // 找最大值用於縮放
+            const allData = [...consumer, ...retailer, ...wholesaler, ...manufacturer];
+            const maxValue = Math.max(...allData) * 1.1;
+
+            // 創建SVG元素
+            let svg = `<svg width="${width}" height="${height}" style="border: 1px solid #ddd; border-radius: 8px; background: white;">`;
+
+            // 繪製背景網格
+            for (let i = 1; i < 5; i++) {
+                const y = padding + (graphHeight / 5) * i;
+                svg += `<line x1="${padding}" y1="${y}" x2="${width - padding}" y2="${y}" stroke="#f0f0f0" stroke-width="1"/>`;
+                const value = Math.round((maxValue / 5) * (5 - i));
+                svg += `<text x="${padding - 10}" y="${y + 5}" text-anchor="end" font-size="12" fill="#999">${value}</text>`;
+            }
+
+            // 繪製Y軸
+            svg += `<line x1="${padding}" y1="${padding}" x2="${padding}" y2="${height - padding}" stroke="#333" stroke-width="2"/>`;
+            // 繪製X軸
+            svg += `<line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}" stroke="#333" stroke-width="2"/>`;
+
+            const months = consumer.length;
+            const xStep = graphWidth / (months - 1);
+
+            // 繪製4條線
+            const drawLine = (data, color, label) => {
+                let path = `M ${padding} ${height - padding - (data[0] / maxValue) * graphHeight}`;
+                for (let i = 1; i < months; i++) {
+                    const x = padding + i * xStep;
+                    const y = height - padding - (data[i] / maxValue) * graphHeight;
+                    path += ` L ${x} ${y}`;
+                }
+                svg += `<path d="${path}" stroke="${color}" stroke-width="2" fill="none" stroke-linejoin="round"/>`;
+            };
+
+            drawLine(consumer, '#667eea', '消費者');
+            drawLine(retailer, '#764ba2', '零售商');
+            drawLine(wholesaler, '#ff6b6b', '批發商');
+            drawLine(manufacturer, '#ffc107', '製造商');
+
+            // 添加圖例
+            const legends = [
+                { color: '#667eea', label: '消費者實際銷售' },
+                { color: '#764ba2', label: '零售商訂貨' },
+                { color: '#ff6b6b', label: '批發商訂貨' },
+                { color: '#ffc107', label: '製造商訂貨' }
+            ];
+
+            let legendY = padding + 15;
+            for (let i = 0; i < legends.length; i++) {
+                svg += `<rect x="${padding + 10}" y="${legendY + i * 20}" width="10" height="10" fill="${legends[i].color}"/>`;
+                svg += `<text x="${padding + 25}" y="${legendY + i * 20 + 10}" font-size="12" fill="#333">${legends[i].label}</text>`;
+            }
+
+            svg += '</svg>';
+            canvas.innerHTML = svg;
+        }
+
+        function updateServiceLevel() {
+            const levels = { '90': 1.28, '95': 1.65, '97.5': 1.96, '99': 2.33 };
+            const level = document.getElementById('serviceLevel').value;
+            document.getElementById('zValue').textContent = `Z值：${levels[level]}`;
+        }
+
+        function calculateSafetyStock() {
+            const monthlyDemand = parseInt(document.getElementById('monthlyDemand').value);
+            const demandStd = parseInt(document.getElementById('demandStd').value);
+            const leadTime = parseInt(document.getElementById('leadTime').value);
+            const holdingCost = parseFloat(document.getElementById('holdingCost').value);
+            const serviceLevel = document.getElementById('serviceLevel').value;
+
+            const zValues = { '90': 1.28, '95': 1.65, '97.5': 1.96, '99': 2.33 };
+            const z = zValues[serviceLevel];
+
+            const dailyDemand = monthlyDemand / 30;
+            const leadTimeStd = demandStd * Math.sqrt(leadTime);
+            const ss = z * leadTimeStd;
+            const annualCost = ss * holdingCost;
+            const avgInventory = (monthlyDemand / 2) + ss;
+            const rop = (dailyDemand * leadTime) + ss;
+
+            document.getElementById('safetyStockResult').style.display = 'block';
+            document.getElementById('dailyDemand').textContent = dailyDemand.toFixed(0);
+            document.getElementById('leadTimeStd').textContent = leadTimeStd.toFixed(0);
+            document.getElementById('safetyStockValue').textContent = ss.toFixed(0);
+            document.getElementById('annualHoldingCost').textContent = '￥' + annualCost.toFixed(0);
+            document.getElementById('avgInventory').textContent = avgInventory.toFixed(0);
+            document.getElementById('rop').textContent = rop.toFixed(0);
+
+            // 提供建議
+            if (serviceLevel === '90') {
+                document.getElementById('serviceAdvice').textContent = '該服務水平適合成本敏感型產品，允許偶爾缺貨。風險：消費者流失。';
+            } else if (serviceLevel === '95') {
+                document.getElementById('serviceAdvice').textContent = '該服務水平是多數企業的標準選擇，在成本與服務間達到較好平衡。';
+            } else if (serviceLevel === '97.5') {
+                document.getElementById('serviceAdvice').textContent = '該服務水平適合高價值產品或重要客戶，庫存成本較高但服務優秀。';
+            } else {
+                document.getElementById('serviceAdvice').textContent = '該服務水平適合關鍵物料或生命攸關產品，要求近乎零缺貨。庫存成本最高。';
+            }
+
+            // 繪製成本對比圖
+            drawCostComparisonChart(monthlyDemand, demandStd, leadTime, holdingCost);
+        }
+
+        function drawCostComparisonChart(demand, std, leadTime, holdingCost) {
+            const canvas = document.getElementById('costComparisonChart');
+            const zValues = [1.28, 1.65, 1.96, 2.33];
+            const levels = ['90%', '95%', '97.5%', '99%'];
+            const costs = zValues.map(z => z * std * Math.sqrt(leadTime) * holdingCost);
+
+            let svg = `<svg width="800" height="350" style="background: white; border-radius: 8px;">`;
+
+            const barWidth = 150;
+            const spacing = 50;
+            const maxCost = Math.max(...costs) * 1.2;
+
+            for (let i = 0; i < zValues.length; i++) {
+                const x = 100 + i * (barWidth + spacing);
+                const barHeight = (costs[i] / maxCost) * 200;
+                const y = 250 - barHeight;
+
+                svg += `<rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" fill="url(#grad)"/>`;
+                svg += `<text x="${x + barWidth/2}" y="280" text-anchor="middle" font-size="12" font-weight="600">${levels[i]}</text>`;
+                svg += `<text x="${x + barWidth/2}" y="${y - 10}" text-anchor="middle" font-size="12" fill="#667eea" font-weight="600">￥${costs[i].toFixed(0)}</text>`;
+            }
+
+            svg += `<defs><linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#667eea;stop-opacity:1" /><stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" /></linearGradient></defs>`;
+
+            svg += `<line x1="80" y1="250" x2="750" y2="250" stroke="#333" stroke-width="2"/>`;
+            svg += `<text x="20" y="260" font-size="12" fill="#333">年度成本(元)</text>`;
+
+            svg += '</svg>';
+            canvas.innerHTML = svg;
+        }
+
+        function calculateMakeBuy() {
+            const volume = parseInt(document.getElementById('annualVolume').value);
+            const makeUnitCost = parseFloat(document.getElementById('makeUnitCost').value);
+            const makeCapitalInvest = parseInt(document.getElementById('makeCapitalInvest').value) * 10000;
+            const makeFixedCost = parseInt(document.getElementById('makeFixedCost').value) * 10000;
+            const buyUnitCost = parseFloat(document.getElementById('buyUnitCost').value);
+            const buyManagementCost = parseInt(document.getElementById('buyManagementCost').value) * 10000;
+            const qualityRiskCost = parseInt(document.getElementById('qualityRiskCost').value) * 10000;
+            const years = parseInt(document.getElementById('analysisYears').value);
+
+            const makeVariable = volume * makeUnitCost;
+            const makeTotal = makeVariable + makeFixedCost + (makeCapitalInvest / years);
+
+            const buyVariable = volume * buyUnitCost;
+            const buyTotal = buyVariable + buyManagementCost + qualityRiskCost;
+
+            const difference = makeTotal - buyTotal;
+
+            document.getElementById('makeBuyResult').style.display = 'block';
+
+            // 更新表格
+            document.getElementById('make-variable').textContent = '￥' + Math.round(makeVariable).toLocaleString();
+            document.getElementById('buy-variable').textContent = '￥' + Math.round(buyVariable).toLocaleString();
+            document.getElementById('diff-variable').textContent = difference > 0 ? '✓ 內製便宜' : '✓ 外包便宜';
+
+            document.getElementById('make-fixed').textContent = '￥' + Math.round(makeFixedCost + makeCapitalInvest/years).toLocaleString();
+            document.getElementById('buy-fixed').textContent = '￥' + Math.round(buyManagementCost + qualityRiskCost).toLocaleString();
+
+            document.getElementById('make-total').textContent = '￥' + Math.round(makeTotal).toLocaleString();
+            document.getElementById('buy-total').textContent = '￥' + Math.round(buyTotal).toLocaleString();
+            document.getElementById('diff-total').textContent = difference > 0 ? '外包節省 ￥' + Math.abs(Math.round(difference)).toLocaleString() : '內製節省 ￥' + Math.abs(Math.round(difference)).toLocaleString();
+
+            if (difference > 0) {
+                document.getElementById('recommendation').textContent = '✓ 建議：外包更經濟';
+            } else {
+                document.getElementById('recommendation').textContent = '✓ 建議：內製更經濟';
+            }
+
+            // 繪製多年成本圖
+            drawMakeBuyChart(makeUnitCost, makeFixedCost, makeCapitalInvest, buyUnitCost, buyManagementCost + qualityRiskCost, volume, years);
+        }
+
+        function drawMakeBuyChart(makeUnit, makeFixed, makeCapital, buyUnit, buyFixed, volume, years) {
+            const canvas = document.getElementById('makeBuyChart');
+            let svg = `<svg width="800" height="350" style="background: white; border-radius: 8px;">`;
+
+            const data = [];
+            let maxCost = 0;
+
+            for (let y = 0; y <= years; y++) {
+                const makeCost = volume * makeUnit * y + makeFixed * y + makeCapital;
+                const buyCost = volume * buyUnit * y + buyFixed * y;
+                data.push({ year: y, make: makeCost, buy: buyCost });
+                maxCost = Math.max(maxCost, makeCost, buyCost);
+            }
+
+            maxCost *= 1.1;
+
+            const chartWidth = 700;
+            const chartHeight = 250;
+            const startX = 50;
+            const startY = 300;
+
+            // 繪製座標軸
+            svg += `<line x1="${startX}" y1="${startY}" x2="${startX + chartWidth}" y2="${startY}" stroke="#333" stroke-width="2"/>`;
+            svg += `<line x1="${startX}" y1="30" x2="${startX}" y2="${startY}" stroke="#333" stroke-width="2"/>`;
+
+            // 繪製網格
+            for (let i = 1; i <= 5; i++) {
+                const y = startY - (chartHeight / 5) * i;
+                svg += `<line x1="${startX}" y1="${y}" x2="${startX + chartWidth}" y2="${y}" stroke="#f0f0f0" stroke-width="1"/>`;
+                const value = Math.round((maxCost / 5) * i);
+                svg += `<text x="${startX - 10}" y="${y + 5}" text-anchor="end" font-size="11" fill="#999">￥${value.toLocaleString()}</text>`;
+            }
+
+            // 繪製數據線
+            const xStep = chartWidth / years;
+            let makePath = `M ${startX} ${startY - (data[0].make / maxCost) * chartHeight}`;
+            let buyPath = `M ${startX} ${startY - (data[0].buy / maxCost) * chartHeight}`;
+
+            for (let i = 1; i < data.length; i++) {
+                const x = startX + i * xStep;
+                makePath += ` L ${x} ${startY - (data[i].make / maxCost) * chartHeight}`;
+                buyPath += ` L ${x} ${startY - (data[i].buy / maxCost) * chartHeight}`;
+            }
+
+            svg += `<path d="${makePath}" stroke="#667eea" stroke-width="3" fill="none" stroke-linejoin="round"/>`;
+            svg += `<path d="${buyPath}" stroke="#764ba2" stroke-width="3" fill="none" stroke-linejoin="round"/>`;
+
+            // 圖例
+            svg += `<rect x="50" y="10" width="15" height="15" fill="#667eea"/>`;
+            svg += `<text x="70" y="22" font-size="12" fill="#333">內製成本</text>`;
+            svg += `<rect x="220" y="10" width="15" height="15" fill="#764ba2"/>`;
+            svg += `<text x="240" y="22" font-size="12" fill="#333">外包成本</text>`;
+
+            // X軸標籤
+            for (let i = 0; i <= years; i++) {
+                const x = startX + i * xStep;
+                svg += `<text x="${x}" y="${startY + 20}" text-anchor="middle" font-size="11" fill="#333">第${i}年</text>`;
+            }
+
+            svg += '</svg>';
+            canvas.innerHTML = svg;
+        }
+
+        function updateResilienceScore() {
+            const scores = [
+                parseInt(document.getElementById('geographic').value),
+                parseInt(document.getElementById('suppliers').value),
+                parseInt(document.getElementById('inventory').value),
+                parseInt(document.getElementById('visibility').value),
+                parseInt(document.getElementById('contingency').value),
+                parseInt(document.getElementById('supplierHealth').value),
+                parseInt(document.getElementById('logistics').value),
+                parseInt(document.getElementById('innovation').value)
+            ];
+
+            const overall = scores.reduce((a, b) => a + b) / scores.length;
+
+            document.getElementById('resilienceResult').style.display = 'block';
+            document.getElementById('overallScore').textContent = overall.toFixed(1);
+
+            if (overall >= 8) {
+                document.getElementById('scoreLevel').textContent = '高度韌性';
+            } else if (overall >= 6) {
+                document.getElementById('scoreLevel').textContent = '中等韌性';
+            } else if (overall >= 4) {
+                document.getElementById('scoreLevel').textContent = '一般韌性';
+            } else {
+                document.getElementById('scoreLevel').textContent = '低度韌性';
+            }
+
+            // 風險等級
+            if (overall >= 8) {
+                document.getElementById('riskLevel').textContent = '低風險';
+                document.getElementById('riskColor').textContent = '✓ 能應對大多數突發';
+            } else if (overall >= 6) {
+                document.getElementById('riskLevel').textContent = '中風險';
+                document.getElementById('riskColor').textContent = '⚠️ 需加強薄弱環節';
+            } else {
+                document.getElementById('riskLevel').textContent = '高風險';
+                document.getElementById('riskColor').textContent = '⚠️ 急需改善';
+            }
+
+            // 改善潛力
+            const lowestScore = Math.min(...scores);
+            const improvementPoints = 10 - lowestScore;
+            document.getElementById('improvementPotential').textContent = improvementPoints.toFixed(1);
+
+            // 恢復時間
+            const recoveryDays = Math.round((10 - overall) * 15);
+            document.getElementById('recoveryTime').textContent = recoveryDays + '天';
+
+            // 生成改善建議
+            generateRecommendations(scores);
+
+            // 繪製雷達圖
+            drawResilienceRadar(scores);
+        }
+
+        function generateRecommendations(scores) {
+            const labels = ['地理分散度', '供應商多樣化', '庫存緩衝', '信息透明度', '應急預案', '供應商健康', '配送靈活性', '技術創新'];
+            const recommendations = document.getElementById('recommendations');
+            recommendations.innerHTML = '';
+
+            const sorted = scores.map((s, i) => ({ score: s, label: labels[i], index: i }))
+                .sort((a, b) => a.score - b.score)
+                .slice(0, 3);
+
+            sorted.forEach((item, idx) => {
+                const advice = [
+                    '建立全球供應商網路，減少地理集中度',
+                    '尋找替代供應商，建立多源採購',
+                    '增加戰略庫存，確保30-90天安全儲備',
+                    '投資信息系統，實現端對端可見性',
+                    '制定供應中斷應急預案，定期演練',
+                    '對供應商進行財務評估，識別風險',
+                    '建立多運輸路線，避免單點故障',
+                    '持續技術投資，優化供應鏈流程'
+                ];
+
+                const div = document.createElement('div');
+                div.style.marginBottom = '15px';
+                div.style.padding = '15px';
+                div.style.background = '#f9f9f9';
+                div.style.borderLeft = '4px solid #ff6b6b';
+                div.style.borderRadius = '5px';
+                div.innerHTML = `<strong style="color: #ff6b6b;">#${idx + 1} 優先改善：${item.label}</strong><br/><span style="color: #666; font-size: 0.9em;">當前評分 ${item.score}/10 - ${advice[item.index]}</span>`;
+                recommendations.appendChild(div);
+            });
+        }
+
+        function drawResilienceRadar(scores) {
+            const canvas = document.getElementById('resilienceRadar');
+            const labels = ['地理分散', '供應商多樣', '庫存緩衝', '信息透明', '應急預案', '供應商健康', '配送靈活', '技術創新'];
+            const dimensions = scores.length;
+
+            let svg = `<svg width="800" height="400" style="background: white; border-radius: 8px;">`;
+
+            // 中心點
+            const centerX = 400;
+            const centerY = 200;
+            const maxRadius = 100;
+
+            // 繪製背景圓圈
+            for (let r = 1; r <= 5; r++) {
+                const radius = (maxRadius / 5) * r;
+                svg += `<circle cx="${centerX}" cy="${centerY}" r="${radius}" fill="none" stroke="#ddd" stroke-width="1"/>`;
+            }
+
+            // 繪製軸線
+            for (let i = 0; i < dimensions; i++) {
+                const angle = (i * 2 * Math.PI) / dimensions - Math.PI / 2;
+                const x = centerX + maxRadius * Math.cos(angle);
+                const y = centerY + maxRadius * Math.sin(angle);
+                svg += `<line x1="${centerX}" y1="${centerY}" x2="${x}" y2="${y}" stroke="#ddd" stroke-width="1"/>`;
+
+                // 標籤
+                const labelX = centerX + (maxRadius + 25) * Math.cos(angle);
+                const labelY = centerY + (maxRadius + 25) * Math.sin(angle);
+                svg += `<text x="${labelX}" y="${labelY}" text-anchor="middle" font-size="11" fill="#666">${labels[i]}</text>`;
+            }
+
+            // 繪製數據多邊形
+            let dataPath = '';
+            for (let i = 0; i < dimensions; i++) {
+                const angle = (i * 2 * Math.PI) / dimensions - Math.PI / 2;
+                const radius = (scores[i] / 10) * maxRadius;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                dataPath += (i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`);
+            }
+            dataPath += ' Z';
+            svg += `<path d="${dataPath}" fill="#667eea33" stroke="#667eea" stroke-width="2"/>`;
+
+            svg += '</svg>';
+            canvas.innerHTML = svg;
+        }
+    </script>
+</body>
+</html>
