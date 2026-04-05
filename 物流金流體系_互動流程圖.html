@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>物流與金流運作體系 - 互動流程圖</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+  .header { text-align: center; padding: 30px 20px 10px; }
+  .header h1 { font-size: 28px; background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .header p { color: #94a3b8; margin-top: 8px; font-size: 14px; }
+
+  .tabs { display: flex; justify-content: center; gap: 12px; margin: 20px 0; flex-wrap: wrap; padding: 0 20px; }
+  .tab { padding: 10px 24px; border-radius: 25px; cursor: pointer; font-size: 14px; font-weight: 600; border: 2px solid #334155; background: transparent; color: #94a3b8; transition: all 0.3s; }
+  .tab:hover { border-color: #60a5fa; color: #60a5fa; }
+  .tab.active { background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-color: transparent; color: #fff; }
+
+  .scene { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; }
+  .scene.active { display: block; }
+
+  /* Flow diagram */
+  .flow-container { position: relative; padding: 20px 0; }
+  .flow-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+  .flow-node { padding: 14px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; position: relative; min-width: 120px; text-align: center; border: 2px solid transparent; }
+  .flow-node:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+  .flow-node.selected { border-color: #fbbf24; box-shadow: 0 0 20px rgba(251,191,36,0.3); }
+
+  .node-logistics { background: linear-gradient(135deg, #059669, #10b981); }
+  .node-payment { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+  .node-platform { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
+  .node-gov { background: linear-gradient(135deg, #dc2626, #ef4444); }
+  .node-bank { background: linear-gradient(135deg, #d97706, #f59e0b); color: #1a1a2e; }
+  .node-user { background: linear-gradient(135deg, #0891b2, #06b6d4); }
+
+  .arrow { color: #475569; font-size: 24px; font-weight: bold; flex-shrink: 0; }
+  .arrow-down { text-align: center; color: #475569; font-size: 24px; margin: 4px 0; }
+
+  /* Detail panel */
+  .detail-panel { background: #1e293b; border-radius: 16px; padding: 24px; margin-top: 20px; border: 1px solid #334155; min-height: 120px; transition: all 0.3s; }
+  .detail-panel h3 { font-size: 18px; margin-bottom: 12px; color: #f1f5f9; }
+  .detail-panel .role-tag { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; margin-right: 8px; margin-bottom: 8px; }
+  .detail-panel p { color: #94a3b8; line-height: 1.8; font-size: 14px; margin-top: 10px; }
+  .detail-panel .responsibilities { margin-top: 12px; }
+  .detail-panel .responsibilities li { color: #cbd5e1; margin: 6px 0; font-size: 13px; list-style: none; padding-left: 20px; position: relative; }
+  .detail-panel .responsibilities li::before { content: '▸'; position: absolute; left: 0; color: #60a5fa; }
+
+  /* Relationship map */
+  .relation-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 20px; }
+  .relation-card { background: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; transition: all 0.3s; }
+  .relation-card:hover { border-color: #60a5fa; transform: translateY(-2px); }
+  .relation-card h4 { font-size: 15px; color: #60a5fa; margin-bottom: 10px; }
+  .relation-card p { font-size: 13px; color: #94a3b8; line-height: 1.7; }
+  .relation-arrow { text-align: center; font-size: 20px; color: #f59e0b; margin: 4px 0; }
+
+  /* Legend */
+  .legend { display: flex; gap: 16px; justify-content: center; margin: 20px 0; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #94a3b8; }
+  .legend-dot { width: 14px; height: 14px; border-radius: 4px; }
+
+  /* Section title */
+  .section-title { font-size: 20px; font-weight: 700; color: #f1f5f9; margin: 30px 0 16px; padding-bottom: 8px; border-bottom: 2px solid #334155; }
+  .section-subtitle { font-size: 14px; color: #64748b; margin-bottom: 20px; }
+
+  /* Scenario walkthrough */
+  .scenario { background: #1e293b; border-radius: 16px; padding: 24px; margin: 20px 0; border: 1px solid #334155; }
+  .step-list { counter-reset: step; }
+  .step-item { display: flex; align-items: flex-start; gap: 16px; padding: 14px 0; border-bottom: 1px solid #1a2332; cursor: pointer; transition: all 0.3s; }
+  .step-item:last-child { border-bottom: none; }
+  .step-item:hover { background: rgba(96,165,250,0.05); border-radius: 8px; padding-left: 8px; }
+  .step-item.highlight { background: rgba(96,165,250,0.1); border-radius: 8px; padding-left: 8px; }
+  .step-num { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+  .step-content { flex: 1; }
+  .step-content strong { color: #f1f5f9; font-size: 14px; }
+  .step-content span { display: block; color: #64748b; font-size: 12px; margin-top: 4px; }
+  .step-logistics .step-num { background: #059669; }
+  .step-payment .step-num { background: #2563eb; }
+  .step-both .step-num { background: linear-gradient(135deg, #059669, #2563eb); }
+
+  @media (max-width: 768px) {
+    .flow-row { flex-direction: column; gap: 4px; }
+    .arrow { transform: rotate(90deg); }
+    .header h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>物流與金流運作體系</h1>
+  <p>點擊各節點查看詳細角色說明 ｜ 切換分頁探索不同面向</p>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('ecommerce')">電商物流金流</div>
+  <div class="tab" onclick="switchTab('international')">國際貿易</div>
+  <div class="tab" onclick="switchTab('roles')">角色總覽</div>
+  <div class="tab" onclick="switchTab('relations')">關聯地圖</div>
+</div>
+
+<!-- ========== 電商場景 ========== -->
+<div class="scene active" id="scene-ecommerce">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>物流角色</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>金流角色</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>平台</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#06b6d4"></div>使用者</div>
+  </div>
+
+  <div class="section-title">電商交易全流程</div>
+  <div class="section-subtitle">從消費者下單到賣家收款的完整物流與金流路徑</div>
+
+  <div class="flow-container">
+    <!-- Row 1: 消費者付款 -->
+    <div class="flow-row">
+      <div class="flow-node node-user" onclick="showDetail('consumer')">消費者</div>
+      <div class="arrow">→</div>
+      <div class="flow-node node-payment" onclick="showDetail('payment_gateway')">第三方支付<br><small>綠界/藍新</small></div>
+      <div class="arrow">→</div>
+      <div class="flow-node node-payment" onclick="showDetail('issuer')">發卡銀行</div>
+      <div class="arrow">→</div>
+      <div class="flow-node node-payment" onclick="showDetail('card_network')">卡組織<br><small>Visa/MC</small></div>
+      <div class="arrow">→</div>
+      <div class="flow-node node-payment" onclick="showDetail('acquirer')">收單銀行</div>
+    </div>
+    <div class="arrow-down">↕ 金流 ↕</div>
+    <!-- Row 2: 平台 -->
+    <div class="flow-row">
+      <div class="flow-node node-platform" onclick="showDetail('platform')">電商平台<br><small>蝦皮/momo</small></div>
+    </div>
+    <div class="arrow-down">↕ 物流 ↕</div>
+    <!-- Row 3: 物流鏈 -->
+    <div class="flow-row">
+      <div class="flow-node node-user" onclick="showDetail('seller')">賣家/品牌</div>
+      <div class="arrow">→</div>
+      <div class="flow-node node-logistics" onclick="showDetail('warehouse')">倉儲中心</div>
+      <div class="arrow">→</div>
+      <div class="flow-node node-logistics" onclick="showDetail('3pl')">3PL 物流</div>
+      <div class="arrow">→</div>
+      <div class="flow-node node-logistics" onclick="showDetail('hub')">區域集散站</div>
+      <div class="arrow">→</div>
+      <div class="flow-node node-logistics" onclick="showDetail('lastmile')">最後一哩<br><small>宅配/超取</small></div>
+    </div>
+  </div>
+
+  <div class="detail-panel" id="detail-panel">
+    <h3>👆 點擊上方任一節點查看說明</h3>
+    <p>每個節點代表物流或金流體系中的一個關鍵角色，點擊即可了解其權責與運作方式。</p>
+  </div>
+
+  <div class="section-title">情境走一遍：蝦皮買球鞋</div>
+  <div class="scenario">
+    <div class="step-list">
+      <div class="step-item step-payment" onmouseenter="this.classList.add('highlight')" onmouseleave="this.classList.remove('highlight')">
+        <div class="step-num">1</div>
+        <div class="step-content"><strong>消費者下單付款</strong><span>選擇信用卡/Line Pay/ATM，款項進入平台信託帳戶（金流啟動）</span></div>
+      </div>
+      <div class="step-item step-both" onmouseenter="this.classList.add('highlight')" onmouseleave="this.classList.remove('highlight')">
+        <div class="step-num">2</div>
+        <div class="step-content"><strong>平台通知賣家出貨</strong><span>系統自動派單，賣家收到出貨通知，準備揀貨包裝</span></div>
+      </div>
+      <div class="step-item step-logistics" onmouseenter="this.classList.add('highlight')" onmouseleave="this.classList.remove('highlight')">
+        <div class="step-num">3</div>
+        <div class="step-content"><strong>賣家交貨給物流</strong><span>貨物交由 3PL 或平台合作物流商（如黑貓），取得追蹤編號</span></div>
+      </div>
+      <div class="step-item step-logistics" onmouseenter="this.classList.add('highlight')" onmouseleave="this.classList.remove('highlight')">
+        <div class="step-num">4</div>
+        <div class="step-content"><strong>幹線運輸 + 區域配送</strong><span>貨物從集貨倉 → 轉運中心 → 區域集散站，逐步靠近消費者</span></div>
+      </div>
+      <div class="step-item step-logistics" onmouseenter="this.classList.add('highlight')" onmouseleave="this.classList.remove('highlight')">
+        <div class="step-num">5</div>
+        <div class="step-content"><strong>最後一哩配送</strong><span>宅配到府/超商取貨/智慧櫃，消費者簽收（物流完成）</span></div>
+      </div>
+      <div class="step-item step-payment" onmouseenter="this.classList.add('highlight')" onmouseleave="this.classList.remove('highlight')">
+        <div class="step-num">6</div>
+        <div class="step-content"><strong>平台撥款給賣家</strong><span>確認收貨後，平台將貨款（扣除手續費）撥入賣家帳戶（金流完成）</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 國際貿易場景 ========== -->
+<div class="scene" id="scene-international">
+  <div class="section-title">國際貿易物流金流</div>
+  <div class="section-subtitle">涉及跨國運輸、海關、銀行信用介入的完整鏈路</div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>物流</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>金流</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div>政府機構</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>銀行</div>
+  </div>
+
+  <div class="flow-container">
+    <div class="flow-row">
+      <div class="flow-node node-user" onclick="showDetail('exporter')">出口商</div>
+      <div class="arrow">→</div>
+      <div class="flow-node node-logistics" onclick="showDetail('forwarder')">貨運承攬</div>
+      <div class="arrow">→</div>
+      <div class="flow-node node-logistics" onclick="showDetail('customs_broker')">報關行</div>
+      <div class="arrow">→</div>
+      <div class="flow-node node-gov" onclick="showDetail('customs')">出口海關</div>
+    </div>
+    <div class="arrow-down">↓</div>
+    <div class="flow-row">
+      <div class="flow-node node-logistics" onclick="showDetail('carrier')">承運人<br><small>船公司/航空</small></div>
+      <div class="arrow">→</div>
+      <div class="flow-node node-logistics" onclick="showDetail('insurance')">保險公司</div>
+    </div>
+    <div class="arrow-down">↓</div>
+    <div class="flow-row">
+      <div class="flow-node node-gov" onclick="showDetail('customs_import')">進口海關</div>
+      <div class="arrow">→</div>
+      <div class="flow-node node-logistics" onclick="showDetail('customs_broker')">報關行</div>
+      <div class="arrow">→</div>
+      <div class="flow-node node-logistics" onclick="showDetail('warehouse_bonded')">保稅倉</div>
+      <div class="arrow">→</div>
+      <div class="flow-node node-user" onclick="showDetail('importer')">進口商</div>
+    </div>
+    <div class="arrow-down" style="margin: 24px 0;">── 金流路徑（信用狀模式）──</div>
+    <div class="flow-row">
+      <div class="flow-node node-bank" onclick="showDetail('issuing_bank')">開狀銀行<br><small>進口商端</small></div>
+      <div class="arrow">→</div>
+      <div class="flow-node node-bank" onclick="showDetail('advising_bank')">通知銀行</div>
+      <div class="arrow">→</div>
+      <div class="flow-node node-bank" onclick="showDetail('negotiating_bank')">押匯銀行<br><small>出口商端</small></div>
+    </div>
+  </div>
+
+  <div class="detail-panel" id="detail-panel-intl">
+    <h3>👆 點擊節點查看國際貿易角色說明</h3>
+    <p>國際貿易涉及更多中介角色，特別是銀行在金流中扮演信用擔保的關鍵功能。</p>
+  </div>
+
+  <div class="section-title">信用狀（L/C）運作步驟</div>
+  <div class="scenario">
+    <div class="step-list">
+      <div class="step-item step-payment"><div class="step-num">1</div><div class="step-content"><strong>進口商向開狀銀行申請開立信用狀</strong><span>銀行評估進口商信用後開出 L/C</span></div></div>
+      <div class="step-item step-payment"><div class="step-num">2</div><div class="step-content"><strong>開狀銀行將 L/C 傳送至通知銀行</strong><span>通知銀行（通常在出口國）將 L/C 轉交出口商</span></div></div>
+      <div class="step-item step-logistics"><div class="step-num">3</div><div class="step-content"><strong>出口商備貨出貨</strong><span>依 L/C 條件準備貨物，安排運輸並取得提單（B/L）</span></div></div>
+      <div class="step-item step-both"><div class="step-num">4</div><div class="step-content"><strong>出口商向押匯銀行提交單據</strong><span>包含提單、商業發票、裝箱單、保險單等</span></div></div>
+      <div class="step-item step-payment"><div class="step-num">5</div><div class="step-content"><strong>押匯銀行審單後墊付貨款</strong><span>出口商即時取得資金，不需等進口商付款</span></div></div>
+      <div class="step-item step-payment"><div class="step-num">6</div><div class="step-content"><strong>開狀銀行收到單據後向進口商收款</strong><span>進口商付款贖單，憑提單提貨（金流+物流閉環完成）</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 角色總覽 ========== -->
+<div class="scene" id="scene-roles">
+  <div class="section-title">所有角色一覽</div>
+  <div class="section-subtitle">物流與金流體系中的關鍵機構及其權責</div>
+  <div class="relation-grid" id="roles-grid"></div>
+</div>
+
+<!-- ========== 關聯地圖 ========== -->
+<div class="scene" id="scene-relations">
+  <div class="section-title">角色關聯地圖</div>
+  <div class="section-subtitle">各角色之間如何互動與協作</div>
+  <div class="relation-grid" id="relations-grid"></div>
+</div>
+
+<script>
+const details = {
+  consumer: { title: '消費者（Buyer/Consumer）', type: '使用者', color: '#06b6d4', desc: '交易的需求發起方，透過線上或線下通路下單購買商品。', responsibilities: ['選擇商品並完成下單', '選擇付款方式（信用卡、電子支付、ATM等）', '確認收貨並完成交易閉環', '有退換貨的權利與義務'] },
+  seller: { title: '賣家 / 品牌商', type: '使用者', color: '#06b6d4', desc: '商品的供應方，負責備貨、包裝並交付物流。', responsibilities: ['管理商品庫存與上架', '接單後揀貨、包裝、出貨', '處理退換貨與售後服務', '與平台及物流商對接'] },
+  platform: { title: '電商平台', type: '平台', color: '#8b5cf6', desc: '連結買賣雙方的數位市集，同時整合物流與金流服務。', responsibilities: ['提供交易撮合環境', '代管買家款項（信託機制）', '整合物流追蹤系統', '制定交易規則與爭議處理機制', '確認收貨後撥款給賣家'] },
+  payment_gateway: { title: '第三方支付', type: '金流', color: '#3b82f6', desc: '作為買賣雙方的資金中介，提供多元支付工具整合。如綠界（ECPay）、藍新（NewebPay）。', responsibilities: ['整合信用卡、ATM、超商繳費等多種支付方式', '處理交易授權與請款', '提供交易安全機制（SSL、3D驗證）', '定期對帳並撥款給商家'] },
+  issuer: { title: '發卡銀行（Issuer）', type: '金流', color: '#3b82f6', desc: '發行信用卡或金融卡給消費者的金融機構。', responsibilities: ['核發信用卡/金融卡給持卡人', '承擔持卡人的信用風險', '處理消費者的帳單與還款', '提供紅利點數、分期等附加服務'] },
+  card_network: { title: '卡組織（Card Network）', type: '金流', color: '#3b82f6', desc: 'Visa、Mastercard、JCB 等國際支付網路，是金流的「高速公路」。', responsibilities: ['建構全球支付清算網路', '制定交易標準與安全規範', '處理發卡行與收單行之間的交易路由', '管理跨境交易的匯率與結算'] },
+  acquirer: { title: '收單銀行（Acquirer）', type: '金流', color: '#3b82f6', desc: '與商家簽約的金融機構，負責處理商家端的收款。', responsibilities: ['與商家簽訂收單合約', '處理刷卡交易的授權請求', '將款項結算並撥付給商家', '管理商家的風險審核（如拒付處理）'] },
+  warehouse: { title: '倉儲中心', type: '物流', color: '#10b981', desc: '貨物的存放與加工中心，現代倉儲已高度自動化。', responsibilities: ['貨物入庫、存放與庫存管理', '訂單揀貨、分揀與包裝', '提供加值服務（貼標、組合包裝等）', '與WMS系統整合實現即時庫存可視化'] },
+  '3pl': { title: '第三方物流（3PL）', type: '物流', color: '#10b981', desc: '整合運輸、倉儲、配送等功能的外包服務商，如 DHL Supply Chain、嘉里大榮。', responsibilities: ['提供一站式物流外包服務', '管理倉儲與配送網路', '提供逆向物流（退貨處理）', '透過規模經濟降低客戶物流成本'] },
+  hub: { title: '區域集散站', type: '物流', color: '#10b981', desc: '物流網路中的轉運節點，負責貨物的集中與分流。', responsibilities: ['接收幹線運輸到達的貨物', '依目的地進行分流與轉運', '優化配送路線與載具調度', '作為最後一哩配送的起點'] },
+  lastmile: { title: '最後一哩配送', type: '物流', color: '#10b981', desc: '將貨物從集散站送達消費者手中的最終環節。', responsibilities: ['宅配到府並取得簽收', '管理超商取貨與智慧櫃', '處理配送異常（無人簽收、地址錯誤）', '回傳配送狀態至平台系統'] },
+  exporter: { title: '出口商', type: '使用者', color: '#06b6d4', desc: '國際貿易中的賣方，將商品從本國銷售至海外市場。', responsibilities: ['生產或採購出口商品', '準備出口單據（發票、裝箱單等）', '依合約安排運輸與保險', '向押匯銀行提交單據以取得貨款'] },
+  importer: { title: '進口商', type: '使用者', color: '#06b6d4', desc: '國際貿易中的買方，從海外採購商品至本國。', responsibilities: ['與出口商簽訂採購合約', '向銀行申請開立信用狀', '辦理進口報關與繳納關稅', '憑提單至碼頭/機場提貨'] },
+  forwarder: { title: '貨運承攬業者', type: '物流', color: '#10b981', desc: '國際物流的「旅行社」，統籌安排跨國運輸的所有環節。', responsibilities: ['規劃最佳運輸路線與方式', '代訂艙位（海運/空運）', '協調各段運輸的銜接', '處理相關保險與文件'] },
+  customs_broker: { title: '報關行', type: '物流', color: '#10b981', desc: '專業代理進出口通關手續的持照業者。', responsibilities: ['代理海關申報作業', '計算並代繳關稅', '處理檢驗檢疫相關程序', '確保貨物分類編號正確'] },
+  customs: { title: '海關（出口端）', type: '政府', color: '#ef4444', desc: '國家邊境管理機構，監管所有進出口貨物。', responsibilities: ['查驗出口貨物是否合規', '核發出口許可與相關證明', '執行出口管制與統計', '防堵走私與違禁品'] },
+  customs_import: { title: '海關（進口端）', type: '政府', color: '#ef4444', desc: '進口國的海關機構，把關所有入境貨物。', responsibilities: ['查驗進口貨物並核定稅則', '徵收關稅、營業稅等', '執行檢驗檢疫標準', '管理保稅區與自由貿易港區'] },
+  carrier: { title: '承運人', type: '物流', color: '#10b981', desc: '實際執行國際運輸的業者，如長榮海運、華航貨運。', responsibilities: ['提供運輸載具（船舶/飛機/車輛）', '簽發提單（B/L）或空運提單（AWB）', '確保貨物安全運抵目的港', '依時間表提供定期航班/航線'] },
+  insurance: { title: '保險公司', type: '物流', color: '#10b981', desc: '為運輸中的貨物提供風險保障。', responsibilities: ['承保貨物運輸險', '提供信用保險（保障收款風險）', '理賠貨物損失或滅失', '協助風險評估與防損建議'] },
+  issuing_bank: { title: '開狀銀行', type: '銀行', color: '#f59e0b', desc: '受進口商委託開立信用狀的銀行，是國際貿易金流的核心擔保者。', responsibilities: ['審核進口商信用並開立 L/C', '承諾在單據相符時付款', '審查出口商提交的單據', '向進口商收取款項（贖單）'] },
+  advising_bank: { title: '通知銀行', type: '銀行', color: '#f59e0b', desc: '位於出口國，負責將信用狀轉交出口商的銀行。', responsibilities: ['驗證信用狀的真實性', '將 L/C 通知出口商', '必要時加保（Confirming）增強信用'] },
+  negotiating_bank: { title: '押匯銀行', type: '銀行', color: '#f59e0b', desc: '出口商的往來銀行，審查單據後先行墊付貨款。', responsibilities: ['審核出口單據是否符合 L/C 條件', '墊付貨款給出口商', '將單據轉寄開狀銀行索款', '處理單據瑕疵（不符點）'] },
+  warehouse_bonded: { title: '保稅倉', type: '物流', color: '#10b981', desc: '經海關核准的特殊倉儲區域，進口貨物可暫緩繳納關稅。', responsibilities: ['存放尚未完稅的進口貨物', '提供加值加工服務', '管理保稅帳冊與進出記錄', '配合海關監管與盤點'] }
+};
+
+const relations = [
+  { title: '消費者 ↔ 電商平台', desc: '消費者在平台瀏覽、下單、付款。平台負責訂單管理、金流代管、售後保障。平台是消費者與賣家的核心橋梁。' },
+  { title: '電商平台 ↔ 賣家', desc: '平台提供流量與交易環境，賣家負責供貨與出貨。平台抽取佣金並控制撥款時機，以確認收貨為觸發條件。' },
+  { title: '平台 ↔ 第三方支付', desc: '平台串接第三方支付以提供多元收付工具。第三方支付處理交易授權、清算，並定期撥款給平台/商家。' },
+  { title: '第三方支付 ↔ 發卡銀行/收單銀行', desc: '第三方支付透過收單銀行接入卡組織網路，當消費者刷卡時，交易經發卡行授權、卡組織路由、收單行結算的三方流程。' },
+  { title: '賣家 ↔ 3PL物流', desc: '賣家將倉儲、配送外包給3PL。3PL負責從入庫、揀貨、包裝到配送的全鏈路物流執行。' },
+  { title: '出口商 ↔ 貨運承攬', desc: '出口商委託貨運承攬安排國際運輸。承攬業者統籌訂艙、報關、保險等，是跨國物流的總協調者。' },
+  { title: '貨運承攬 ↔ 承運人', desc: '承攬業者向船公司/航空公司訂艙位，承運人負責實際運輸。承攬業者常透過併貨取得較低運費。' },
+  { title: '報關行 ↔ 海關', desc: '報關行代理進出口商向海關申報。海關依據申報資料查驗貨物、核定稅則、徵收關稅。' },
+  { title: '開狀銀行 ↔ 押匯銀行', desc: '開狀銀行承諾付款，押匯銀行先行墊付。兩者透過國際銀行間的SWIFT網路交換單據與資金。' },
+  { title: '物流完成 → 金流釋放', desc: '核心邏輯：物流的交貨確認（簽收/提單流轉）是金流撥款的前提。無論電商或國貿，「貨到」觸發「付款」是整個體系運作的基石。' },
+  { title: '央行/財金公司 ↔ 所有銀行', desc: '中央銀行透過財金資訊公司（FISC）處理銀行間的跨行清算與資金結算，是金流體系的底層基礎設施。' },
+  { title: '保險公司 ↔ 託運人/承運人', desc: '保險公司為運輸中的貨物提供風險保障。在信用狀交易中，保險單也是押匯的必要文件之一。' }
+];
+
+const allRoles = Object.entries(details).map(([key, val]) => ({ key, ...val }));
+
+// Render roles grid
+function renderRoles() {
+  const grid = document.getElementById('roles-grid');
+  grid.innerHTML = allRoles.map(r => `
+    <div class="relation-card" onclick="showDetail('${r.key}')">
+      <h4><span class="role-tag" style="background:${r.color}22;color:${r.color};border:1px solid ${r.color}55">${r.type}</span> ${r.title}</h4>
+      <p>${r.desc}</p>
+    </div>
+  `).join('');
+}
+
+// Render relations grid
+function renderRelations() {
+  const grid = document.getElementById('relations-grid');
+  grid.innerHTML = relations.map(r => `
+    <div class="relation-card">
+      <h4>${r.title}</h4>
+      <p>${r.desc}</p>
+    </div>
+  `).join('');
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('scene-' + tab).classList.add('active');
+}
+
+function showDetail(key) {
+  const d = details[key];
+  if (!d) return;
+  const panels = document.querySelectorAll('.detail-panel');
+  panels.forEach(panel => {
+    panel.innerHTML = `
+      <h3><span class="role-tag" style="background:${d.color}22;color:${d.color};border:1px solid ${d.color}55">${d.type}</span> ${d.title}</h3>
+      <p>${d.desc}</p>
+      <ul class="responsibilities">${d.responsibilities.map(r => `<li>${r}</li>`).join('')}</ul>
+    `;
+  });
+  // Highlight selected node
+  document.querySelectorAll('.flow-node').forEach(n => n.classList.remove('selected'));
+  event.target.closest('.flow-node')?.classList.add('selected');
+}
+
+renderRoles();
+renderRelations();
+</script>
+</body>
+</html>

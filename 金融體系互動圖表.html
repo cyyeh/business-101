@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全球金融體系互動圖表</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans TC', 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+    background: #f1f5f9; min-height: 100vh; padding: 24px;
+  }
+  .container { max-width: 920px; margin: 0 auto; }
+  h1 { text-align: center; font-size: 26px; color: #1e293b; margin-bottom: 4px; }
+  .subtitle { text-align: center; font-size: 14px; color: #94a3b8; margin-bottom: 18px; }
+  .filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 18px; }
+  .filters button {
+    padding: 6px 16px; border-radius: 20px; border: 1px solid #cbd5e1;
+    background: #fff; color: #64748b; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all .2s;
+  }
+  .filters button:hover { border-color: #94a3b8; }
+  .filters button.active { background: #1e293b; color: #fff; border-color: #1e293b; }
+  .svg-wrap {
+    background: #fff; border-radius: 14px; border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06); overflow: hidden;
+  }
+  svg { display: block; width: 100%; }
+  svg text { pointer-events: none; user-select: none; }
+  .node { cursor: pointer; }
+  .node rect { transition: stroke-width .15s, opacity .15s; }
+  .node:hover rect { stroke-width: 2.5; }
+  .conn { transition: opacity .15s, stroke-width .15s; }
+  .detail-panel {
+    margin-top: 16px; padding: 20px; border-radius: 12px; border: 2px solid;
+    animation: fadeIn .2s ease;
+  }
+  .detail-panel h3 { font-size: 20px; margin-bottom: 6px; }
+  .detail-panel h3 span { font-size: 14px; font-weight: 400; color: #94a3b8; margin-left: 8px; }
+  .detail-panel .cat-badge {
+    display: inline-block; padding: 3px 12px; border-radius: 12px;
+    font-size: 12px; font-weight: 600; float: right; margin-top: 4px;
+  }
+  .detail-panel p { font-size: 14px; color: #475569; line-height: 1.75; margin: 6px 0; }
+  .detail-panel .relations { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,.08); }
+  .detail-panel .rel-title { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .detail-panel .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .detail-panel .tag {
+    padding: 4px 10px; border-radius: 8px; font-size: 12px;
+    background: #fff; border: 1px solid rgba(0,0,0,.1); color: #475569;
+  }
+  .hint {
+    margin-top: 14px; padding: 14px; background: #f8fafc;
+    border-radius: 10px; border: 1px solid #e2e8f0;
+    text-align: center; font-size: 12px; color: #94a3b8;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>全球金融體系機構關聯圖</h1>
+  <p class="subtitle">點擊機構查看詳情與關聯 · 使用分類篩選聚焦特定領域</p>
+  <div class="filters" id="filters"></div>
+  <div class="svg-wrap">
+    <svg id="chart" viewBox="0 0 870 750"></svg>
+  </div>
+  <div id="detailPanel"></div>
+  <div class="hint">💡 點擊任一機構方塊可查看詳細說明與關聯，使用上方分類按鈕篩選特定類型。</div>
+</div>
+
+<script>
+const W = 200, H = 70;
+
+const institutions = [
+  { id:"central_bank", name:"中央銀行", nameEn:"Central Bank", emoji:"🏛️", color:"#1e40af", bg:"#eff6ff", border:"#60a5fa", x:400, y:60,
+    desc:"制定貨幣政策、維持物價穩定、管理外匯儲備、擔任最後貸款人", ex:"Fed、ECB、PBoC、BoJ", cat:"監管與政策" },
+  { id:"regulator", name:"金融監管機構", nameEn:"Financial Regulator", emoji:"⚖️", color:"#7c3aed", bg:"#f5f3ff", border:"#a78bfa", x:130, y:60,
+    desc:"制定法規、核發執照、監督金融機構、保護消費者權益", ex:"SEC、FCA、金管會", cat:"監管與政策" },
+  { id:"international", name:"國際金融組織", nameEn:"Int'l Financial Org", emoji:"🌐", color:"#0f766e", bg:"#f0fdfa", border:"#2dd4bf", x:670, y:60,
+    desc:"促進全球金融合作與穩定、提供危機救助與發展融資", ex:"IMF、World Bank、BIS", cat:"監管與政策" },
+  { id:"commercial_bank", name:"商業銀行", nameEn:"Commercial Bank", emoji:"🏦", color:"#2563eb", bg:"#eff6ff", border:"#93c5fd", x:130, y:220,
+    desc:"吸收存款、發放貸款、支付結算、外匯兌換、財富管理", ex:"JPMorgan、HSBC、ICBC", cat:"銀行體系" },
+  { id:"investment_bank", name:"投資銀行", nameEn:"Investment Bank", emoji:"💼", color:"#dc2626", bg:"#fef2f2", border:"#fca5a5", x:400, y:220,
+    desc:"承銷發行、併購諮詢、自營交易、經紀業務", ex:"Goldman Sachs、Morgan Stanley", cat:"銀行體系" },
+  { id:"exchange", name:"證券交易所", nameEn:"Stock Exchange", emoji:"📈", color:"#a16207", bg:"#fefce8", border:"#fbbf24", x:670, y:220,
+    desc:"提供集中交易平台、撮合買賣、維護市場秩序", ex:"NYSE、NASDAQ、TWSE", cat:"市場基礎設施" },
+  { id:"asset_mgmt", name:"資產管理公司", nameEn:"Asset Management", emoji:"📊", color:"#15803d", bg:"#f0fdf4", border:"#86efac", x:130, y:380,
+    desc:"管理基金、投資各類資產、追求客戶資產增值", ex:"BlackRock、Vanguard、Fidelity", cat:"投資機構" },
+  { id:"insurance", name:"保險公司", nameEn:"Insurance Company", emoji:"🛡️", color:"#be185d", bg:"#fdf2f8", border:"#f9a8d4", x:400, y:380,
+    desc:"收取保費、風險轉移、理賠服務、保費投資", ex:"Allianz、中國平安、國泰人壽", cat:"投資機構" },
+  { id:"pension", name:"退休基金", nameEn:"Pension Fund", emoji:"🏖️", color:"#1d4ed8", bg:"#eff6ff", border:"#93c5fd", x:670, y:380,
+    desc:"匯集退休提撥金、長期穩健投資、支付退休給付", ex:"GPIF、NBIM、CPPIB", cat:"投資機構" },
+  { id:"rating", name:"信用評等機構", nameEn:"Credit Rating Agency", emoji:"⭐", color:"#c2410c", bg:"#fff7ed", border:"#fdba74", x:130, y:540,
+    desc:"評估信用風險、給予信用等級、影響融資成本", ex:"S&P、Moody's、Fitch", cat:"輔助機構" },
+  { id:"clearing", name:"清算結算機構", nameEn:"Clearing & Settlement", emoji:"🔄", color:"#475569", bg:"#f1f5f9", border:"#94a3b8", x:400, y:540,
+    desc:"確認交易、計算淨額、移轉證券與資金", ex:"DTCC、Euroclear、Clearstream", cat:"市場基礎設施" },
+  { id:"swf", name:"主權財富基金", nameEn:"Sovereign Wealth Fund", emoji:"👑", color:"#7c3aed", bg:"#f5f3ff", border:"#c4b5fd", x:670, y:540,
+    desc:"投資國家外匯儲備盈餘、實現長期財富增值", ex:"ADIA、GIC、CIC", cat:"投資機構" },
+  { id:"fintech", name:"金融科技公司", nameEn:"FinTech", emoji:"🚀", color:"#059669", bg:"#ecfdf5", border:"#6ee7b7", x:400, y:680,
+    desc:"科技驅動金融創新：行動支付、網路借貸、數位保險、區塊鏈", ex:"螞蟻集團、Stripe、Square", cat:"新興力量" },
+];
+
+const connections = [
+  { from:"central_bank", to:"commercial_bank", label:"貨幣政策傳導", color:"#3b82f6" },
+  { from:"central_bank", to:"investment_bank", label:"利率調控", color:"#3b82f6" },
+  { from:"central_bank", to:"international", label:"政策協調", color:"#14b8a6" },
+  { from:"regulator", to:"commercial_bank", label:"審慎監管", color:"#8b5cf6" },
+  { from:"regulator", to:"investment_bank", label:"業務監管", color:"#8b5cf6" },
+  { from:"regulator", to:"exchange", label:"市場監管", color:"#8b5cf6" },
+  { from:"regulator", to:"insurance", label:"保險監管", color:"#8b5cf6" },
+  { from:"investment_bank", to:"exchange", label:"承銷上市", color:"#f87171" },
+  { from:"asset_mgmt", to:"exchange", label:"買賣證券", color:"#4ade80" },
+  { from:"insurance", to:"exchange", label:"保費投資", color:"#f472b6" },
+  { from:"pension", to:"exchange", label:"長期投資", color:"#60a5fa" },
+  { from:"swf", to:"exchange", label:"全球配置", color:"#a78bfa" },
+  { from:"rating", to:"investment_bank", label:"信用評級", color:"#fb923c" },
+  { from:"rating", to:"commercial_bank", label:"銀行評等", color:"#fb923c" },
+  { from:"clearing", to:"exchange", label:"交易結算", color:"#94a3b8" },
+  { from:"fintech", to:"commercial_bank", label:"競爭與合作", color:"#34d399" },
+  { from:"commercial_bank", to:"asset_mgmt", label:"代銷基金", color:"#60a5fa" },
+];
+
+const categories = [
+  { name:"監管與政策", color:"#7c3aed", bg:"#ede9fe" },
+  { name:"銀行體系", color:"#2563eb", bg:"#dbeafe" },
+  { name:"市場基礎設施", color:"#a16207", bg:"#fef9c3" },
+  { name:"投資機構", color:"#15803d", bg:"#dcfce7" },
+  { name:"輔助機構", color:"#c2410c", bg:"#ffedd5" },
+  { name:"新興力量", color:"#059669", bg:"#d1fae5" },
+];
+
+let selected = null;
+let filterCat = null;
+
+const byId = id => institutions.find(i => i.id === id);
+const cx = n => n.x + W / 2;
+const cy = n => n.y + H / 2;
+
+function render() {
+  // filters
+  const fb = document.getElementById('filters');
+  fb.innerHTML = '';
+  const allBtn = document.createElement('button');
+  allBtn.textContent = '全部顯示';
+  allBtn.className = filterCat === null ? 'active' : '';
+  allBtn.onclick = () => { filterCat = null; selected = null; render(); };
+  fb.appendChild(allBtn);
+  categories.forEach(c => {
+    const b = document.createElement('button');
+    b.textContent = c.name;
+    b.className = filterCat === c.name ? 'active' : '';
+    b.style.cssText = filterCat === c.name
+      ? `background:${c.color};color:#fff;border-color:${c.color}`
+      : `background:${c.bg};color:${c.color};border-color:${c.color}40`;
+    b.onclick = () => { filterCat = filterCat === c.name ? null : c.name; selected = null; render(); };
+    fb.appendChild(b);
+  });
+
+  const visibleIds = new Set(
+    (filterCat ? institutions.filter(i => i.cat === filterCat) : institutions).map(i => i.id)
+  );
+
+  const relConns = selected ? connections.filter(c => c.from === selected || c.to === selected) : [];
+  const relIds = new Set();
+  if (selected) {
+    relIds.add(selected);
+    relConns.forEach(c => { relIds.add(c.from); relIds.add(c.to); });
+  }
+
+  // SVG
+  const svg = document.getElementById('chart');
+  svg.innerHTML = '';
+
+  // defs
+  const defs = el('defs');
+  connections.forEach((c, i) => {
+    defs.appendChild(marker(`arr-${i}`, c.color));
+  });
+  defs.appendChild(marker('arr-mute', '#cbd5e1'));
+  svg.appendChild(defs);
+
+  // connections
+  connections.forEach((c, i) => {
+    if (!visibleIds.has(c.from) || !visibleIds.has(c.to)) return;
+    const f = byId(c.from), t = byId(c.to);
+    const isRel = selected && (c.from === selected || c.to === selected);
+    const dimmed = selected && !isRel;
+
+    const mx = (cx(f) + cx(t)) / 2, my = (cy(f) + cy(t)) / 2;
+    const dx = cx(t) - cx(f), dy = cy(t) - cy(f);
+    const len = Math.sqrt(dx*dx + dy*dy) || 1;
+    const cpx = mx + (-dy/len) * 22, cpy = my + (dx/len) * 22;
+
+    const g = el('g', { class:'conn' });
+    // hover area
+    const hit = el('path', {
+      d: `M${cx(f)} ${cy(f)} Q${cpx} ${cpy} ${cx(t)} ${cy(t)}`,
+      fill:'none', stroke:'transparent', 'stroke-width': 16
+    });
+    const path = el('path', {
+      d: `M${cx(f)} ${cy(f)} Q${cpx} ${cpy} ${cx(t)} ${cy(t)}`,
+      fill:'none',
+      stroke: isRel ? c.color : dimmed ? '#e2e8f0' : '#e2e8f0',
+      'stroke-width': isRel ? 2.5 : 1.2,
+      'stroke-dasharray': dimmed ? '4,4' : 'none',
+      opacity: dimmed ? 0.15 : isRel ? 1 : 0.45,
+      'marker-end': isRel ? `url(#arr-${i})` : 'url(#arr-mute)'
+    });
+    g.appendChild(hit);
+    g.appendChild(path);
+
+    // label on hover
+    const labelG = el('g', { opacity: isRel ? 1 : 0 });
+    const tw = c.label.length * 14;
+    labelG.appendChild(el('rect', {
+      x: cpx - tw/2, y: cpy - 12, width: tw, height: 24, rx: 5,
+      fill:'#fff', stroke: c.color, 'stroke-width': 1, opacity:.95
+    }));
+    const txt = el('text', {
+      x: cpx, y: cpy + 4, 'text-anchor':'middle', 'font-size': 11,
+      fill: c.color, 'font-weight': 600
+    });
+    txt.textContent = c.label;
+    labelG.appendChild(txt);
+    g.appendChild(labelG);
+
+    hit.onmouseenter = () => { path.setAttribute('stroke', c.color); path.setAttribute('stroke-width', 2.5); path.setAttribute('opacity', 1); path.setAttribute('marker-end', `url(#arr-${i})`); labelG.setAttribute('opacity', 1); };
+    hit.onmouseleave = () => { if (!isRel) { path.setAttribute('stroke', dimmed?'#e2e8f0':'#e2e8f0'); path.setAttribute('stroke-width', 1.2); path.setAttribute('opacity', dimmed?.15:.45); path.setAttribute('marker-end','url(#arr-mute)'); labelG.setAttribute('opacity', 0); }};
+
+    svg.appendChild(g);
+  });
+
+  // nodes
+  institutions.forEach(inst => {
+    if (!visibleIds.has(inst.id)) return;
+    const isSel = selected === inst.id;
+    const isRel = relIds.has(inst.id);
+    const dimmed = selected && !isRel;
+
+    const g = el('g', { class:'node' });
+    g.style.opacity = dimmed ? 0.2 : 1;
+
+    if (isSel) {
+      g.appendChild(el('rect', {
+        x: inst.x-4, y: inst.y-4, width: W+8, height: H+8, rx: 15,
+        fill:'none', stroke: inst.color, 'stroke-width': 2, opacity: .25
+      }));
+    }
+
+    g.appendChild(el('rect', {
+      x: inst.x, y: inst.y, width: W, height: H, rx: 12,
+      fill: inst.bg, stroke: isSel ? inst.color : inst.border,
+      'stroke-width': isSel ? 3 : 1.5
+    }));
+
+    const t1 = el('text', {
+      x: inst.x + W/2, y: inst.y + 28, 'text-anchor':'middle',
+      'font-size': 14, 'font-weight': 700, fill: inst.color
+    });
+    t1.textContent = `${inst.emoji} ${inst.name}`;
+    g.appendChild(t1);
+
+    const t2 = el('text', {
+      x: inst.x + W/2, y: inst.y + 48, 'text-anchor':'middle',
+      'font-size': 10, fill:'#94a3b8'
+    });
+    t2.textContent = inst.nameEn;
+    g.appendChild(t2);
+
+    g.onclick = () => { selected = selected === inst.id ? null : inst.id; render(); };
+    svg.appendChild(g);
+  });
+
+  // detail panel
+  const dp = document.getElementById('detailPanel');
+  if (!selected) { dp.innerHTML = ''; return; }
+  const s = byId(selected);
+  const rc = connections.filter(c => c.from === selected || c.to === selected);
+
+  let relHTML = '';
+  if (rc.length) {
+    relHTML = `<div class="relations"><p class="rel-title" style="color:${s.color}">關聯關係：</p><div class="tags">`;
+    rc.forEach(c => {
+      const otherId = c.from === selected ? c.to : c.from;
+      const other = byId(otherId);
+      const dir = c.from === selected ? '→' : '←';
+      relHTML += `<span class="tag">${dir} ${other.emoji} ${other.name}：${c.label}</span>`;
+    });
+    relHTML += '</div></div>';
+  }
+
+  dp.innerHTML = `
+    <div class="detail-panel" style="background:${s.bg};border-color:${s.border}">
+      <span class="cat-badge" style="background:${s.color}15;color:${s.color}">${s.cat}</span>
+      <h3 style="color:${s.color}">${s.emoji} ${s.name}<span>${s.nameEn}</span></h3>
+      <p><strong>職責：</strong>${s.desc}</p>
+      <p style="font-size:13px;color:#94a3b8"><strong>代表機構：</strong>${s.ex}</p>
+      ${relHTML}
+    </div>`;
+}
+
+function el(tag, attrs) {
+  const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  if (attrs) Object.entries(attrs).forEach(([k,v]) => e.setAttribute(k, v));
+  return e;
+}
+
+function marker(id, color) {
+  const m = el('marker', { id, markerWidth:8, markerHeight:6, refX:8, refY:3, orient:'auto' });
+  m.appendChild(el('polygon', { points:'0 0,8 3,0 6', fill: color }));
+  return m;
+}
+
+render();
+</script>
+</body>
+</html>
