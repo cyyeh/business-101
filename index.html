@@ -303,6 +303,9 @@
       white-space: nowrap;
       margin-left: .35rem;
       transition: opacity .5s;
+      max-width: 40%;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .search-results-dropdown {
       position: absolute;
@@ -444,6 +447,7 @@
       .content-box blockquote { padding: .4rem .75rem; }
       footer { padding: 1.25rem; }
       .search-wrapper { padding: 0 .75rem; margin-top: .75rem; }
+      .search-input-box .index-status { max-width: 35%; font-size: .65rem; }
       .search-results-dropdown { left: .75rem; right: .75rem; max-height: 320px; }
     }
   </style>
