@@ -168,15 +168,32 @@
     /* Error */
     .error { text-align: center; color: #e53e3e; padding: 2rem; }
 
-    /* Responsive */
-    @media (max-width: 768px) {
+    /* Responsive - tablet */
+    @media (max-width: 1024px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* Responsive - mobile */
+    @media (max-width: 640px) {
       header { padding: 1.5rem 1rem; }
-      header h1 { font-size: 1.5rem; }
-      .home { padding: 1rem; }
-      .grid { grid-template-columns: 1fr; }
-      .reader { padding: 1rem; }
-      .content-box { padding: 1.25rem; }
-      .tabs { overflow-x: auto; white-space: nowrap; }
+      header h1 { font-size: 1.35rem; }
+      header .subtitle { font-size: .95rem; }
+      .home { padding: .75rem; }
+      .grid { grid-template-columns: 1fr; gap: .75rem; }
+      .card { padding: 1.15rem; }
+      .card h2 { font-size: 1.05rem; }
+      .reader { padding: .75rem; }
+      .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; gap: 0; }
+      .tab { padding: .5rem .9rem; font-size: .88rem; flex-shrink: 0; }
+      .content-box { padding: 1rem; border-radius: 8px; }
+      .content-box h1 { font-size: 1.35rem; }
+      .content-box h2 { font-size: 1.15rem; }
+      .content-box h3 { font-size: 1.05rem; }
+      .content-box table { font-size: .85rem; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .content-box pre { font-size: .82rem; padding: .75rem; }
+      .content-box iframe { height: 60vh; }
+      .content-box blockquote { padding: .4rem .75rem; }
+      footer { padding: 1.25rem; }
     }
   </style>
 </head>
