@@ -10,6 +10,7 @@
       --primary: #1e3a5f;
       --primary-light: #2c5282;
       --accent: #ed8936;
+      --accent2: #805ad5;
       --bg: #f7fafc;
       --card-bg: #fff;
       --text: #2d3748;
@@ -49,8 +50,53 @@
     }
     header .back:hover { color: #fff; }
 
+    /* Navigation tabs on home */
+    .nav-tabs {
+      display: flex;
+      justify-content: center;
+      gap: .5rem;
+      padding: 1.25rem 2rem 0;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .nav-tab {
+      padding: .75rem 2rem;
+      border: none;
+      background: var(--card-bg);
+      cursor: pointer;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-light);
+      border-radius: var(--radius) var(--radius) 0 0;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      transition: color .2s, background .2s;
+      font-family: inherit;
+      position: relative;
+      top: 1px;
+    }
+    .nav-tab.active {
+      color: var(--primary);
+      background: var(--bg);
+      border-bottom: 2px solid var(--bg);
+    }
+    .nav-tab.active.cross {
+      color: var(--accent2);
+    }
+    .nav-tab:hover:not(.active) { color: var(--primary); background: #edf2f7; }
+    .nav-tab .count {
+      font-size: .8rem;
+      font-weight: 400;
+      color: var(--text-light);
+      margin-left: .35rem;
+    }
+
     /* Home grid */
-    .home { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+    .home { max-width: 1400px; margin: 0 auto; padding: 0 2rem 2rem; }
+    .section-divider {
+      border-top: 2px solid var(--border);
+      padding-top: 1.5rem;
+    }
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -78,6 +124,15 @@
       border-radius: 9999px;
       border: 1px solid var(--border);
       color: var(--text-light);
+    }
+
+    /* Cross-topic card special styles */
+    .card.cross-topic { border-left: 4px solid var(--accent2); }
+    .card.cross-topic h2 { color: var(--accent2); }
+    .card.cross-topic .badge.topic-badge {
+      background: #f3e8ff;
+      border-color: #d6bcfa;
+      color: #6b46c1;
     }
 
     /* Reader */
@@ -178,7 +233,9 @@
       header { padding: 1.5rem 1rem; }
       header h1 { font-size: 1.35rem; }
       header .subtitle { font-size: .95rem; }
-      .home { padding: .75rem; }
+      .nav-tabs { padding: .75rem .75rem 0; gap: .25rem; }
+      .nav-tab { padding: .6rem 1rem; font-size: .95rem; }
+      .home { padding: 0 .75rem .75rem; }
       .grid { grid-template-columns: 1fr; gap: .75rem; }
       .card { padding: 1.15rem; }
       .card h2 { font-size: 1.05rem; }
@@ -201,21 +258,37 @@
   <div id="app"></div>
 
   <script>
-    let topics = [];
+    let topicSections = [];
+    let crossSections = [];
     let currentTabIdx = 0;
+    let activeHomeTab = 'topics'; // 'topics' or 'cross'
 
     marked.setOptions({ breaks: true, gfm: true });
 
-    /* ---- Parse README.md into topics ---- */
+    /* ---- Parse README.md into two groups ---- */
     function parseReadme(md) {
-      const sections = [];
+      const topics = [];
+      const cross = [];
       let cur = null;
+      let inCross = false;
 
       for (const line of md.split('\n')) {
+        // Detect ## level headers to switch between sections
+        const h2 = line.match(/^##\s+(.+)/);
+        if (h2) {
+          const title = h2[1].trim();
+          if (title === '跨主題整合分析') { inCross = true; cur = null; continue; }
+          if (title === '各主題分析') { inCross = false; cur = null; continue; }
+          // skip other ## headers like 本地預覽
+          cur = null;
+          continue;
+        }
+
         const hdr = line.match(/^###\s+(.+)/);
         if (hdr) {
-          cur = { title: hdr[1].trim(), links: [] };
-          sections.push(cur);
+          cur = { title: hdr[1].trim(), links: [], isCross: inCross };
+          if (inCross) cross.push(cur);
+          else topics.push(cur);
           continue;
         }
         if (!cur) continue;
@@ -228,10 +301,11 @@
           if (url.endsWith('.html')) type = 'interactive';
           if (text.includes('案例') || url.includes('案例')) type = 'casestudy';
           if (text.includes('練習') || url.includes('練習')) type = 'quiz';
+          if (inCross) type = 'cross';
           cur.links.push({ text: text.trim(), url: url.trim(), description: desc.trim(), type });
         }
       }
-      return sections;
+      return { topics, cross };
     }
 
     /* ---- Tab label ---- */
@@ -240,13 +314,22 @@
       if (link.type === 'interactive') return '互動圖表';
       if (link.type === 'casestudy') return '案例分析';
       if (link.type === 'quiz') return '練習與自測';
+      if (link.type === 'cross') return '整合分析';
       return '專業版';
+    }
+
+    /* ---- Extract cross-topic tags from description ---- */
+    function extractTopicTags(desc) {
+      const match = desc.match(/橫跨(.+)/);
+      if (!match) return [];
+      return match[1].split(/[、，,]/).map(s => s.replace(/[大主題\d]/g, '').trim()).filter(Boolean);
     }
 
     /* ---- Render home ---- */
     function renderHome() {
       currentTabIdx = 0;
-      const cards = topics.map(t => {
+
+      const topicCards = topicSections.map(t => {
         const pro = t.links.find(l => l.type === 'professional');
         const desc = pro ? pro.description.replace(/^專業版[，,]\s*/, '') : t.links[0]?.description || '';
         const badges = t.links.map(l => `<span class="badge">${tabLabel(l)}</span>`).join('');
@@ -257,18 +340,49 @@
         </a>`;
       }).join('');
 
+      const crossCards = crossSections.map(t => {
+        const link = t.links[0];
+        const desc = link?.description || '';
+        const tags = extractTopicTags(desc);
+        const tagBadges = tags.map(tag => `<span class="badge topic-badge">${tag}</span>`).join('');
+        return `<a class="card cross-topic" href="#${encodeURIComponent(t.title)}">
+          <h2>${t.title}</h2>
+          <p>${desc}</p>
+          <div class="badge-row">${tagBadges}</div>
+        </a>`;
+      }).join('');
+
+      const isTopics = activeHomeTab === 'topics';
+
       document.getElementById('app').innerHTML = `
         <header>
           <h1>Business 101</h1>
           <p class="subtitle">商業與金融基礎知識學習筆記</p>
         </header>
-        <main class="home"><div class="grid">${cards}</div></main>
+        <div class="nav-tabs">
+          <button class="nav-tab${isTopics ? ' active' : ''}" data-tab="topics">
+            各主題分析<span class="count">${topicSections.length}</span>
+          </button>
+          <button class="nav-tab${!isTopics ? ' active cross' : ' cross'}" data-tab="cross">
+            跨主題整合分析<span class="count">${crossSections.length}</span>
+          </button>
+        </div>
+        <main class="home section-divider">
+          <div class="grid">${isTopics ? topicCards : crossCards}</div>
+        </main>
         <footer>
           <a href="https://github.com/cyyeh/business-101" target="_blank" rel="noopener">GitHub</a>
         </footer>`;
+
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeHomeTab = btn.dataset.tab;
+          renderHome();
+        });
+      });
     }
 
-    /* ---- Render topic ---- */
+    /* ---- Render topic (with tabs) ---- */
     async function renderTopic(topic) {
       if (currentTabIdx >= topic.links.length) currentTabIdx = 0;
 
@@ -276,18 +390,26 @@
         `<button class="tab${i === currentTabIdx ? ' active' : ''}" data-idx="${i}">${tabLabel(l)}</button>`
       ).join('');
 
+      const backLabel = topic.isCross ? '← 返回跨主題整合分析' : '← 返回各主題分析';
+
       document.getElementById('app').innerHTML = `
         <header>
-          <a class="back" href="#">← 返回首頁</a>
+          <a class="back" href="#" data-back="${topic.isCross ? 'cross' : 'topics'}">${backLabel}</a>
           <h1>${topic.title}</h1>
         </header>
         <main class="reader">
-          <div class="tabs">${tabs}</div>
+          ${topic.links.length > 1 ? `<div class="tabs">${tabs}</div>` : ''}
           <div class="content-box loading" id="md-content">載入中…</div>
         </main>
         <footer>
           <a href="https://github.com/cyyeh/business-101" target="_blank" rel="noopener">GitHub</a>
         </footer>`;
+
+      document.querySelector('.back').addEventListener('click', (e) => {
+        e.preventDefault();
+        activeHomeTab = e.target.dataset.back || 'topics';
+        location.hash = '';
+      });
 
       document.querySelectorAll('.tab').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -330,9 +452,14 @@
       const hash = decodeURIComponent(location.hash.slice(1));
       if (!hash) { renderHome(); return; }
 
-      const topic = topics.find(t => t.title === hash);
-      if (topic) { renderTopic(topic); }
-      else { renderHome(); }
+      const allTopics = [...topicSections, ...crossSections];
+      const topic = allTopics.find(t => t.title === hash);
+      if (topic) {
+        currentTabIdx = 0;
+        renderTopic(topic);
+      } else {
+        renderHome();
+      }
     }
 
     /* ---- Init ---- */
@@ -340,7 +467,9 @@
       try {
         const res = await fetch('README.md');
         const md = await res.text();
-        topics = parseReadme(md);
+        const parsed = parseReadme(md);
+        topicSections = parsed.topics;
+        crossSections = parsed.cross;
         window.addEventListener('hashchange', route);
         route();
       } catch (e) {
