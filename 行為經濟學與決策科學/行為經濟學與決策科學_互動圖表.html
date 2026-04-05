@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行為經濟學與決策科學 - 互動工具與圖表</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 18px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+        }
+
+        .tab-button:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tool-section {
+            margin-bottom: 40px;
+        }
+
+        .tool-section h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 30px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .card p {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .slider-container {
+            margin: 20px 0;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .slider-item {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.1));
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .value-display {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 5px;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input[type="number"], input[type="text"] {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .footer {
+            background: #f5f5f5;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .tab-button {
+                padding: 12px 10px;
+                font-size: 0.9em;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+
+            .tab-content {
+                padding: 20px;
+            }
+
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>行為經濟學與決策科學</h1>
+            <p>互動工具與視覺化分析</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab(0)">前景理論值函數</button>
+            <button class="tab-button" onclick="switchTab(1)">認知偏誤百科</button>
+            <button class="tab-button" onclick="switchTab(2)">錨定效應模擬</button>
+            <button class="tab-button" onclick="switchTab(3)">心理帳戶分析</button>
+            <button class="tab-button" onclick="switchTab(4)">推力設計工具</button>
+        </div>
+
+        <!-- Tab 1: 前景理論值函數 -->
+        <div class="tab-content active">
+            <div class="tool-section">
+                <h2>前景理論值函數互動圖</h2>
+                <p style="color: #666; margin-bottom: 20px;">根據 Kahneman 和 Tversky 的前景理論，人們對於獲得和損失的評估是非線性的。使用下面的滑塊調整參數，看看值函數如何變化。</p>
+
+                <div class="slider-container">
+                    <div class="slider-item">
+                        <label>損失厭惡係數 (λ): <span id="lambdaValue">2.5</span></label>
+                        <input type="range" id="lambda" min="1" max="5" step="0.1" value="2.5" onchange="updateProspectChart()">
+                        <div class="info-box">損失厭惡係數越高，損失帶來的痛苦相對於收益帶來的快樂就越大。典型值為 2.25 - 2.88。</div>
+                    </div>
+                    <div class="slider-item">
+                        <label>風險規避參數 (α): <span id="alphaValue">0.88</span></label>
+                        <input type="range" id="alpha" min="0.5" max="1.5" step="0.1" value="0.88" onchange="updateProspectChart()">
+                        <div class="info-box">α 值越小，邊際效用遞減越快。0.88 是實驗中常見的值。</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="prospectChart"></canvas>
+                </div>
+
+                <div class="result-box">
+                    <p><strong>解釋</strong>：紅色曲線代表損失（x < 0），斜率更陡峭，顯示損失帶來的痛苦。綠色曲線代表收益（x > 0）。注意損失曲線的斜率（損失厭惡）比收益曲線更陡峭。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: 認知偏誤百科 -->
+        <div class="tab-content">
+            <div class="tool-section">
+                <h2>認知偏誤互動卡片</h2>
+                <p style="color: #666; margin-bottom: 20px;">點擊下面的卡片了解各種認知偏誤，包括定義、現實例子和對策。</p>
+
+                <div class="card-grid">
+                    <div class="card" onclick="toggleBias(this)">
+                        <h3>錨定效應</h3>
+                        <p>過度依賴第一個提供的信息…</p>
+                        <div class="bias-detail" style="display:none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(102, 126, 234, 0.3);">
+                            <strong>定義</strong>：人們在做判斷時，過度依賴第一個提供的資訊（錨點）。<br><br>
+                            <strong>現實例子</strong>：超市促銷標籤「原價 999 元，現在 499 元」，即使原價不真實。<br><br>
+                            <strong>對策</strong>：比較多個參考點，進行市場研究，質疑第一個數字。
+                        </div>
+                    </div>
+
+                    <div class="card" onclick="toggleBias(this)">
+                        <h3>確認偏誤</h3>
+                        <p>傾向於搜集支持既有信念的信息…</p>
+                        <div class="bias-detail" style="display:none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(102, 126, 234, 0.3);">
+                            <strong>定義</strong>：傾向於搜集、解釋和記住支持既有信念的資訊。<br><br>
+                            <strong>現實例子</strong>：投資者買了某股票後，只看好消息，忽視壞消息。<br><br>
+                            <strong>對策</strong>：主動尋求相反觀點，聽取批評，定期挑戰假設。
+                        </div>
+                    </div>
+
+                    <div class="card" onclick="toggleBias(this)">
+                        <h3>可得性偏誤</h3>
+                        <p>根據能輕易想到的例子評估頻率…</p>
+                        <div class="bias-detail" style="display:none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(102, 126, 234, 0.3);">
+                            <strong>定義</strong>：根據能輕易想到的例子來評估事件的頻率或概率。<br><br>
+                            <strong>現實例子</strong>：人們過度擔心飛行事故，因為媒體大篇幅報導。<br><br>
+                            <strong>對策</strong>：依靠統計數據，尋求基率信息，對直覺進行理性檢驗。
+                        </div>
+                    </div>
+
+                    <div class="card" onclick="toggleBias(this)">
+                        <h3>沉沒成本謬誤</h3>
+                        <p>因為已投入資源而繼續投入…</p>
+                        <div class="bias-detail" style="display:none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(102, 126, 234, 0.3);">
+                            <strong>定義</strong>：因為已投入資源（不可收回）而繼續投入或保持決策。<br><br>
+                            <strong>現實例子</strong>：看不喜歡的電影直到結束，因為已經買了票。<br><br>
+                            <strong>對策</strong>：忘掉過去投入，只比較未來成本和收益，認識到放棄有時更聰明。
+                        </div>
+                    </div>
+
+                    <div class="card" onclick="toggleBias(this)">
+                        <h3>過度自信</h3>
+                        <p>過度估計自己知識的精確性…</p>
+                        <div class="bias-detail" style="display:none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(102, 126, 234, 0.3);">
+                            <strong>定義</strong>：過度估計自己知識的精確性和預測的準確度。<br><br>
+                            <strong>現實例子</strong>：93% 的駕駛者認為自己駕駛技能優於平均（數學上不可能）。<br><br>
+                            <strong>對策</strong>：檢視過去預測的準確度，考慮基率，聽取批評聲音。
+                        </div>
+                    </div>
+
+                    <div class="card" onclick="toggleBias(this)">
+                        <h3>框架效應</h3>
+                        <p>同樣的信息，不同呈現方式導致不同決策…</p>
+                        <div class="bias-detail" style="display:none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(102, 126, 234, 0.3);">
+                            <strong>定義</strong>：同樣的選擇在不同呈現方式下，導致不同決策。<br><br>
+                            <strong>現實例子</strong>：「節省 $50」vs「損失 $50」，對購買意願的影響不同。<br><br>
+                            <strong>對策</strong>：用多個框架表述同一問題，檢驗決策是否穩健。
+                        </div>
+                    </div>
+
+                    <div class="card" onclick="toggleBias(this)">
+                        <h3>稟賦效應</h3>
+                        <p>擁有東西後認為它更值錢…</p>
+                        <div class="bias-detail" style="display:none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(102, 126, 234, 0.3);">
+                            <strong>定義</strong>：人們對自己擁有的東西賦予更高的價值，僅因為他們擁有它。<br><br>
+                            <strong>現實例子</strong>：同樣的馬克杯，擁有者要 $5.25 才願意賣，購買者只願付 $2.75。<br><br>
+                            <strong>對策</strong>：用市場價格評估，而非購買價格，角色轉換看問題。
+                        </div>
+                    </div>
+
+                    <div class="card" onclick="toggleBias(this)">
+                        <h3>損失厭惡</h3>
+                        <p>損失帶來的痛苦約為收益的 2.5 倍…</p>
+                        <div class="bias-detail" style="display:none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(102, 126, 234, 0.3);">
+                            <strong>定義</strong>：損失帶來的負面感受約為同等收益帶來的正面感受的 2.5 倍。<br><br>
+                            <strong>現實例子</strong>：失去 50 元的痛苦 > 獲得 50 元的快樂。<br><br>
+                            <strong>對策</strong>：認識這種不對稱性，在投資和決策中考慮它。
+                        </div>
+                    </div>
+
+                    <div class="card" onclick="toggleBias(this)">
+                        <h3>社會證明</h3>
+                        <p>他人正在做，所以我也做…</p>
+                        <div class="bias-detail" style="display:none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(102, 126, 234, 0.3);">
+                            <strong>定義</strong>：人們改變行為以符合社會規範或他人的行為。<br><br>
+                            <strong>現實例子</strong>：旅館：「75% 的客人重複使用毛巾」比「為了環保」更有效。<br><br>
+                            <strong>對策</strong>：意識到社會證明的影響，評估決策的真實依據。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: 錨定效應模擬 -->
+        <div class="tab-content">
+            <div class="tool-section">
+                <h2>錨定效應實驗模擬器</h2>
+                <p style="color: #666; margin-bottom: 20px;">體驗錨定效應如何影響你的估計。下方給出不同的錨點，看看它們如何影響你的估計值。</p>
+
+                <div class="slider-container">
+                    <div class="slider-item">
+                        <label><strong>實驗：聯合國中非洲國家的百分比</strong></label>
+                        <p style="color: #999; margin-bottom: 15px;">假設輪盤旋轉結果（實際上是預設的）。這個結果與聯合國成員無關，但會影響你的估計。</p>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                            <div>
+                                <label style="display: block; margin-bottom: 10px;">
+                                    <strong>情景 A：輪盤顯示 10%</strong>
+                                </label>
+                                <input type="range" id="estimate1" min="0" max="100" value="25" onchange="updateAnchor1()">
+                                <div class="result-box" style="margin-top: 10px;">
+                                    你的估計：<span class="value-display" id="value1">25%</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 10px;">
+                                    <strong>情景 B：輪盤顯示 65%</strong>
+                                </label>
+                                <input type="range" id="estimate2" min="0" max="100" value="45" onchange="updateAnchor2()">
+                                <div class="result-box" style="margin-top: 10px;">
+                                    你的估計：<span class="value-display" id="value2">45%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-box" style="margin-top: 20px;">
+                            <strong>分析</strong>：
+                            <ul style="margin-left: 20px; margin-top: 10px;">
+                                <li>實際答案：聯合國 193 個成員中約 54 個非洲國家，即 28%</li>
+                                <li>如果輪盤顯示 10%，平均估計約 25%（接近錨點）</li>
+                                <li>如果輪盤顯示 65%，平均估計約 45%（接近錨點）</li>
+                                <li>同樣的問題，不同的錨點導致 20% 的估計差異</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; background: #fffacd; padding: 20px; border-radius: 8px; border-left: 4px solid #ffc107;">
+                    <strong>你學到了什麼？</strong>
+                    <p style="margin-top: 10px; color: #666;">即使你知道錨點與答案無關，它仍然影響你的判斷。這就是錨定效應的力量——它是自動的心理過程，難以完全避免。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 4: 心理帳戶分析 -->
+        <div class="tab-content">
+            <div class="tool-section">
+                <h2>心理帳戶分析器</h2>
+                <p style="color: #666; margin-bottom: 20px;">根據 Richard Thaler 的心理帳戶理論，人們在心理上將金錢分成不同的帳戶。使用此工具分析不同收入來源的支出傾向。</p>
+
+                <div class="slider-container">
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>月薪收入：</label>
+                            <input type="number" id="salary" value="30000" min="0">
+                        </div>
+                        <div class="input-group">
+                            <label>意外獎金：</label>
+                            <input type="number" id="bonus" value="10000" min="0">
+                        </div>
+                        <div class="input-group">
+                            <label>中獎所得：</label>
+                            <input type="number" id="lottery" value="5000" min="0">
+                        </div>
+                    </div>
+
+                    <button class="button" onclick="calculateMentalAccounts()">分析心理帳戶</button>
+                </div>
+
+                <div class="card-grid" style="margin-top: 20px;">
+                    <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border-left: 4px solid #667eea; padding: 20px; border-radius: 8px;">
+                        <h3 style="color: #667eea;">月薪帳戶</h3>
+                        <p style="color: #666; margin: 10px 0;">支出傾向：低（必需開支優先）</p>
+                        <p id="salarySpend" style="font-weight: bold; color: #667eea;">預估支出：90% 用於日常開支</p>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 193, 7, 0.1)); border-left: 4px solid #ff9800; padding: 20px; border-radius: 8px;">
+                        <h3 style="color: #ff9800;">獎金帳戶</h3>
+                        <p style="color: #666; margin: 10px 0;">支出傾向：中等（特殊開支）</p>
+                        <p id="bonusSpend" style="font-weight: bold; color: #ff9800;">預估支出：60% 用於非日常開支</p>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(139, 195, 74, 0.1)); border-left: 4px solid #4caf50; padding: 20px; border-radius: 8px;">
+                        <h3 style="color: #4caf50;">中獎帳戶</h3>
+                        <p style="color: #666; margin: 10px 0;">支出傾向：高（額外福利）</p>
+                        <p id="lotterySpend" style="font-weight: bold; color: #4caf50;">預估支出：80% 立即消費</p>
+                    </div>
+                </div>
+
+                <div class="chart-container" style="margin-top: 30px;">
+                    <canvas id="accountChart"></canvas>
+                </div>
+
+                <div class="info-box" style="margin-top: 20px;">
+                    <strong>心理帳戶的洞察</strong>：
+                    <p>儘管金錢在經濟上是相同的，但不同來源的金錢被心理上分開對待。月薪被視為「常規」資金，用於必需開支。獎金被視為「特殊」資金，更可能用於非日常開支。中獎所得被視為「額外福利」，最可能被立即消費。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 5: 推力設計工具 -->
+        <div class="tab-content">
+            <div class="tool-section">
+                <h2>推力設計工具 (MINDSPACE)</h2>
+                <p style="color: #666; margin-bottom: 20px;">使用英國行為洞察團隊開發的 MINDSPACE 框架設計有效的推力。評估每個因素的適用性。</p>
+
+                <div class="slider-container">
+                    <p style="margin-bottom: 20px; color: #666;">為你的推力干預評估每個 MINDSPACE 因素的相關性（1=不相關，10=非常相關）</p>
+
+                    <div class="slider-item">
+                        <label>Messenger（信使）- 誰在傳遞信息？<br>
+                        <small>評分：<span id="messengerScore">5</span>/10</small></label>
+                        <input type="range" id="messenger" min="1" max="10" value="5" onchange="updateMindspace()">
+                    </div>
+
+                    <div class="slider-item">
+                        <label>Incentives（激勵）- 有經濟激勵嗎？<br>
+                        <small>評分：<span id="incentivesScore">5</span>/10</small></label>
+                        <input type="range" id="incentives" min="1" max="10" value="5" onchange="updateMindspace()">
+                    </div>
+
+                    <div class="slider-item">
+                        <label>Norms（規範）- 社會規範是什麼？<br>
+                        <small>評分：<span id="normsScore">5</span>/10</small></label>
+                        <input type="range" id="norms" min="1" max="10" value="5" onchange="updateMindspace()">
+                    </div>
+
+                    <div class="slider-item">
+                        <label>Defaults（預設）- 預設選項是什麼？<br>
+                        <small>評分：<span id="defaultsScore">5</span>/10</small></label>
+                        <input type="range" id="defaults" min="1" max="10" value="5" onchange="updateMindspace()">
+                    </div>
+
+                    <div class="slider-item">
+                        <label>Salience（顯著性）- 信息有多突出？<br>
+                        <small>評分：<span id="salienceScore">5</span>/10</small></label>
+                        <input type="range" id="salience" min="1" max="10" value="5" onchange="updateMindspace()">
+                    </div>
+
+                    <div class="slider-item">
+                        <label>Priming（引導）- 背景信息是什麼？<br>
+                        <small>評分：<span id="primingScore">5</span>/10</small></label>
+                        <input type="range" id="priming" min="1" max="10" value="5" onchange="updateMindspace()">
+                    </div>
+
+                    <div class="slider-item">
+                        <label>Affect（感受）- 情感吸引力？<br>
+                        <small>評分：<span id="affectScore">5</span>/10</small></label>
+                        <input type="range" id="affect" min="1" max="10" value="5" onchange="updateMindspace()">
+                    </div>
+
+                    <div class="slider-item">
+                        <label>Commitment（承諾）- 承諾機制？<br>
+                        <small>評分：<span id="commitmentScore">5</span>/10</small></label>
+                        <input type="range" id="commitment" min="1" max="10" value="5" onchange="updateMindspace()">
+                    </div>
+
+                    <div class="slider-item">
+                        <label>Ego（自我認同）- 自我形象相關？<br>
+                        <small>評分：<span id="egoScore">5</span>/10</small></label>
+                        <input type="range" id="ego" min="1" max="10" value="5" onchange="updateMindspace()">
+                    </div>
+                </div>
+
+                <div class="chart-container" style="margin-top: 30px;">
+                    <canvas id="mindspaceChart"></canvas>
+                </div>
+
+                <div class="result-box" style="margin-top: 20px;">
+                    <p><strong>推力強度評分</strong>：<span class="value-display" id="totalScore">0/90</span></p>
+                    <p id="scoreInterpretation" style="margin-top: 10px; color: #666;"></p>
+                </div>
+
+                <div class="info-box" style="margin-top: 20px;">
+                    <strong>MINDSPACE 框架解釋</strong>：
+                    <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                        <li><strong>Messenger</strong>：信使的可信性和相關性影響信息被接受的可能性</li>
+                        <li><strong>Incentives</strong>：經濟激勵改變行為，但往往被高估</li>
+                        <li><strong>Norms</strong>：人們傾向於符合社會規範，"大多數人在做"很有力</li>
+                        <li><strong>Defaults</strong>：預設選項非常強大，大多數人不改變</li>
+                        <li><strong>Salience</strong>：突出和可見的信息更可能被注意和採納</li>
+                        <li><strong>Priming</strong>：背景信息影響後續決策的框架</li>
+                        <li><strong>Affect</strong>：情感吸引力增加記憶和動機</li>
+                        <li><strong>Commitment</strong>：一旦做出承諾，人們更傾向於保持一致</li>
+                        <li><strong>Ego</strong>：將行為與正面的自我形象聯繫起來增加採納</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>行為經濟學與決策科學互動工具</strong></p>
+            <p>使用這些互動式工具了解和應用行為經濟學的原理</p>
+            <p>基於 Kahneman, Tversky, Thaler 等研究</p>
+        </div>
+    </div>
+
+    <script>
+        let prospectChart, accountChart, mindspaceChart;
+
+        function switchTab(index) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            tabs[index].classList.add('active');
+            buttons[index].classList.add('active');
+
+            // 延遲更新圖表以確保容器已渲染
+            setTimeout(() => {
+                if (index === 0) updateProspectChart();
+                if (index === 3) calculateMentalAccounts();
+                if (index === 4) updateMindspace();
+            }, 100);
+        }
+
+        function updateProspectChart() {
+            const lambda = parseFloat(document.getElementById('lambda').value);
+            const alpha = parseFloat(document.getElementById('alpha').value);
+
+            document.getElementById('lambdaValue').textContent = lambda.toFixed(2);
+            document.getElementById('alphaValue').textContent = alpha.toFixed(2);
+
+            const losses = [];
+            const gains = [];
+            const labels = [];
+
+            for (let x = -100; x <= 100; x += 10) {
+                labels.push(x);
+                if (x <= 0) {
+                    losses.push(-lambda * Math.pow(-x, alpha));
+                    gains.push(null);
+                } else {
+                    losses.push(null);
+                    gains.push(Math.pow(x, alpha));
+                }
+            }
+
+            const ctx = document.getElementById('prospectChart').getContext('2d');
+            if (prospectChart) prospectChart.destroy();
+
+            prospectChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '損失 (Loss)',
+                            data: losses,
+                            borderColor: '#ef5350',
+                            backgroundColor: 'rgba(239, 83, 80, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            spanGaps: false
+                        },
+                        {
+                            label: '收益 (Gain)',
+                            data: gains,
+                            borderColor: '#66bb6a',
+                            backgroundColor: 'rgba(102, 187, 106, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            spanGaps: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Value (價值)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Outcome (結果)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function toggleBias(card) {
+            const detail = card.querySelector('.bias-detail');
+            detail.style.display = detail.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function updateAnchor1() {
+            document.getElementById('value1').textContent = document.getElementById('estimate1').value + '%';
+        }
+
+        function updateAnchor2() {
+            document.getElementById('value2').textContent = document.getElementById('estimate2').value + '%';
+        }
+
+        function calculateMentalAccounts() {
+            const salary = parseFloat(document.getElementById('salary').value) || 0;
+            const bonus = parseFloat(document.getElementById('bonus').value) || 0;
+            const lottery = parseFloat(document.getElementById('lottery').value) || 0;
+
+            const salarySpend = salary * 0.9;
+            const bonusSpend = bonus * 0.6;
+            const lotterySpend = lottery * 0.8;
+
+            document.getElementById('salarySpend').textContent = `預估支出：${(90)}% 用於日常開支 (${salarySpend.toLocaleString()} 元)`;
+            document.getElementById('bonusSpend').textContent = `預估支出：${(60)}% 用於非日常開支 (${bonusSpend.toLocaleString()} 元)`;
+            document.getElementById('lotterySpend').textContent = `預估支出：${(80)}% 立即消費 (${lotterySpend.toLocaleString()} 元)`;
+
+            const ctx = document.getElementById('accountChart').getContext('2d');
+            if (accountChart) accountChart.destroy();
+
+            accountChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['月薪', '獎金', '中獎'],
+                    datasets: [
+                        {
+                            label: '支出金額',
+                            data: [salarySpend, bonusSpend, lotterySpend],
+                            backgroundColor: ['#667eea', '#ff9800', '#4caf50']
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '支出金額 (元)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateMindspace() {
+            const scores = {
+                messenger: parseInt(document.getElementById('messenger').value),
+                incentives: parseInt(document.getElementById('incentives').value),
+                norms: parseInt(document.getElementById('norms').value),
+                defaults: parseInt(document.getElementById('defaults').value),
+                salience: parseInt(document.getElementById('salience').value),
+                priming: parseInt(document.getElementById('priming').value),
+                affect: parseInt(document.getElementById('affect').value),
+                commitment: parseInt(document.getElementById('commitment').value),
+                ego: parseInt(document.getElementById('ego').value)
+            };
+
+            for (let key in scores) {
+                document.getElementById(key + 'Score').textContent = scores[key];
+            }
+
+            const total = Object.values(scores).reduce((a, b) => a + b, 0);
+            document.getElementById('totalScore').textContent = `${total}/90`;
+
+            let interpretation = '';
+            if (total <= 30) {
+                interpretation = '推力強度弱：考慮增強以上因素。';
+            } else if (total <= 60) {
+                interpretation = '推力強度中等：有改進空間，考慮強化關鍵因素。';
+            } else {
+                interpretation = '推力強度強：這是一個全面的推力設計，可能在改變行為上有效。';
+            }
+            document.getElementById('scoreInterpretation').textContent = interpretation;
+
+            const ctx = document.getElementById('mindspaceChart').getContext('2d');
+            if (mindspaceChart) mindspaceChart.destroy();
+
+            mindspaceChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Messenger', 'Incentives', 'Norms', 'Defaults', 'Salience', 'Priming', 'Affect', 'Commitment', 'Ego'],
+                    datasets: [{
+                        label: 'MINDSPACE 評分',
+                        data: [scores.messenger, scores.incentives, scores.norms, scores.defaults, scores.salience, scores.priming, scores.affect, scores.commitment, scores.ego],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.25)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    },
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 10
+                        }
+                    }
+                }
+            });
+        }
+
+        // 初始化第一個圖表
+        window.addEventListener('load', () => {
+            updateProspectChart();
+        });
+    </script>
+</body>
+</html>

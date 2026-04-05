@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>銷售管理 - 互動圖表與工具</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            background: #f8f9fa;
+            border-bottom: 2px solid #ddd;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            flex: 1;
+            min-width: 180px;
+            padding: 15px 20px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button:hover {
+            background: #f0f0f0;
+            color: #667eea;
+        }
+
+        .tab-button.active {
+            background: white;
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+
+        .tool-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+        }
+
+        .tool-section h3 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-field label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .input-field input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .input-field input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result-box {
+            background: white;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-box h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .metric-card.alt {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .metric-card.alt2 {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            color: #856404;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .tab-button {
+                min-width: 150px;
+                padding: 12px 15px;
+                font-size: 0.9em;
+            }
+
+            .chart-container {
+                height: 300px;
+            }
+
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+
+            .metric-card {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>銷售管理 - 互動圖表與工具</h1>
+            <p>數據驅動的銷售管理，一目瞭然</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab(0)">銷售漏斗模擬器</button>
+            <button class="tab-button" onclick="switchTab(1)">B2B vs B2C 比較</button>
+            <button class="tab-button" onclick="switchTab(2)">LTV 計算器</button>
+            <button class="tab-button" onclick="switchTab(3)">績效儀表板</button>
+            <button class="tab-button" onclick="switchTab(4)">銷售預測工具</button>
+        </div>
+
+        <!-- Tab 1: 銷售漏斗模擬器 -->
+        <div class="tab-content active">
+            <h2 class="section-title">銷售漏斗模擬器 - 轉換率計算</h2>
+
+            <div class="tool-section">
+                <h3>設定初始潛客數和各階段轉換率</h3>
+
+                <div class="input-group">
+                    <div class="input-field">
+                        <label>初始潛客數 (Leads)</label>
+                        <input type="number" id="initialLeads" value="1000" min="10">
+                    </div>
+                    <div class="input-field">
+                        <label>MQL 轉換率 (%)</label>
+                        <input type="number" id="mqlRate" value="20" min="0" max="100">
+                    </div>
+                    <div class="input-field">
+                        <label>SQL 轉換率 (%)</label>
+                        <input type="number" id="sqlRate" value="30" min="0" max="100">
+                    </div>
+                    <div class="input-field">
+                        <label>機會轉換率 (%)</label>
+                        <input type="number" id="opportunityRate" value="50" min="0" max="100">
+                    </div>
+                </div>
+
+                <button onclick="calculateFunnel()">計算漏斗</button>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="funnelChart"></canvas>
+            </div>
+
+            <div class="result-box" id="funnelResult">
+                <h4>漏斗分析結果</h4>
+                <div class="result-item">
+                    <span>初始潛客 (Leads):</span>
+                    <strong id="leads">-</strong>
+                </div>
+                <div class="result-item">
+                    <span>符合行銷條件 (MQL):</span>
+                    <strong id="mql">-</strong>
+                </div>
+                <div class="result-item">
+                    <span>符合銷售條件 (SQL):</span>
+                    <strong id="sql">-</strong>
+                </div>
+                <div class="result-item">
+                    <span>機會 (Opportunities):</span>
+                    <strong id="opportunities">-</strong>
+                </div>
+                <div class="result-item">
+                    <span>成交 (Won Deals):</span>
+                    <strong id="won">-</strong>
+                </div>
+                <div class="result-item">
+                    <span>總體成交率:</span>
+                    <strong id="overallRate">-</strong>
+                </div>
+            </div>
+
+            <div class="note">
+                💡 <strong>提示：</strong> 改變各階段的轉換率，看看對最終成交數的影響。通常，小幅提升轉換率會帶來大幅提升最終營收。
+            </div>
+        </div>
+
+        <!-- Tab 2: B2B vs B2C 比較 -->
+        <div class="tab-content">
+            <h2 class="section-title">B2B vs B2C 銷售模式比較</h2>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>維度</th>
+                        <th>B2B (企業軟體)</th>
+                        <th>B2C (零售/電商)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>決策周期</strong></td>
+                        <td>3-6 個月</td>
+                        <td>數分鐘至數週</td>
+                    </tr>
+                    <tr>
+                        <td><strong>客戶數</strong></td>
+                        <td>少 (數百到數千)</td>
+                        <td>大 (數萬到數百萬)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>交易金額</strong></td>
+                        <td>大 (數十萬至數百萬)</td>
+                        <td>小 (數百到數千)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>購買者</strong></td>
+                        <td>委員會 (多人決策)</td>
+                        <td>個人決策</td>
+                    </tr>
+                    <tr>
+                        <td><strong>銷售重點</strong></td>
+                        <td>ROI、信任、長期價值</td>
+                        <td>便利、價格、體驗</td>
+                    </tr>
+                    <tr>
+                        <td><strong>銷售管道</strong></td>
+                        <td>直銷、帳戶管理</td>
+                        <td>零售、電商、社群</td>
+                    </tr>
+                    <tr>
+                        <td><strong>行銷配合</strong></td>
+                        <td>Lead 生成、思想領導</td>
+                        <td>品牌廣告、推薦</td>
+                    </tr>
+                    <tr>
+                        <td><strong>銷售週期關鍵</strong></td>
+                        <td>關係建立、信任</td>
+                        <td>便利性、衝動</td>
+                    </tr>
+                    <tr>
+                        <td><strong>典型例子</strong></td>
+                        <td>企業 SaaS、諮詢服務</td>
+                        <td>零售店、Amazon、便利商店</td>
+                    </tr>
+                    <tr>
+                        <td><strong>客戶成功重要性</strong></td>
+                        <td>極其重要 (影響續約)</td>
+                        <td>重要 (影響重複購買)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="margin-top: 40px;">
+                <h3 style="color: #667eea; margin-bottom: 20px;">銷售週期對比圖</h3>
+                <div class="chart-container">
+                    <canvas id="b2bVsB2cChart"></canvas>
+                </div>
+            </div>
+
+            <div class="note">
+                💡 <strong>關鍵洞察：</strong> B2B 銷售需要耐心和建立關係，B2C 銷售需要快速和衝動引導。選擇正確的銷售策略取決於你的業務模式。
+            </div>
+        </div>
+
+        <!-- Tab 3: LTV 計算器 -->
+        <div class="tab-content">
+            <h2 class="section-title">客戶生命週期價值 (LTV) 計算器</h2>
+
+            <div class="tool-section">
+                <h3>計算客戶終身價值和獲取成本比率</h3>
+
+                <div class="input-group">
+                    <div class="input-field">
+                        <label>平均年度利潤 (NT$)</label>
+                        <input type="number" id="annualProfit" value="50000" min="1000">
+                    </div>
+                    <div class="input-field">
+                        <label>平均客戶年限 (年)</label>
+                        <input type="number" id="customerYears" value="3" min="1" max="20">
+                    </div>
+                    <div class="input-field">
+                        <label>客戶獲取成本 CAC (NT$)</label>
+                        <input type="number" id="cac" value="20000" min="1000">
+                    </div>
+                    <div class="input-field">
+                        <label>月客戶流失率 (%)</label>
+                        <input type="number" id="churnRate" value="5" min="0" max="50" step="0.1">
+                    </div>
+                </div>
+
+                <button onclick="calculateLTV()">計算 LTV</button>
+            </div>
+
+            <div class="chart-container" style="display:none" id="ltvChartContainer">
+                <canvas id="ltvChart"></canvas>
+            </div>
+
+            <div class="result-box" id="ltvResult">
+                <h4>計算結果</h4>
+                <div class="result-item">
+                    <span>客戶生命週期價值 (LTV):</span>
+                    <strong id="ltv">-</strong>
+                </div>
+                <div class="result-item">
+                    <span>客戶獲取成本 (CAC):</span>
+                    <strong id="cacDisplay">-</strong>
+                </div>
+                <div class="result-item">
+                    <span>LTV:CAC 比率:</span>
+                    <strong id="ltvCacRatio">-</strong>
+                </div>
+                <div class="result-item">
+                    <span>健康度評估:</span>
+                    <strong id="healthScore">-</strong>
+                </div>
+                <div class="result-item">
+                    <span>建議:</span>
+                    <strong id="recommendation">-</strong>
+                </div>
+            </div>
+
+            <div class="note">
+                💡 <strong>健康指標：</strong> LTV:CAC 比率應該 > 3:1。如果比率 < 1.5:1，代表生意不可持續。如果 > 5:1，代表你可以投入更多成本獲取客戶。
+            </div>
+        </div>
+
+        <!-- Tab 4: 績效儀表板 -->
+        <div class="tab-content">
+            <h2 class="section-title">銷售團隊績效儀表板</h2>
+
+            <div class="tool-section">
+                <h3>輸入銷售數據，查看團隊績效概覽</h3>
+
+                <div class="input-group">
+                    <div class="input-field">
+                        <label>月配額 (NT$)</label>
+                        <input type="number" id="monthlyQuota" value="1000000" min="10000">
+                    </div>
+                    <div class="input-field">
+                        <label>本月實績 (NT$)</label>
+                        <input type="number" id="monthlyActual" value="800000" min="0">
+                    </div>
+                    <div class="input-field">
+                        <label>銷售員數</label>
+                        <input type="number" id="salesTeamSize" value="5" min="1" max="100">
+                    </div>
+                    <div class="input-field">
+                        <label>平均銷售週期 (天)</label>
+                        <input type="number" id="avgSalesCycle" value="60" min="1" max="365">
+                    </div>
+                    <div class="input-field">
+                        <label>當月新客戶數</label>
+                        <input type="number" id="newCustomers" value="15" min="0">
+                    </div>
+                    <div class="input-field">
+                        <label>客戶流失數</label>
+                        <input type="number" id="churnCustomers" value="2" min="0">
+                    </div>
+                </div>
+
+                <button onclick="calculateDashboard()">生成儀表板</button>
+            </div>
+
+            <div id="dashboardMetrics"></div>
+
+            <div style="margin-top: 40px;">
+                <h3 style="color: #667eea; margin-bottom: 20px;">配額達成進度</h3>
+                <div class="chart-container">
+                    <canvas id="quotaChart"></canvas>
+                </div>
+            </div>
+
+            <div class="note">
+                💡 <strong>關鍵指標：</strong> 配額達成率 (%) = 實績 ÷ 配額。>100% 代表超額達成，80-100% 是目標區間，<80% 需要改進。
+            </div>
+        </div>
+
+        <!-- Tab 5: 銷售預測工具 -->
+        <div class="tab-content">
+            <h2 class="section-title">銷售預測工具</h2>
+
+            <div class="tool-section">
+                <h3>基於管道機會，預測下月營收</h3>
+
+                <div class="input-group">
+                    <div class="input-field">
+                        <label>進行中的機會 (NT$)</label>
+                        <input type="number" id="earlyStage" value="2000000" min="0">
+                    </div>
+                    <div class="input-field">
+                        <label>早期階段轉換率 (%)</label>
+                        <input type="number" id="earlyStageRate" value="10" min="0" max="100">
+                    </div>
+                    <div class="input-field">
+                        <label>談判中的機會 (NT$)</label>
+                        <input type="number" id="middleStage" value="3000000" min="0">
+                    </div>
+                    <div class="input-field">
+                        <label>中期階段轉換率 (%)</label>
+                        <input type="number" id="middleStageRate" value="30" min="0" max="100">
+                    </div>
+                    <div class="input-field">
+                        <label>簽約前的機會 (NT$)</label>
+                        <input type="number" id="lateStage" value="2000000" min="0">
+                    </div>
+                    <div class="input-field">
+                        <label>晚期階段轉換率 (%)</label>
+                        <input type="number" id="lateStageRate" value="70" min="0" max="100">
+                    </div>
+                </div>
+
+                <button onclick="calculateForecast()">預測營收</button>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="forecastChart"></canvas>
+            </div>
+
+            <div class="result-box" id="forecastResult">
+                <h4>銷售預測結果</h4>
+                <div class="result-item">
+                    <span>早期機會貢獻:</span>
+                    <strong id="earlyForecast">-</strong>
+                </div>
+                <div class="result-item">
+                    <span>中期機會貢獻:</span>
+                    <strong id="middleForecast">-</strong>
+                </div>
+                <div class="result-item">
+                    <span>晚期機會貢獻:</span>
+                    <strong id="lateForecast">-</strong>
+                </div>
+                <div class="result-item">
+                    <span>預期下月營收 (最保守):</span>
+                    <strong id="conservativeForecast">-</strong>
+                </div>
+                <div class="result-item">
+                    <span>預期下月營收 (最樂觀):</span>
+                    <strong id="optimisticForecast">-</strong>
+                </div>
+                <div class="result-item">
+                    <span>預期下月營收 (中等):</span>
+                    <strong id="moderateForecast" style="color: #667eea; font-size: 1.2em;">-</strong>
+                </div>
+            </div>
+
+            <div class="note">
+                💡 <strong>預測方法：</strong> 採用漏斗基礎預測，分別計算各階段機會乘以其轉換率。保守估計只計算中期和晚期，樂觀估計全計，中等估計加上調整系數。
+            </div>
+        </div>
+
+        <footer>
+            <p>銷售管理互動工具 | 幫助您用數據驅動銷售決策</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">💡 所有計算基於輸入數據，實際結果需考慮市場因素調整</p>
+        </footer>
+    </div>
+
+    <script>
+        let funnelChart, b2bVsB2cChart, ltvChart, quotaChart, forecastChart;
+
+        function switchTab(index) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            tabs[index].classList.add('active');
+            buttons[index].classList.add('active');
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('zh-TW', {
+                style: 'currency',
+                currency: 'TWD',
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        function calculateFunnel() {
+            const initialLeads = parseInt(document.getElementById('initialLeads').value) || 1000;
+            const mqlRate = parseInt(document.getElementById('mqlRate').value) || 20;
+            const sqlRate = parseInt(document.getElementById('sqlRate').value) || 30;
+            const opportunityRate = parseInt(document.getElementById('opportunityRate').value) || 50;
+
+            const mql = Math.round(initialLeads * mqlRate / 100);
+            const sql = Math.round(mql * sqlRate / 100);
+            const opportunities = Math.round(sql * opportunityRate / 100);
+            const won = opportunities;
+            const overallRate = ((won / initialLeads) * 100).toFixed(2);
+
+            document.getElementById('leads').textContent = initialLeads;
+            document.getElementById('mql').textContent = mql;
+            document.getElementById('sql').textContent = sql;
+            document.getElementById('opportunities').textContent = opportunities;
+            document.getElementById('won').textContent = won;
+            document.getElementById('overallRate').textContent = overallRate + '%';
+            document.getElementById('funnelResult').classList.add('show');
+
+            const ctx = document.getElementById('funnelChart').getContext('2d');
+            if (funnelChart) funnelChart.destroy();
+
+            funnelChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['初始潛客', 'MQL', 'SQL', '機會', '成交'],
+                    datasets: [{
+                        label: '客戶數',
+                        data: [initialLeads, mql, sql, opportunities, won],
+                        backgroundColor: [
+                            'rgba(102, 126, 234, 0.8)',
+                            'rgba(118, 75, 162, 0.8)',
+                            'rgba(240, 147, 251, 0.8)',
+                            'rgba(245, 87, 108, 0.8)',
+                            'rgba(79, 172, 254, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(102, 126, 234)',
+                            'rgb(118, 75, 162)',
+                            'rgb(240, 147, 251)',
+                            'rgb(245, 87, 108)',
+                            'rgb(79, 172, 254)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { font: { size: 12 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function calculateLTV() {
+            const annualProfit = parseInt(document.getElementById('annualProfit').value) || 50000;
+            const customerYears = parseInt(document.getElementById('customerYears').value) || 3;
+            const cac = parseInt(document.getElementById('cac').value) || 20000;
+            const churnRate = parseFloat(document.getElementById('churnRate').value) || 5;
+
+            const ltv = annualProfit * customerYears;
+            const ratio = (ltv / cac).toFixed(2);
+
+            let healthScore = '不健康';
+            let recommendation = '需要改進成本效益';
+
+            if (ratio >= 5) {
+                healthScore = '優秀';
+                recommendation = '可以增加獲客投入，利潤充分';
+            } else if (ratio >= 3) {
+                healthScore = '健康';
+                recommendation = '生意可持續，成長的好基礎';
+            } else if (ratio >= 1.5) {
+                healthScore = '有風險';
+                recommendation = '需要降低獲客成本或提升客戶利潤';
+            } else {
+                healthScore = '不可持續';
+                recommendation = '必須立即改善，否則無法生存';
+            }
+
+            document.getElementById('ltv').textContent = formatCurrency(ltv);
+            document.getElementById('cacDisplay').textContent = formatCurrency(cac);
+            document.getElementById('ltvCacRatio').textContent = ratio + ':1';
+            document.getElementById('healthScore').textContent = healthScore;
+            document.getElementById('recommendation').textContent = recommendation;
+            document.getElementById('ltvResult').classList.add('show');
+        }
+
+        function calculateDashboard() {
+            const monthlyQuota = parseInt(document.getElementById('monthlyQuota').value) || 1000000;
+            const monthlyActual = parseInt(document.getElementById('monthlyActual').value) || 800000;
+            const teamSize = parseInt(document.getElementById('salesTeamSize').value) || 5;
+            const salesCycle = parseInt(document.getElementById('avgSalesCycle').value) || 60;
+            const newCustomers = parseInt(document.getElementById('newCustomers').value) || 15;
+            const churnCustomers = parseInt(document.getElementById('churnCustomers').value) || 2;
+
+            const quotaAchievement = ((monthlyActual / monthlyQuota) * 100).toFixed(1);
+            const perCapitaQuota = (monthlyQuota / teamSize).toFixed(0);
+            const netNewCustomers = newCustomers - churnCustomers;
+            const customerRetention = ((newCustomers - churnCustomers) / newCustomers * 100).toFixed(1);
+
+            const metricsHtml = `
+                <div class="metric-card">
+                    <div>
+                        <div class="metric-value">${quotaAchievement}%</div>
+                        <div class="metric-label">配額達成率</div>
+                    </div>
+                    <div>
+                        <div class="metric-value">${formatCurrency(monthlyActual)}</div>
+                        <div class="metric-label">本月實績</div>
+                    </div>
+                </div>
+
+                <div class="metric-card alt">
+                    <div>
+                        <div class="metric-value">${formatCurrency(perCapitaQuota)}</div>
+                        <div class="metric-label">人均配額</div>
+                    </div>
+                    <div>
+                        <div class="metric-value">${teamSize}</div>
+                        <div class="metric-label">銷售員數</div>
+                    </div>
+                </div>
+
+                <div class="metric-card alt2">
+                    <div>
+                        <div class="metric-value">${netNewCustomers}</div>
+                        <div class="metric-label">淨新增客戶</div>
+                    </div>
+                    <div>
+                        <div class="metric-value">${salesCycle} 天</div>
+                        <div class="metric-label">平均銷售週期</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('dashboardMetrics').innerHTML = metricsHtml;
+
+            const ctx = document.getElementById('quotaChart').getContext('2d');
+            if (quotaChart) quotaChart.destroy();
+
+            quotaChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['達成', '未達成'],
+                    datasets: [{
+                        data: [monthlyActual, Math.max(0, monthlyQuota - monthlyActual)],
+                        backgroundColor: ['rgba(79, 172, 254, 0.8)', 'rgba(211, 211, 211, 0.5)'],
+                        borderColor: ['rgb(79, 172, 254)', 'rgb(211, 211, 211)'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        function calculateForecast() {
+            const earlyStage = parseInt(document.getElementById('earlyStage').value) || 2000000;
+            const earlyRate = parseInt(document.getElementById('earlyStageRate').value) || 10;
+            const middleStage = parseInt(document.getElementById('middleStage').value) || 3000000;
+            const middleRate = parseInt(document.getElementById('middleStageRate').value) || 30;
+            const lateStage = parseInt(document.getElementById('lateStage').value) || 2000000;
+            const lateRate = parseInt(document.getElementById('lateStageRate').value) || 70;
+
+            const earlyForecast = earlyStage * (earlyRate / 100);
+            const middleForecast = middleStage * (middleRate / 100);
+            const lateForecast = lateStage * (lateRate / 100);
+
+            const conservativeForecast = middleForecast + lateForecast;
+            const optimisticForecast = earlyForecast + middleForecast + lateForecast;
+            const moderateForecast = (conservativeForecast + optimisticForecast) / 2;
+
+            document.getElementById('earlyForecast').textContent = formatCurrency(earlyForecast);
+            document.getElementById('middleForecast').textContent = formatCurrency(middleForecast);
+            document.getElementById('lateForecast').textContent = formatCurrency(lateForecast);
+            document.getElementById('conservativeForecast').textContent = formatCurrency(conservativeForecast);
+            document.getElementById('optimisticForecast').textContent = formatCurrency(optimisticForecast);
+            document.getElementById('moderateForecast').textContent = formatCurrency(moderateForecast);
+            document.getElementById('forecastResult').classList.add('show');
+
+            const ctx = document.getElementById('forecastChart').getContext('2d');
+            if (forecastChart) forecastChart.destroy();
+
+            forecastChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['保守預測', '中等預測', '樂觀預測'],
+                    datasets: [{
+                        label: '預期營收',
+                        data: [conservativeForecast, moderateForecast, optimisticForecast],
+                        backgroundColor: [
+                            'rgba(245, 87, 108, 0.8)',
+                            'rgba(102, 126, 234, 0.8)',
+                            'rgba(79, 172, 254, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(245, 87, 108)',
+                            'rgb(102, 126, 234)',
+                            'rgb(79, 172, 254)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'NT$' + (value / 1000000).toFixed(1) + 'M';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize B2B vs B2C chart on load
+        window.addEventListener('load', function() {
+            const ctxB2B = document.getElementById('b2bVsB2cChart').getContext('2d');
+            b2bVsB2cChart = new Chart(ctxB2B, {
+                type: 'radar',
+                data: {
+                    labels: ['決策速度', '客戶保留', '單筆金額', '團隊規模', '長期關係'],
+                    datasets: [
+                        {
+                            label: 'B2B',
+                            data: [20, 90, 90, 50, 95],
+                            borderColor: 'rgb(102, 126, 234)',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'B2C',
+                            data: [90, 50, 20, 90, 30],
+                            borderColor: 'rgb(245, 87, 108)',
+                            backgroundColor: 'rgba(245, 87, 108, 0.1)',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 100,
+                            ticks: { stepSize: 20 }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

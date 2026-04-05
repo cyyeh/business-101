@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>創業融資與私募股權 - 互動工具</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #f0f0f0;
+            background: #f8f9fa;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            color: #666;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button:hover {
+            background: #f0f0f0;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .tool-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tool-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-field label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .input-field input,
+        .input-field select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.95em;
+        }
+
+        .input-field input:focus,
+        .input-field select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button.calculate, button.reset {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        button.calculate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        button.calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button.reset {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        button.reset:hover {
+            background: #d0d0d0;
+        }
+
+        .results {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .result-value {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-top: 30px;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+
+        .info-box strong {
+            color: #667eea;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 20px;
+            position: relative;
+            padding-left: 50px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .timeline-description {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .tab-button {
+                padding: 12px 10px;
+                font-size: 0.9em;
+            }
+
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>創業融資與私募股權</h1>
+            <p>互動工具 - 深化理解融資機制</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('timeline')">融資時間軸</button>
+            <button class="tab-button" onclick="showTab('cap-table')">Cap Table 模擬器</button>
+            <button class="tab-button" onclick="showTab('lbo')">LBO 計算器</button>
+            <button class="tab-button" onclick="showTab('comparison')">Term Sheet 比較</button>
+            <button class="tab-button" onclick="showTab('fund')">VC 基金結構</button>
+        </div>
+
+        <!-- 時間軸 Tab -->
+        <div id="timeline" class="tab-content active">
+            <h2>創業融資階段時間軸</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker">1</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Pre-seed 階段（第 0-6 個月）</div>
+                        <div class="timeline-description">
+                            <strong>融資規模：</strong>$25K - $250K<br>
+                            <strong>投資者：</strong>創始人自籌、家族、朋友、天使投資人<br>
+                            <strong>企業狀況：</strong>想法、原型、最小可行產品<br>
+                            <strong>融資方式：</strong>SAFE、轉換票據、股權<br>
+                            <strong>目標：</strong>驗證產品-市場想法
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">2</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Seed 階段（6-18 個月）</div>
+                        <div class="timeline-description">
+                            <strong>融資規模：</strong>$500K - $2M<br>
+                            <strong>投資者：</strong>種子基金、天使聯合體、加速器<br>
+                            <strong>企業狀況：</strong>可工作的產品、初期用戶、基本驗證<br>
+                            <strong>融資方式：</strong>優先股、SAFE、轉換票據<br>
+                            <strong>目標：</strong>產品優化、用戶增長
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">3</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Series A 階段（1-2 年）</div>
+                        <div class="timeline-description">
+                            <strong>融資規模：</strong>$2M - $10M<br>
+                            <strong>投資者：</strong>專業 VC、成長型基金<br>
+                            <strong>企業狀況：</strong>產品-市場匹配驗證、明確商業模式、早期收入<br>
+                            <strong>融資方式：</strong>優先股、董事會席位<br>
+                            <strong>目標：</strong>市場擴張、產品改進、團隊建設
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">4</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Series B 階段（2-4 年）</div>
+                        <div class="timeline-description">
+                            <strong>融資規模：</strong>$10M - $50M<br>
+                            <strong>投資者：</strong>成長股權基金、後期 VC<br>
+                            <strong>企業狀況：</strong>驗證的增長、明確的盈利路徑、國際機會<br>
+                            <strong>融資方式：</strong>多輪優先股、混合證券<br>
+                            <strong>目標：</strong>全球擴張、市場份額增長
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">5</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Series C+ 階段（4-7 年）</div>
+                        <div class="timeline-description">
+                            <strong>融資規模：</strong>$50M - $500M+<br>
+                            <strong>投資者：</strong>後期基金、對沖基金、主權財富基金<br>
+                            <strong>企業狀況：</strong>達到產品市場領導地位、國際存在<br>
+                            <strong>融資方式：</strong>複雜的優先股結構、可轉換債券<br>
+                            <strong>目標：</strong>準備上市或大型併購
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">6</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">退出階段（7-10 年）</div>
+                        <div class="timeline-description">
+                            <strong>融資規模：</strong>不適用（變現）<br>
+                            <strong>退出方式：</strong>IPO、併購、二次銷售、SPAC<br>
+                            <strong>企業狀況：</strong>成熟企業、明確盈利、龐大市場份額<br>
+                            <strong>預期估值：</strong>$1B+（獨角獸或更高）<br>
+                            <strong>目標：</strong>投資者回報實現
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="timelineChart"></canvas>
+            </div>
+
+            <div class="info-box">
+                <strong>💡 提示：</strong> 上面的時間線是典型路徑。實際路徑因企業、市場和宏觀環境而異。有些企業可能跳過某些階段，有些可能停留更長時間。
+            </div>
+        </div>
+
+        <!-- Cap Table 模擬器 Tab -->
+        <div id="cap-table" class="tab-content">
+            <h2>Cap Table 股權稀釋模擬器</h2>
+            <div class="tool-section">
+                <h3>輸入融資信息</h3>
+                <div class="input-group">
+                    <div class="input-field">
+                        <label>創始人初期股份 (%)</label>
+                        <input type="number" id="founderEquity" value="100" min="0" max="100">
+                    </div>
+                    <div class="input-field">
+                        <label>Seed 融資時投資者獲得 (%)</label>
+                        <input type="number" id="seedPercent" value="20" min="0" max="100">
+                    </div>
+                    <div class="input-field">
+                        <label>Series A 融資時投資者獲得 (%)</label>
+                        <input type="number" id="seriesAPercent" value="25" min="0" max="100">
+                    </div>
+                    <div class="input-field">
+                        <label>Series B 融資時投資者獲得 (%)</label>
+                        <input type="number" id="seriesBPercent" value="25" min="0" max="100">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="calculate" onclick="calculateCapTable()">計算 Cap Table</button>
+                    <button class="reset" onclick="resetCapTable()">重置</button>
+                </div>
+
+                <div class="results" id="capTableResults" style="display:none;">
+                    <div class="result-item">
+                        <span class="result-label">初期（創始人）：</span>
+                        <span class="result-value" id="initial">100%</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Seed 後（創始人）：</span>
+                        <span class="result-value" id="afterSeed">80%</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Series A 後（創始人）：</span>
+                        <span class="result-value" id="afterA">60%</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Series B 後（創始人）：</span>
+                        <span class="result-value" id="afterB">45%</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">總稀釋程度：</span>
+                        <span class="result-value" id="totalDilution">55%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="capTableChart"></canvas>
+            </div>
+
+            <div class="info-box">
+                <strong>⚠️ 重要：</strong> 股份稀釋是正常的融資過程。關鍵是確保公司價值增長超過稀釋百分比。例如，失去 50% 所有權但公司價值增加 100 倍對創始人來說仍然極其有利。
+            </div>
+        </div>
+
+        <!-- LBO 計算器 Tab -->
+        <div id="lbo" class="tab-content">
+            <h2>槓桿收購（LBO）報酬計算器</h2>
+            <div class="tool-section">
+                <h3>輸入 LBO 交易參數</h3>
+                <div class="input-group">
+                    <div class="input-field">
+                        <label>目標企業年 EBITDA（$M）</label>
+                        <input type="number" id="ebitda" value="50" min="1">
+                    </div>
+                    <div class="input-field">
+                        <label>收購 EBITDA 倍數</label>
+                        <input type="number" id="purchaseMultiple" value="10" min="1" step="0.5">
+                    </div>
+                    <div class="input-field">
+                        <label>PE 自有資金比例 (%)</label>
+                        <input type="number" id="peEquityPercent" value="30" min="0" max="100">
+                    </div>
+                    <div class="input-field">
+                        <label>銀行貸款利率 (%)</label>
+                        <input type="number" id="interestRate" value="6" min="0" max="15" step="0.5">
+                    </div>
+                    <div class="input-field">
+                        <label>持有期（年）</label>
+                        <input type="number" id="holdingPeriod" value="5" min="1" max="10">
+                    </div>
+                    <div class="input-field">
+                        <label>退出 EBITDA 倍數</label>
+                        <input type="number" id="exitMultiple" value="12" min="1" step="0.5">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="calculate" onclick="calculateLBO()">計算回報</button>
+                    <button class="reset" onclick="resetLBO()">重置</button>
+                </div>
+
+                <div class="results" id="lboResults" style="display:none;">
+                    <div class="result-item">
+                        <span class="result-label">總收購價格（$M）：</span>
+                        <span class="result-value" id="purchasePrice">500</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">PE 投入金額（$M）：</span>
+                        <span class="result-value" id="peInvestment">150</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">銀行貸款金額（$M）：</span>
+                        <span class="result-value" id="bankLoan">350</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">年度利息支出（$M）：</span>
+                        <span class="result-value" id="annualInterest">21</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">持有期內總利息（$M）：</span>
+                        <span class="result-value" id="totalInterest">105</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">退出企業價值（$M）：</span>
+                        <span class="result-value" id="exitValue">600</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">退出後償還貸款（$M）：</span>
+                        <span class="result-value" id="loanRepayment">350</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">PE 淨收益（$M）：</span>
+                        <span class="result-value" id="peProfit">250</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">投資回報倍數（MoIC）：</span>
+                        <span class="result-value" id="moic">1.67x</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>💡 說明：</strong><br>
+                - MoIC (Multiple on Invested Capital) = 淨收益 / PE 投入<br>
+                - 典型目標 MoIC：3-5x（取決於風險和持有期）<br>
+                - 高槓桿放大回報但也增加風險
+            </div>
+        </div>
+
+        <!-- Term Sheet 比較 Tab -->
+        <div id="comparison" class="tab-content">
+            <h2>Term Sheet 條款比較器</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>條款</th>
+                        <th>創始人友好</th>
+                        <th>中立</th>
+                        <th>投資者友好</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>優先清液權</strong></td>
+                        <td>1x 非參與</td>
+                        <td>1x 參與</td>
+                        <td>2x+ 參與</td>
+                    </tr>
+                    <tr>
+                        <td><strong>反稀釋條款</strong></td>
+                        <td>無</td>
+                        <td>寬幅加權平均</td>
+                        <td>窄幅或完全棘輪</td>
+                    </tr>
+                    <tr>
+                        <td><strong>董事會席位</strong></td>
+                        <td>無</td>
+                        <td>觀察席</td>
+                        <td>有投票席位</td>
+                    </tr>
+                    <tr>
+                        <td><strong>投資估值</strong></td>
+                        <td>高（Pre-money）</td>
+                        <td>中立</td>
+                        <td>低（保守）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>投資金額</strong></td>
+                        <td>小額輪</td>
+                        <td>適當規模</td>
+                        <td>大額輪</td>
+                    </tr>
+                    <tr>
+                        <td><strong>轉換條款</strong></td>
+                        <td>可選轉換</td>
+                        <td>中立</td>
+                        <td>強制轉換</td>
+                    </tr>
+                    <tr>
+                        <td><strong>清算偏好堆疊</strong></td>
+                        <td>非堆疊</td>
+                        <td>部分堆疊</td>
+                        <td>完全堆疊</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box">
+                <strong>📌 建議：</strong> 沒有完美的 Term Sheet。重要的是理解每個條款的含義，並在談判過程中優先考慮對你的企業最重要的方面。通常，融資額和投資者的價值（指導、人脈）比條款更重要。
+            </div>
+        </div>
+
+        <!-- VC 基金結構 Tab -->
+        <div id="fund" class="tab-content">
+            <h2>VC 基金結構與收益分配</h2>
+
+            <div class="tool-section">
+                <h3>基金參數輸入</h3>
+                <div class="input-group">
+                    <div class="input-field">
+                        <label>基金總規模（$M）</label>
+                        <input type="number" id="fundSize" value="100" min="1">
+                    </div>
+                    <div class="input-field">
+                        <label>管理費比例 (%)</label>
+                        <input type="number" id="managementFeePercent" value="2" min="0" max="5" step="0.1">
+                    </div>
+                    <div class="input-field">
+                        <label>投資期（年）</label>
+                        <input type="number" id="investmentPeriod" value="5" min="1" max="7">
+                    </div>
+                    <div class="input-field">
+                        <label>基金總利潤（$M）</label>
+                        <input type="number" id="fundProfit" value="300" min="0">
+                    </div>
+                    <div class="input-field">
+                        <label>Carry 比例 (%)</label>
+                        <input type="number" id="carryPercent" value="20" min="0" max="30" step="1">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="calculate" onclick="calculateFundStructure()">計算收益分配</button>
+                    <button class="reset" onclick="resetFundStructure()">重置</button>
+                </div>
+
+                <div class="results" id="fundResults" style="display:none;">
+                    <div class="result-item">
+                        <span class="result-label">年度管理費（$M）：</span>
+                        <span class="result-value" id="annualMgmtFee">2</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">投資期內總管理費（$M）：</span>
+                        <span class="result-value" id="totalMgmtFee">10</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">GP 的 Carry（$M）：</span>
+                        <span class="result-value" id="gpCarry">60</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">GP 總收入（管理費 + Carry）（$M）：</span>
+                        <span class="result-value" id="gpTotal">70</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">LP 獲得的利潤（$M）：</span>
+                        <span class="result-value" id="lpProfit">240</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">基金 MOIC（倍數）：</span>
+                        <span class="result-value" id="fundMoic">3x</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">LP 實際 MOIC：</span>
+                        <span class="result-value" id="lpMoic">2.4x</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="fundChart"></canvas>
+            </div>
+
+            <div class="info-box">
+                <strong>🎯 關鍵概念：</strong><br>
+                - 管理費：保證的成本，支付基金運營<br>
+                - Carry：激勵 GP 尋找成功投資<br>
+                - 基金 MOIC：所有投資者的總回報倍數<br>
+                - LP MOIC：扣除管理費和 Carry 後 LP 的實際回報
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>創業融資與私募股權互動工具 | 2026年 | 教育用途</p>
+            <p>免責聲明：本工具僅作教育用途，不構成投資建議。實際融資交易涉及複雜的法律、稅務和財務考慮。</p>
+        </div>
+    </div>
+
+    <script>
+        // Tab 切換功能
+        function showTab(tabName) {
+            const contents = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+
+            contents.forEach(content => content.classList.remove('active'));
+            buttons.forEach(button => button.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // 延遲執行以確保圖表容器已可見
+            setTimeout(() => {
+                if (tabName === 'timeline') initTimelineChart();
+                if (tabName === 'cap-table') initCapTableChart();
+                if (tabName === 'lbo') initLBOChart();
+                if (tabName === 'fund') initFundChart();
+            }, 100);
+        }
+
+        // Timeline Chart
+        let timelineChart = null;
+        function initTimelineChart() {
+            const ctx = document.getElementById('timelineChart');
+            if (!ctx) return;
+
+            if (timelineChart) timelineChart.destroy();
+
+            timelineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Pre-seed', 'Seed', 'Series A', 'Series B', 'Series C', 'IPO'],
+                    datasets: [
+                        {
+                            label: '融資規模下限 ($M)',
+                            data: [0.025, 0.5, 2, 10, 50, null],
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            fill: false,
+                            tension: 0.4
+                        },
+                        {
+                            label: '融資規模上限 ($M)',
+                            data: [0.25, 2, 10, 50, 500, null],
+                            borderColor: '#764ba2',
+                            backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                            fill: '-1',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: { display: true, text: '創業融資階段與融資規模' }
+                    },
+                    scales: {
+                        y: {
+                            type: 'logarithmic',
+                            title: { display: true, text: '融資規模 ($M) - 對數標度' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Cap Table Calculator
+        function calculateCapTable() {
+            const founder = parseFloat(document.getElementById('founderEquity').value);
+            const seed = parseFloat(document.getElementById('seedPercent').value);
+            const seriesA = parseFloat(document.getElementById('seriesAPercent').value);
+            const seriesB = parseFloat(document.getElementById('seriesBPercent').value);
+
+            const afterSeed = founder * (1 - seed / 100);
+            const afterA = afterSeed * (1 - seriesA / 100);
+            const afterB = afterA * (1 - seriesB / 100);
+
+            document.getElementById('initial').textContent = founder.toFixed(2) + '%';
+            document.getElementById('afterSeed').textContent = afterSeed.toFixed(2) + '%';
+            document.getElementById('afterA').textContent = afterA.toFixed(2) + '%';
+            document.getElementById('afterB').textContent = afterB.toFixed(2) + '%';
+            document.getElementById('totalDilution').textContent = (100 - afterB).toFixed(2) + '%';
+            document.getElementById('capTableResults').style.display = 'block';
+
+            initCapTableChart(afterSeed, afterA, afterB);
+        }
+
+        function resetCapTable() {
+            document.getElementById('founderEquity').value = '100';
+            document.getElementById('seedPercent').value = '20';
+            document.getElementById('seriesAPercent').value = '25';
+            document.getElementById('seriesBPercent').value = '25';
+            document.getElementById('capTableResults').style.display = 'none';
+        }
+
+        let capTableChart = null;
+        function initCapTableChart(seed = 80, seriesA = 60, seriesB = 45) {
+            const ctx = document.getElementById('capTableChart');
+            if (!ctx) return;
+
+            if (capTableChart) capTableChart.destroy();
+
+            capTableChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['初期', 'Seed 後', 'Series A 後', 'Series B 後'],
+                    datasets: [
+                        {
+                            label: '創始人',
+                            data: [100, seed, seriesA, seriesB],
+                            backgroundColor: '#667eea'
+                        },
+                        {
+                            label: '投資者',
+                            data: [0, 100 - seed, 100 - seriesA, 100 - seriesB],
+                            backgroundColor: '#764ba2'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'x',
+                    scales: { x: { stacked: true }, y: { stacked: true, max: 100 } },
+                    plugins: { legend: { position: 'top' }, title: { display: true, text: '創始人股權稀釋過程' } }
+                }
+            });
+        }
+
+        // LBO Calculator
+        function calculateLBO() {
+            const ebitda = parseFloat(document.getElementById('ebitda').value);
+            const purchaseMultiple = parseFloat(document.getElementById('purchaseMultiple').value);
+            const peEquityPercent = parseFloat(document.getElementById('peEquityPercent').value);
+            const interestRate = parseFloat(document.getElementById('interestRate').value);
+            const holdingPeriod = parseFloat(document.getElementById('holdingPeriod').value);
+            const exitMultiple = parseFloat(document.getElementById('exitMultiple').value);
+
+            const purchasePrice = ebitda * purchaseMultiple;
+            const peInvestment = purchasePrice * peEquityPercent / 100;
+            const bankLoan = purchasePrice - peInvestment;
+            const annualInterest = bankLoan * interestRate / 100;
+            const totalInterest = annualInterest * holdingPeriod;
+            const exitValue = ebitda * exitMultiple;
+            const loanRepayment = bankLoan;
+            const peProfit = exitValue - loanRepayment - totalInterest - peInvestment + peInvestment;
+            const moic = (exitValue - loanRepayment) / peInvestment;
+
+            document.getElementById('purchasePrice').textContent = purchasePrice.toFixed(0);
+            document.getElementById('peInvestment').textContent = peInvestment.toFixed(0);
+            document.getElementById('bankLoan').textContent = bankLoan.toFixed(0);
+            document.getElementById('annualInterest').textContent = annualInterest.toFixed(0);
+            document.getElementById('totalInterest').textContent = totalInterest.toFixed(0);
+            document.getElementById('exitValue').textContent = exitValue.toFixed(0);
+            document.getElementById('loanRepayment').textContent = loanRepayment.toFixed(0);
+            document.getElementById('peProfit').textContent = (exitValue - loanRepayment - peInvestment).toFixed(0);
+            document.getElementById('moic').textContent = moic.toFixed(2) + 'x';
+
+            document.getElementById('lboResults').style.display = 'block';
+        }
+
+        function resetLBO() {
+            document.getElementById('ebitda').value = '50';
+            document.getElementById('purchaseMultiple').value = '10';
+            document.getElementById('peEquityPercent').value = '30';
+            document.getElementById('interestRate').value = '6';
+            document.getElementById('holdingPeriod').value = '5';
+            document.getElementById('exitMultiple').value = '12';
+            document.getElementById('lboResults').style.display = 'none';
+        }
+
+        // Fund Structure Calculator
+        function calculateFundStructure() {
+            const fundSize = parseFloat(document.getElementById('fundSize').value);
+            const managementFeePercent = parseFloat(document.getElementById('managementFeePercent').value);
+            const investmentPeriod = parseFloat(document.getElementById('investmentPeriod').value);
+            const fundProfit = parseFloat(document.getElementById('fundProfit').value);
+            const carryPercent = parseFloat(document.getElementById('carryPercent').value);
+
+            const annualMgmtFee = fundSize * managementFeePercent / 100;
+            const totalMgmtFee = annualMgmtFee * investmentPeriod;
+            const gpCarry = fundProfit * carryPercent / 100;
+            const gpTotal = totalMgmtFee + gpCarry;
+            const lpProfit = fundProfit * (1 - carryPercent / 100);
+            const fundMoic = (fundSize + fundProfit) / fundSize;
+            const lpMoic = (fundSize + lpProfit) / fundSize;
+
+            document.getElementById('annualMgmtFee').textContent = annualMgmtFee.toFixed(1);
+            document.getElementById('totalMgmtFee').textContent = totalMgmtFee.toFixed(1);
+            document.getElementById('gpCarry').textContent = gpCarry.toFixed(1);
+            document.getElementById('gpTotal').textContent = gpTotal.toFixed(1);
+            document.getElementById('lpProfit').textContent = lpProfit.toFixed(1);
+            document.getElementById('fundMoic').textContent = fundMoic.toFixed(2) + 'x';
+            document.getElementById('lpMoic').textContent = lpMoic.toFixed(2) + 'x';
+
+            document.getElementById('fundResults').style.display = 'block';
+            initFundChart(totalMgmtFee, gpCarry, lpProfit);
+        }
+
+        function resetFundStructure() {
+            document.getElementById('fundSize').value = '100';
+            document.getElementById('managementFeePercent').value = '2';
+            document.getElementById('investmentPeriod').value = '5';
+            document.getElementById('fundProfit').value = '300';
+            document.getElementById('carryPercent').value = '20';
+            document.getElementById('fundResults').style.display = 'none';
+        }
+
+        let fundChart = null;
+        function initFundChart(mgmtFee = 10, carry = 60, lpProfit = 240) {
+            const ctx = document.getElementById('fundChart');
+            if (!ctx) return;
+
+            if (fundChart) fundChart.destroy();
+
+            fundChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['管理費（GP）', 'Carry（GP）', '利潤（LP）'],
+                    datasets: [{
+                        data: [mgmtFee, carry, lpProfit],
+                        backgroundColor: ['#667eea', '#764ba2', '#42a5f5']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' },
+                        title: { display: true, text: '基金收益分配' }
+                    }
+                }
+            });
+        }
+
+        // 初始化
+        window.addEventListener('load', () => {
+            initTimelineChart();
+            initCapTableChart();
+        });
+    </script>
+</body>
+</html>

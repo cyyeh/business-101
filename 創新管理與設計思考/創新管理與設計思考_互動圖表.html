@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>創新管理與設計思考 - 互動圖表</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0;
+            border-bottom: 3px solid #667eea;
+            background-color: #f8f9fa;
+            padding: 0 20px;
+        }
+
+        .tab-button {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+            position: relative;
+            top: 3px;
+        }
+
+        .tab-button:hover {
+            color: #667eea;
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .tool-section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .tool-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-item label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .input-item input,
+        .input-item select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .input-item input:focus,
+        .input-item select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1em;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .result-box {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .result-box h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .result-item {
+            padding: 10px;
+            margin: 10px 0;
+            background: #f0f4ff;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .comparison-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table tbody tr:hover {
+            background-color: #f0f4ff;
+        }
+
+        .innovation-type-good {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .innovation-type-moderate {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .innovation-type-poor {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .stage-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 700;
+            font-size: 1.2em;
+            margin: 0 10px 10px 0;
+        }
+
+        .stage-description {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .stage-text h4 {
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stage-text p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .metric-box {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .metric-box .value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .metric-box .label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #f0e7fe 100%);
+            border-left: 5px solid #667eea;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .info-box strong {
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-button {
+                min-width: 100%;
+            }
+
+            .tab-content {
+                padding: 20px;
+            }
+
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>創新管理與設計思考</h1>
+            <p>互動工具 - 探索創新的多個維度</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab(event, 'design-thinking')">設計思考五階段</button>
+            <button class="tab-button" onclick="switchTab(event, 'innovation-types')">創新類型比較</button>
+            <button class="tab-button" onclick="switchTab(event, 'three-horizons')">三個地平線</button>
+            <button class="tab-button" onclick="switchTab(event, 'portfolio-assess')">創新組合評估</button>
+            <button class="tab-button" onclick="switchTab(event, 'disruptive-judge')">破壞式創新判斷</button>
+        </div>
+
+        <!-- Tab 1: 設計思考五階段 -->
+        <div id="design-thinking" class="tab-content active">
+            <h2>設計思考五階段流程圖</h2>
+            <p style="color: #666; margin: 10px 0 30px 0;">從同理心到測試的完整創新循環</p>
+
+            <div class="chart-container">
+                <canvas id="designThinkingChart"></canvas>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                <div class="tool-section" style="border-left: 5px solid #667eea;">
+                    <div class="stage-description">
+                        <div class="stage-circle">1</div>
+                        <div class="stage-text">
+                            <h4>同理心</h4>
+                            <p>理解用戶需求和痛點</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tool-section" style="border-left: 5px solid #8b5cf6;">
+                    <div class="stage-description">
+                        <div class="stage-circle" style="background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);">2</div>
+                        <div class="stage-text">
+                            <h4>定義</h4>
+                            <p>清晰陳述真實問題</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tool-section" style="border-left: 5px solid #ec4899;">
+                    <div class="stage-description">
+                        <div class="stage-circle" style="background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);">3</div>
+                        <div class="stage-text">
+                            <h4>發想</h4>
+                            <p>生成多個創新想法</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tool-section" style="border-left: 5px solid #f97316;">
+                    <div class="stage-description">
+                        <div class="stage-circle" style="background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);">4</div>
+                        <div class="stage-text">
+                            <h4>原型</h4>
+                            <p>快速製作可測試版本</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tool-section" style="border-left: 5px solid #22c55e;">
+                    <div class="stage-description">
+                        <div class="stage-circle" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">5</div>
+                        <div class="stage-text">
+                            <h4>測試</h4>
+                            <p>與用戶驗證並迭代</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>💡 關鍵要點：</strong><br>
+                設計思考是迭代的循環，不是線性流程。根據測試反饋，你可能需要回到同理心或定義階段重新開始。
+            </div>
+        </div>
+
+        <!-- Tab 2: 創新類型比較 -->
+        <div id="innovation-types" class="tab-content">
+            <h2>創新類型比較器</h2>
+            <p style="color: #666; margin: 10px 0 30px 0;">三種創新類型的特點分析</p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>維度</th>
+                        <th>漸進式創新</th>
+                        <th>突破式創新</th>
+                        <th>破壞式創新</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>定義</strong></td>
+                        <td>逐步改進現有產品</td>
+                        <td>推出全新產品類型</td>
+                        <td>用簡單廉價方式顛覆市場</td>
+                    </tr>
+                    <tr>
+                        <td><strong>創新幅度</strong></td>
+                        <td><span class="innovation-type-good">小</span></td>
+                        <td><span class="innovation-type-moderate">大</span></td>
+                        <td><span class="innovation-type-moderate">大</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>初期性能</strong></td>
+                        <td><span class="innovation-type-good">優於現有</span></td>
+                        <td><span class="innovation-type-good">優於現有</span></td>
+                        <td><span class="innovation-type-poor">低於現有</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>投資規模</strong></td>
+                        <td><span class="innovation-type-good">低</span></td>
+                        <td><span class="innovation-type-moderate">中</span></td>
+                        <td><span class="innovation-type-moderate">中</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>投資回期</strong></td>
+                        <td><span class="innovation-type-good">短（1-2年）</span></td>
+                        <td><span class="innovation-type-moderate">中期（3-5年）</span></td>
+                        <td><span class="innovation-type-poor">長期（5-10年）</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>市場風險</strong></td>
+                        <td><span class="innovation-type-good">低</span></td>
+                        <td><span class="innovation-type-moderate">中</span></td>
+                        <td><span class="innovation-type-poor">高</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>成功率</strong></td>
+                        <td><span class="innovation-type-good">高（70-80%）</span></td>
+                        <td><span class="innovation-type-moderate">中（40-50%）</span></td>
+                        <td><span class="innovation-type-poor">低（10-20%）</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>市場影響</strong></td>
+                        <td><span class="innovation-type-moderate">改進現有</span></td>
+                        <td><span class="innovation-type-good">創造新類型</span></td>
+                        <td><span class="innovation-type-good">顛覆產業</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="chart-container" style="height: 350px; margin-top: 40px;">
+                <canvas id="innovationTypesChart"></canvas>
+            </div>
+
+            <div class="info-box">
+                <strong>💡 最佳實踐：</strong><br>
+                企業應該同時進行三種創新：漸進式保持現金流，突破式開拓新市場，破壞式為未來做準備。
+            </div>
+        </div>
+
+        <!-- Tab 3: 三個地平線 -->
+        <div id="three-horizons" class="tab-content">
+            <h2>三個地平線框架可視化</h2>
+            <p style="color: #666; margin: 10px 0 30px 0;">如何平衡短期利潤和長期創新</p>
+
+            <div class="chart-container">
+                <canvas id="threeHorizonsChart"></canvas>
+            </div>
+
+            <div style="margin-top: 40px;">
+                <div class="tool-section">
+                    <h3>📊 投資分配建議</h3>
+                    <div class="metric-grid">
+                        <div class="metric-box">
+                            <div class="value">60-70%</div>
+                            <div class="label">地平線 1<br>（現有業務改進）</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="value">20-30%</div>
+                            <div class="label">地平線 2<br>（新市場開拓）</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="value">10%</div>
+                            <div class="label">地平線 3<br>（面向未來探索）</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tool-section" style="border-left: 5px solid #10b981;">
+                    <h3>地平線 1 - 核心業務改進</h3>
+                    <p><strong>時間：</strong> 0-1 年 | <strong>目標：</strong> 優化現有業務</p>
+                    <p style="margin-top: 10px;">改進現有產品功能、成本優化、運營效率提升</p>
+                </div>
+
+                <div class="tool-section" style="border-left: 5px solid #f59e0b;">
+                    <h3>地平線 2 - 新市場開拓</h3>
+                    <p><strong>時間：</strong> 1-3 年 | <strong>目標：</strong> 進入新領域</p>
+                    <p style="margin-top: 10px;">進入相鄰市場、新產品線、新客戶群體</p>
+                </div>
+
+                <div class="tool-section" style="border-left: 5px solid #667eea;">
+                    <h3>地平線 3 - 面向未來探索</h3>
+                    <p><strong>時間：</strong> 3+ 年 | <strong>目標：</strong> 培育未來業務</p>
+                    <p style="margin-top: 10px;">技術研發、新概念驗證、顛覆性創新探索</p>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>💡 關鍵洞察：</strong><br>
+                地平線 3 的失敗可以接受（預期失敗率 70-90%），因為目標是學習。但地平線 1 的失敗會影響企業生存。
+            </div>
+        </div>
+
+        <!-- Tab 4: 創新組合評估 -->
+        <div id="portfolio-assess" class="tab-content">
+            <h2>創新組合評估器</h2>
+            <p style="color: #666; margin: 10px 0 30px 0;">評估你的創新組合是否平衡</p>
+
+            <div class="tool-section">
+                <h3>📋 輸入你的創新項目數據</h3>
+                <div class="input-group">
+                    <div class="input-item">
+                        <label>地平線 1 的項目數</label>
+                        <input type="number" id="h1-projects" value="15" min="0">
+                    </div>
+                    <div class="input-item">
+                        <label>地平線 2 的項目數</label>
+                        <input type="number" id="h2-projects" value="8" min="0">
+                    </div>
+                    <div class="input-item">
+                        <label>地平線 3 的項目數</label>
+                        <input type="number" id="h3-projects" value="2" min="0">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-item">
+                        <label>地平線 1 預期成功率 (%)</label>
+                        <input type="number" id="h1-success" value="75" min="0" max="100">
+                    </div>
+                    <div class="input-item">
+                        <label>地平線 2 預期成功率 (%)</label>
+                        <input type="number" id="h2-success" value="40" min="0" max="100">
+                    </div>
+                    <div class="input-item">
+                        <label>地平線 3 預期成功率 (%)</label>
+                        <input type="number" id="h3-success" value="15" min="0" max="100">
+                    </div>
+                </div>
+
+                <button class="button" onclick="assessPortfolio()">評估我的組合</button>
+            </div>
+
+            <div id="portfolio-result" class="result-box" style="display: none;">
+                <h4>📊 你的創新組合評估結果</h4>
+                <div id="portfolio-details"></div>
+                <div class="chart-container" style="height: 300px; margin-top: 20px;">
+                    <canvas id="portfolioChart"></canvas>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>💡 評估建議：</strong><br>
+                • 項目分配應達到 60:30:10 比例<br>
+                • 期望成功項目數：H1 約 11-12 個 | H2 約 3-4 個 | H3 約 0-1 個<br>
+                • 如果 H2 和 H3 項目數太少，企業面臨長期增長危機
+            </div>
+        </div>
+
+        <!-- Tab 5: 破壞式創新判斷 -->
+        <div id="disruptive-judge" class="tab-content">
+            <h2>破壞式創新判斷工具</h2>
+            <p style="color: #666; margin: 10px 0 30px 0;">判斷一個創新是否具有破壞式特徵</p>
+
+            <div class="tool-section">
+                <h3>🔍 評估一個創新想法</h3>
+                <div class="input-group">
+                    <div class="input-item" style="grid-column: 1 / -1;">
+                        <label>創新想法名稱</label>
+                        <input type="text" id="innovation-name" placeholder="例：電動滑板車">
+                    </div>
+                </div>
+
+                <h4 style="margin-top: 20px; margin-bottom: 15px;">請評分以下特徵（1-5 分）：</h4>
+                <div style="display: grid; gap: 15px;">
+                    <div class="input-item">
+                        <label>🎯 初期性能是否低於現有方案？</label>
+                        <input type="range" id="feature-1" min="1" max="5" value="3">
+                        <small id="score-1" style="color: #667eea; font-weight: 600;">得分：3/5</small>
+                    </div>
+                    <div class="input-item">
+                        <label>💰 價格是否明顯低於現有方案？</label>
+                        <input type="range" id="feature-2" min="1" max="5" value="3">
+                        <small id="score-2" style="color: #667eea; font-weight: 600;">得分：3/5</small>
+                    </div>
+                    <div class="input-item">
+                        <label>🎁 是否針對非消費者或低端市場？</label>
+                        <input type="range" id="feature-3" min="1" max="5" value="3">
+                        <small id="score-3" style="color: #667eea; font-weight: 600;">得分：3/5</small>
+                    </div>
+                    <div class="input-item">
+                        <label>📈 性能改進軌跡是否向上？</label>
+                        <input type="range" id="feature-4" min="1" max="5" value="3">
+                        <small id="score-4" style="color: #667eea; font-weight: 600;">得分：3/5</small>
+                    </div>
+                    <div class="input-item">
+                        <label>🌐 是否建立了新的價值網絡？</label>
+                        <input type="range" id="feature-5" min="1" max="5" value="3">
+                        <small id="score-5" style="color: #667eea; font-weight: 600;">得分：3/5</small>
+                    </div>
+                </div>
+
+                <button class="button" style="margin-top: 20px;" onclick="judgeDisruptive()">評估破壞式創新程度</button>
+            </div>
+
+            <div id="disruption-result" class="result-box" style="display: none;">
+                <h4>📊 破壞式創新評估結果</h4>
+                <div id="disruption-details"></div>
+                <div class="chart-container" style="height: 300px; margin-top: 20px;">
+                    <canvas id="disruptionChart"></canvas>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>💡 破壞式創新的特徵：</strong><br>
+                • 初期性能可能較弱，但逐步改進<br>
+                • 針對傳統企業不關注的市場<br>
+                • 以低成本或簡單性為優勢<br>
+                • 最終可能顛覆整個行業<br>
+                <strong>總分超過 18 分：</strong> 具有較強的破壞式創新特徵
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 語言支持和數據
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        font: { size: 12, family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    font: { family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }
+                }
+            }
+        };
+
+        let charts = {};
+
+        // Tab 切換
+        function switchTab(evt, tabName) {
+            const tabcontents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabcontents.length; i++) {
+                tabcontents[i].classList.remove("active");
+            }
+
+            const tabbuttons = document.getElementsByClassName("tab-button");
+            for (let i = 0; i < tabbuttons.length; i++) {
+                tabbuttons[i].classList.remove("active");
+            }
+
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+
+            // 重新繪製圖表
+            setTimeout(() => {
+                if (charts[tabName]) charts[tabName].resize();
+            }, 100);
+        }
+
+        // 初始化設計思考圖表
+        function initDesignThinkingChart() {
+            const ctx = document.getElementById('designThinkingChart').getContext('2d');
+            charts['design-thinking'] = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['同理心', '定義', '發想', '原型', '測試'],
+                    datasets: [{
+                        label: '重要程度',
+                        data: [95, 90, 85, 95, 90],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#667eea'
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        // 初始化創新類型圖表
+        function initInnovationTypesChart() {
+            const ctx = document.getElementById('innovationTypesChart').getContext('2d');
+            charts['innovation-types'] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['投資規模', '成功率', '市場風險', '投資回期'],
+                    datasets: [
+                        {
+                            label: '漸進式創新',
+                            data: [20, 75, 20, 15],
+                            backgroundColor: '#10b981'
+                        },
+                        {
+                            label: '突破式創新',
+                            data: [60, 45, 60, 50],
+                            backgroundColor: '#f59e0b'
+                        },
+                        {
+                            label: '破壞式創新',
+                            data: [50, 15, 80, 70],
+                            backgroundColor: '#ef4444'
+                        }
+                    ]
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 初始化三個地平線圖表
+        function initThreeHorizonsChart() {
+            const ctx = document.getElementById('threeHorizonsChart').getContext('2d');
+            charts['three-horizons'] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['現在', '1年', '2年', '3年', '4年', '5年'],
+                    datasets: [
+                        {
+                            label: '地平線 1 - 現有業務',
+                            data: [80, 82, 85, 85, 85, 80],
+                            borderColor: '#10b981',
+                            borderWidth: 3,
+                            fill: true,
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)'
+                        },
+                        {
+                            label: '地平線 2 - 新市場',
+                            data: [0, 5, 15, 25, 35, 40],
+                            borderColor: '#f59e0b',
+                            borderWidth: 3,
+                            fill: true,
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)'
+                        },
+                        {
+                            label: '地平線 3 - 未來業務',
+                            data: [0, 0, 2, 5, 10, 15],
+                            borderColor: '#667eea',
+                            borderWidth: 3,
+                            fill: true,
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)'
+                        }
+                    ]
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 創新組合評估
+        function assessPortfolio() {
+            const h1 = parseInt(document.getElementById('h1-projects').value) || 0;
+            const h2 = parseInt(document.getElementById('h2-projects').value) || 0;
+            const h3 = parseInt(document.getElementById('h3-projects').value) || 0;
+            const h1Success = parseInt(document.getElementById('h1-success').value) || 0;
+            const h2Success = parseInt(document.getElementById('h2-success').value) || 0;
+            const h3Success = parseInt(document.getElementById('h3-success').value) || 0;
+
+            const total = h1 + h2 + h3;
+            const h1Pct = total > 0 ? (h1 / total * 100).toFixed(1) : 0;
+            const h2Pct = total > 0 ? (h2 / total * 100).toFixed(1) : 0;
+            const h3Pct = total > 0 ? (h3 / total * 100).toFixed(1) : 0;
+
+            const h1SuccessCount = (h1 * h1Success / 100).toFixed(1);
+            const h2SuccessCount = (h2 * h2Success / 100).toFixed(1);
+            const h3SuccessCount = (h3 * h3Success / 100).toFixed(1);
+
+            const detailsHtml = `
+                <div class="result-item">
+                    <strong>地平線分佈：</strong><br>
+                    地平線 1：${h1} 項目（${h1Pct}%）- 預期成功 ${h1SuccessCount} 個<br>
+                    地平線 2：${h2} 項目（${h2Pct}%）- 預期成功 ${h2SuccessCount} 個<br>
+                    地平線 3：${h3} 項目（${h3Pct}%）- 預期成功 ${h3SuccessCount} 個
+                </div>
+                <div class="result-item">
+                    <strong>評估結果：</strong><br>
+                    ${h1Pct >= 60 && h1Pct <= 70 ? '✅ 地平線 1 分配合理' : '⚠️ 地平線 1 分配需調整'}<br>
+                    ${h2Pct >= 20 && h2Pct <= 30 ? '✅ 地平線 2 分配合理' : '⚠️ 地平線 2 分配需調整'}<br>
+                    ${h3Pct >= 10 && h3Pct <= 15 ? '✅ 地平線 3 分配合理' : '⚠️ 地平線 3 分配需調整'}
+                </div>
+            `;
+
+            document.getElementById('portfolio-details').innerHTML = detailsHtml;
+            document.getElementById('portfolio-result').style.display = 'block';
+
+            // 繪製組合圖表
+            if (charts['portfolio-assess']) {
+                charts['portfolio-assess'].destroy();
+            }
+            const ctx = document.getElementById('portfolioChart').getContext('2d');
+            charts['portfolio-assess'] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['地平線 1', '地平線 2', '地平線 3'],
+                    datasets: [{
+                        data: [h1, h2, h3],
+                        backgroundColor: ['#10b981', '#f59e0b', '#667eea'],
+                        borderColor: 'white',
+                        borderWidth: 2
+                    }]
+                },
+                options: chartOptions
+            });
+        }
+
+        // 更新範圍滑塊值顯示
+        document.addEventListener('DOMContentLoaded', function() {
+            for (let i = 1; i <= 5; i++) {
+                const slider = document.getElementById('feature-' + i);
+                if (slider) {
+                    slider.addEventListener('input', function() {
+                        document.getElementById('score-' + i).textContent = '得分：' + this.value + '/5';
+                    });
+                }
+            }
+        });
+
+        // 破壞式創新判斷
+        function judgeDisruptive() {
+            const name = document.getElementById('innovation-name').value || '這個創新想法';
+            const scores = [1, 2, 3, 4, 5].map(i => parseInt(document.getElementById('feature-' + i).value) || 0);
+            const total = scores.reduce((a, b) => a + b, 0);
+
+            let assessment = '';
+            if (total >= 20) {
+                assessment = '🟢 具有強烈的破壞式創新特徵。這個想法很可能在未來顛覆市場。';
+            } else if (total >= 15) {
+                assessment = '🟡 具有中等破壞式創新特徵。需要進一步驗證市場機會和改進潛力。';
+            } else {
+                assessment = '🔴 破壞式創新特徵較弱。可能更適合作為突破式或漸進式創新。';
+            }
+
+            const detailsHtml = `
+                <div class="result-item">
+                    <strong>${name} 評估：</strong><br>
+                    總分：${total} / 25<br>
+                    ${assessment}
+                </div>
+                <div class="result-item">
+                    <strong>詳細評分：</strong><br>
+                    初期性能：${scores[0]}/5<br>
+                    價格優勢：${scores[1]}/5<br>
+                    目標市場：${scores[2]}/5<br>
+                    改進潛力：${scores[3]}/5<br>
+                    生態建設：${scores[4]}/5
+                </div>
+            `;
+
+            document.getElementById('disruption-details').innerHTML = detailsHtml;
+            document.getElementById('disruption-result').style.display = 'block';
+
+            // 繪製評估圖表
+            if (charts['disruptive-judge']) {
+                charts['disruptive-judge'].destroy();
+            }
+            const ctx = document.getElementById('disruptionChart').getContext('2d');
+            charts['disruptive-judge'] = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['初期性能', '價格優勢', '目標市場', '改進潛力', '生態建設'],
+                    datasets: [{
+                        label: '破壞式創新特徵',
+                        data: scores,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#667eea'
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 5
+                        }
+                    }
+                }
+            });
+        }
+
+        // 初始化所有圖表
+        window.addEventListener('DOMContentLoaded', function() {
+            initDesignThinkingChart();
+            initInnovationTypesChart();
+            initThreeHorizonsChart();
+        });
+    </script>
+</body>
+</html>
