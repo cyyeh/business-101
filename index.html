@@ -172,12 +172,15 @@
       border: 1px solid var(--border);
       min-height: 300px;
     }
+    .copy-md-wrap {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: .75rem;
+    }
     .copy-md-btn {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      float: right;
-      margin: 0 0 .75rem .75rem;
       padding: 6px 14px;
       font-size: .82rem;
       font-family: inherit;
@@ -187,7 +190,6 @@
       border-radius: 6px;
       cursor: pointer;
       transition: background .2s, color .2s;
-      z-index: 2;
     }
     .copy-md-btn:hover { background: var(--primary); color: #fff; }
     .copy-md-btn.copied { background: #48bb78; color: #fff; border-color: #48bb78; }
@@ -197,7 +199,6 @@
 
     /* Markdown styles */
     .content-box h1 { font-size: 1.7rem; margin: 1.5rem 0 .75rem; color: var(--primary); }
-    .content-box h1:first-of-type { clear: right; }
     .content-box h2 { font-size: 1.35rem; margin: 2rem 0 .6rem; padding-bottom: .4rem; border-bottom: 1px solid var(--border); }
     .content-box h3 { font-size: 1.15rem; margin: 1.5rem 0 .5rem; }
     .content-box h4 { font-size: 1.05rem; margin: 1rem 0 .4rem; }
@@ -479,7 +480,10 @@
           btn.textContent = '複製失敗';
         }
       });
-      return btn;
+      const wrap = document.createElement('div');
+      wrap.className = 'copy-md-wrap';
+      wrap.appendChild(btn);
+      return wrap;
     }
 
     /* ---- Parse README.md into two groups ---- */
