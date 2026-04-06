@@ -434,7 +434,7 @@
             <button class="tab-button active" data-tab="plc">產品生命週期模擬</button>
             <button class="tab-button" data-tab="mvp">MVP規劃工具</button>
             <button class="tab-button" data-tab="aarrr">AARRR指標儀表板</button>
-            <button class="tab-button" data-tab="userstory">用戶故事產生器</button>
+            <button class="tab-button" data-tab="userstory">使用者故事產生器</button>
             <button class="tab-button" data-tab="kanban">敏捷看板模擬</button>
         </div>
 
@@ -551,7 +551,7 @@
             <div class="controls">
                 <div class="control-item" style="flex: 1;">
                     <label>功能名稱</label>
-                    <input type="text" id="featureName" placeholder="例如：推薦算法">
+                    <input type="text" id="featureName" placeholder="例如：推薦演算法">
                 </div>
                 <div class="control-item" style="flex: 1;">
                     <label>影響度 (1-10)</label>
@@ -571,12 +571,12 @@
             <h2 class="section-title">AARRR海盜指標儀表板</h2>
 
             <div class="info-box">
-                <strong>說明：</strong>輸入各階段的轉化率，實時看到用戶從獲取到推薦的完整漏斗。
+                <strong>說明：</strong>輸入各階段的轉化率，實時看到使用者從取得到推薦的完整漏斗。
             </div>
 
             <div class="controls">
                 <div class="control-item" style="flex: 1;">
-                    <label>初始用戶數</label>
+                    <label>初始使用者數</label>
                     <input type="number" id="initial-users" value="100000" step="1000">
                 </div>
                 <div class="control-item" style="flex: 1;">
@@ -601,20 +601,20 @@
 
             <div class="funnel">
                 <div class="funnel-stage a">
-                    <span>🎯 獲取 (Acquisition)</span><br>
-                    <strong id="funnel-a">100,000 用戶</strong>
+                    <span>🎯 取得 (Acquisition)</span><br>
+                    <strong id="funnel-a">100,000 使用者</strong>
                 </div>
                 <div class="funnel-stage r1">
                     <span>⚡ 激活 (Activation)</span><br>
-                    <strong id="funnel-r1">40,000 用戶</strong>
+                    <strong id="funnel-r1">40,000 使用者</strong>
                 </div>
                 <div class="funnel-stage r2">
                     <span>📱 留存 (Retention)</span><br>
-                    <strong id="funnel-r2">12,000 用戶</strong>
+                    <strong id="funnel-r2">12,000 使用者</strong>
                 </div>
                 <div class="funnel-stage revenue">
                     <span>💰 收益 (Revenue)</span><br>
-                    <strong id="funnel-revenue">600 付費用戶</strong>
+                    <strong id="funnel-revenue">600 付費使用者</strong>
                 </div>
                 <div class="funnel-stage referral">
                     <span>👥 推薦 (Referral)</span><br>
@@ -642,22 +642,22 @@
             </div>
         </div>
 
-        <!-- Tab 4: 用戶故事產生器 -->
+        <!-- Tab 4: 使用者故事產生器 -->
         <div id="userstory" class="tab-content">
-            <h2 class="section-title">用戶故事產生器</h2>
+            <h2 class="section-title">使用者故事產生器</h2>
 
             <div class="info-box">
-                <strong>說明：</strong>填入用戶、功能、目標，自動生成標準用戶故事格式，幫助團隊理解需求。
+                <strong>說明：</strong>填入使用者、功能、目標，自動生成標準使用者故事格式，幫助團隊理解需求。
             </div>
 
             <div class="template-form">
                 <div class="form-group">
-                    <label>用戶角色 (User Role)</label>
-                    <input type="text" id="userRole" placeholder="例如：電商購物者、內容創作者、項目經理" value="電商購物者">
+                    <label>使用者角色 (User Role)</label>
+                    <input type="text" id="userRole" placeholder="例如：電商購物者、內容創作者、專案經理" value="電商購物者">
                 </div>
                 <div class="form-group">
                     <label>想要/需要的功能 (Feature/Capability)</label>
-                    <input type="text" id="featureWant" placeholder="例如：快速結帳、推薦算法、團隊協作" value="快速結帳流程">
+                    <input type="text" id="featureWant" placeholder="例如：快速結帳、推薦演算法、團隊協作" value="快速結帳流程">
                 </div>
                 <div class="form-group">
                     <label>目的/目標 (Goal/Benefit)</label>
@@ -672,28 +672,28 @@
                 </div>
 
                 <div class="button-group">
-                    <button class="btn btn-primary" onclick="generateUserStory()">生成用戶故事</button>
+                    <button class="btn btn-primary" onclick="generateUserStory()">生成使用者故事</button>
                     <button class="btn btn-secondary" onclick="resetUserStory()">重置</button>
                 </div>
             </div>
 
             <div id="storyOutput"></div>
 
-            <h3 style="margin-top: 30px;">常用用戶故事模板</h3>
+            <h3 style="margin-top: 30px;">常用使用者故事模板</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
-                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.3s; border-left: 4px solid #667eea;" onclick="applyTemplate('新用戶註冊', '新用戶', '快速註冊並完成首次設置', '完成初始化設置')">
-                    <strong>新用戶註冊</strong>
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.3s; border-left: 4px solid #667eea;" onclick="applyTemplate('新使用者註冊', '新使用者', '快速註冊並完成首次設置', '完成初始化設置')">
+                    <strong>新使用者註冊</strong>
                     <p style="font-size: 0.85em; color: #666; margin-top: 5px;">適用於入門體驗</p>
                 </div>
-                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.3s; border-left: 4px solid #667eea;" onclick="applyTemplate('付費轉化', '免費用戶', '升級到付費計劃', '解鎖進階功能')">
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.3s; border-left: 4px solid #667eea;" onclick="applyTemplate('付費轉化', '免費使用者', '升級到付費計劃', '解鎖進階功能')">
                     <strong>付費轉化</strong>
                     <p style="font-size: 0.85em; color: #666; margin-top: 5px;">適用於商業化</p>
                 </div>
-                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.3s; border-left: 4px solid #667eea;" onclick="applyTemplate('功能發現', '活躍用戶', '發現產品的高級功能', '更好地使用產品')">
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.3s; border-left: 4px solid #667eea;" onclick="applyTemplate('功能發現', '活躍使用者', '發現產品的高級功能', '更好地使用產品')">
                     <strong>功能發現</strong>
                     <p style="font-size: 0.85em; color: #666; margin-top: 5px;">適用於提升使用深度</p>
                 </div>
-                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.3s; border-left: 4px solid #667eea;" onclick="applyTemplate('流失預防', '即將流失用戶', '接收個性化激勵信息', '重新參與產品')">
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.3s; border-left: 4px solid #667eea;" onclick="applyTemplate('流失預防', '即將流失使用者', '接收個性化激勵資訊', '重新參與產品')">
                     <strong>流失預防</strong>
                     <p style="font-size: 0.85em; color: #666; margin-top: 5px;">適用於留存優化</p>
                 </div>
@@ -931,10 +931,10 @@
             const rev = Math.round(r2 * revenue / 100);
             const ref = Math.round(r2 * referral / 100);
 
-            document.getElementById('funnel-a').textContent = a.toLocaleString() + ' 用戶';
-            document.getElementById('funnel-r1').textContent = r1.toLocaleString() + ' 用戶';
-            document.getElementById('funnel-r2').textContent = r2.toLocaleString() + ' 用戶';
-            document.getElementById('funnel-revenue').textContent = rev.toLocaleString() + ' 付費用戶';
+            document.getElementById('funnel-a').textContent = a.toLocaleString() + ' 使用者';
+            document.getElementById('funnel-r1').textContent = r1.toLocaleString() + ' 使用者';
+            document.getElementById('funnel-r2').textContent = r2.toLocaleString() + ' 使用者';
+            document.getElementById('funnel-revenue').textContent = rev.toLocaleString() + ' 付費使用者';
             document.getElementById('funnel-referral').textContent = ref.toLocaleString() + ' 推薦者';
 
             const lrRatio = (r2 / initial * 100).toFixed(2);
@@ -944,7 +944,7 @@
             document.getElementById('breakeven').textContent = rev > 0 ? Math.round(12 / (rev / r2)) + '個月' : '無法計算';
         }
 
-        // ============= Tab 4: 用戶故事產生器 =============
+        // ============= Tab 4: 使用者故事產生器 =============
         function generateUserStory() {
             const role = document.getElementById('userRole').value.trim();
             const feature = document.getElementById('featureWant').value.trim();
@@ -968,7 +968,7 @@
 
             const output = document.getElementById('storyOutput');
             output.innerHTML = `
-                <h3 style="margin-top: 30px;">生成的用戶故事</h3>
+                <h3 style="margin-top: 30px;">生成的使用者故事</h3>
                 <div class="generated-story">${story}</div>
                 <button class="btn btn-secondary" onclick="copyToClipboard()" style="margin-top: 15px;">複製到剪貼板</button>
             `;
@@ -998,10 +998,10 @@
         // ============= Tab 5: 敏捷看板 =============
         const kanbanTasks = [
             { id: 1, name: '設計首頁UI', status: 'todo' },
-            { id: 2, name: '實現用戶認證', status: 'doing' },
+            { id: 2, name: '實現使用者認證', status: 'doing' },
             { id: 3, name: '優化搜尋功能', status: 'doing' },
             { id: 4, name: '修復登入bug', status: 'review' },
-            { id: 5, name: '撰寫API文檔', status: 'done' }
+            { id: 5, name: '撰寫API文件', status: 'done' }
         ];
 
         function renderKanban() {

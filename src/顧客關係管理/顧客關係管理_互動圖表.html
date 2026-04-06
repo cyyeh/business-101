@@ -266,7 +266,7 @@
                         <input type="number" id="clv-period" placeholder="例如：5" value="5">
                     </div>
                     <div class="form-group">
-                        <label>客戶獲取成本（元）</label>
+                        <label>客戶取得成本（元）</label>
                         <input type="number" id="clv-cac" placeholder="例如：200" value="200">
                     </div>
                     <div class="form-group">
@@ -349,7 +349,7 @@
                         <select id="crm-complexity">
                             <option value="simple" selected>簡單（基本銷售/客服）</option>
                             <option value="moderate">中等（跨部門協作）</option>
-                            <option value="complex">複雜（多行業、多渠道）</option>
+                            <option value="complex">複雜（多行業、多通路）</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -623,10 +623,10 @@
             let alternatives = '';
 
             const platforms = [
-                { name: 'Salesforce', score: score.salesforce, desc: '全球領導者，功能最全面，適合複雜業務需求', price: '月費$165-$330/用戶', color: '#667eea' },
+                { name: 'Salesforce', score: score.salesforce, desc: '全球領導者，功能最全面，適合複雜業務需求', price: '月費$165-$330/使用者', color: '#667eea' },
                 { name: 'HubSpot', score: score.hubspot, desc: '易用性最佳，All-in-one套件，適合中小企業', price: '月費$0-$1200（取決於套件）', color: '#ff6b6b' },
-                { name: 'Zoho CRM', score: score.zoho, desc: '性價比最高，功能紮實，適合預算有限企業', price: '月費$12-$45/用戶', color: '#51cf66' },
-                { name: 'Microsoft Dynamics 365', score: score.dynamics, desc: '與Office整合深，適合微軟生態用戶', price: '月費$65-$210/用戶', color: '#4a90e2' }
+                { name: 'Zoho CRM', score: score.zoho, desc: '性價比最高，功能紮實，適合預算有限企業', price: '月費$12-$45/使用者', color: '#51cf66' },
+                { name: 'Microsoft Dynamics 365', score: score.dynamics, desc: '與Office整合深，適合微軟生態使用者', price: '月費$65-$210/使用者', color: '#4a90e2' }
             ];
 
             // Sort by score

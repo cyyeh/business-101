@@ -567,7 +567,7 @@
                         <div class="card">
                             <div class="card-title">SaaS 例: Salesforce</div>
                             <div class="card-value">$1,200-5,000</div>
-                            <div class="card-desc">按用戶數計費</div>
+                            <div class="card-desc">按使用者數計費</div>
                         </div>
                     </div>
                 </div>
@@ -582,7 +582,7 @@
 
                     <div class="slider-group">
                         <div class="slider-label">
-                            <span>付費用戶數</span>
+                            <span>付費使用者數</span>
                             <span id="mrrUserValue">1,000</span>
                         </div>
                         <input type="range" min="100" max="10000" value="1000" step="100" oninput="updateMRR()">
@@ -633,7 +633,7 @@
 
                     <div class="slider-group">
                         <div class="slider-label">
-                            <span>客戶獲取成本 (CAC) ($)</span>
+                            <span>客戶取得成本 (CAC) ($)</span>
                             <span id="cacValue">1000</span>
                         </div>
                         <input type="range" min="100" max="10000" value="1000" step="100" oninput="updateCAC()">
@@ -666,14 +666,14 @@
             <!-- Tab 4: 平台經濟網路效應 -->
             <div id="network" class="tab-content">
                 <h2 class="section-title">平台經濟網路效應模擬</h2>
-                <p style="margin-bottom: 30px; color: #4a5568;">根據 Metcalfe 定律，網絡價值與用戶數平方成正比。觀察不同規模平台的相對價值：</p>
+                <p style="margin-bottom: 30px; color: #4a5568;">根據 Metcalfe 定律，網路價值與使用者數平方成正比。觀察不同規模平台的相對價值：</p>
 
                 <div class="chart-container">
-                    <div class="chart-title">用戶數與平台價值關係</div>
+                    <div class="chart-title">使用者數與平台價值關係</div>
 
                     <div class="slider-group">
                         <div class="slider-label">
-                            <span>平台 A 用戶數 (百萬)</span>
+                            <span>平台 A 使用者數 (百萬)</span>
                             <span id="networkUserAValue">10</span>
                         </div>
                         <input type="range" min="1" max="50" value="10" step="1" oninput="updateNetworkEffect()">
@@ -681,7 +681,7 @@
 
                     <div class="slider-group">
                         <div class="slider-label">
-                            <span>平台 B 用戶數 (百萬)</span>
+                            <span>平台 B 使用者數 (百萬)</span>
                             <span id="networkUserBValue">5</span>
                         </div>
                         <input type="range" min="1" max="50" value="5" step="1" oninput="updateNetworkEffect()">
@@ -718,7 +718,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>用戶基數</strong></td>
+                                <td><strong>使用者基數</strong></td>
                                 <td>30 億</td>
                                 <td>500 萬</td>
                             </tr>
@@ -809,7 +809,7 @@
                             2. 明確的商業目標(不是技術目標)<br>
                             3. 持續的人才投資與培養<br>
                             4. 試驗和快速迭代的文化<br>
-                            5. 激勵與績效對齐
+                            5. 激勵與績效對齊
                         </div>
                     </div>
                 </div>
@@ -849,7 +849,7 @@
                         <div class="timeline-dot"></div>
                         <div class="timeline-content">
                             <div class="timeline-year">第 4 步：有效傳達願景</div>
-                            <div class="timeline-text">通過多渠道、多次傳達。CEO 演講、部門會議、內部通訊、員工故事分享。重複傳達直到員工能背誦你的願景。</div>
+                            <div class="timeline-text">通過多通路、多次傳達。CEO 演講、部門會議、內部通訊、員工故事分享。重複傳達直到員工能背誦你的願景。</div>
                         </div>
                     </div>
 
@@ -873,7 +873,7 @@
                         <div class="timeline-dot"></div>
                         <div class="timeline-content">
                             <div class="timeline-year">第 7 步：鞏固成果並推動進一步變革</div>
-                            <div class="timeline-text">一旦初期項目成功，利用這一動力推進更深層的變革。避免自滿和退縮。重複第 1-6 步進行下一輪變革。</div>
+                            <div class="timeline-text">一旦初期專案成功，利用這一動力推進更深層的變革。避免自滿和退縮。重複第 1-6 步進行下一輪變革。</div>
                         </div>
                     </div>
 
@@ -931,7 +931,7 @@
                             <td><strong>工作時間</strong></td>
                             <td>固定工時(9-5)</td>
                             <td>靈活，自主選擇</td>
-                            <td>演算法實質管理</td>
+                            <td>演演算法實質管理</td>
                         </tr>
                         <tr>
                             <td><strong>工資</strong></td>
@@ -1156,7 +1156,7 @@
 
             const ratio = (valueA / valueB).toFixed(1);
             const resultText = document.getElementById('networkResultText');
-            resultText.textContent = `平台 A 的網路價值是平台 B 的 ${ratio} 倍。這展示了網路效應的威力——用戶數只多 2 倍，但平台價值卻多 ${ratio} 倍。這就是為什麼領先者很難被超越。`;
+            resultText.textContent = `平台 A 的網路價值是平台 B 的 ${ratio} 倍。這展示了網路效應的威力——使用者數只多 2 倍，但平台價值卻多 ${ratio} 倍。這就是為什麼領先者很難被超越。`;
         }
 
         // Initialize on load

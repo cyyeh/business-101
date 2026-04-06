@@ -424,33 +424,33 @@
             </div>
 
             <div class="tool-grid">
-                <div class="tool-card" onclick="selectTool('补贴')">
+                <div class="tool-card" onclick="selectTool('補貼')">
                     <h3>補貼</h3>
                     <p>政府直接向企業或產業提供財政資助</p>
                 </div>
-                <div class="tool-card" onclick="selectTool('税收')">
+                <div class="tool-card" onclick="selectTool('稅收')">
                     <h3>稅收優惠</h3>
                     <p>企業所得稅減免、研發稅收抵免等</p>
                 </div>
-                <div class="tool-card" onclick="selectTool('关税')">
+                <div class="tool-card" onclick="selectTool('關稅')">
                     <h3>關稅與貿易政策</h3>
                     <p>進口關稅、出口優惠、保護措施</p>
                 </div>
-                <div class="tool-card" onclick="selectTool('法规')">
+                <div class="tool-card" onclick="selectTool('法規')">
                     <h3>法規標準</h3>
                     <p>技術標準、環保規範、安全要求</p>
                 </div>
-                <div class="tool-card" onclick="selectTool('采购')">
+                <div class="tool-card" onclick="selectTool('採購')">
                     <h3>政府採購</h3>
                     <p>優先採購本地企業產品與服務</p>
                 </div>
-                <div class="tool-card" onclick="selectTool('研发')">
+                <div class="tool-card" onclick="selectTool('研發')">
                     <h3>研發投資</h3>
                     <p>政府直接資助企業或機構研發</p>
                 </div>
             </div>
 
-            <!-- 詳細信息 -->
+            <!-- 詳細資訊 -->
             <div id="toolDetails" class="tool-details"></div>
         </div>
 
@@ -610,7 +610,7 @@
                         <div class="timeline-year">2016-2020</div>
                         <div class="timeline-title">「5+2產業創新計畫」與AI時代</div>
                         <div class="timeline-description">
-                            政府推出「亞洲矽谷」、「智慧機械」、「綠色能源」等重點計畫。人工智能、IC設計、晶片製造成為新焦點。英特爾、微軟等國際企業在台灣設置研發中心。
+                            政府推出「亞洲矽谷」、「智慧機械」、「綠色能源」等重點計畫。人工智慧、IC設計、晶片製造成為新焦點。英特爾、微軟等國際企業在台灣設置研發中心。
                         </div>
                     </div>
                 </div>
@@ -647,16 +647,16 @@
             event.target.classList.add('active');
         }
 
-        // 產業政策工具詳細信息
+        // 產業政策工具詳細資訊
         const toolData = {
-            '补贴': {
+            '補貼': {
                 description: '政府直接向企業或產業提供財政資助',
-                优势: [
+                優勢: [
                     '政策效果直接且快速',
                     '目標明確，易於調整',
                     '適合新興產業起步階段'
                 ],
-                缺点: [
+                缺點: [
                     '長期成本高，財政負擔重',
                     '易引發尋租行為與腐敗',
                     '容易導致市場扭曲'
@@ -668,16 +668,16 @@
                 ],
                 效率: 75,
                 公平性: 50,
-                可持续性: 55
+                可持續性: 55
             },
-            '税收': {
+            '稅收': {
                 description: '企業所得稅減免、研發稅收抵免、出口退稅等',
-                优势: [
+                優勢: [
                     '行政成本低',
                     '相對隱蔽，易獲得企業支持',
                     '鼓勵投資與創新'
                 ],
-                缺点: [
+                缺點: [
                     '長期財政影響難以評估',
                     '可能被大企業濫用',
                     '易引發稅收競爭'
@@ -689,16 +689,16 @@
                 ],
                 效率: 70,
                 公平性: 55,
-                可持续性: 65
+                可持續性: 65
             },
-            '关税': {
+            '關稅': {
                 description: '進口關稅、反傾銷稅、出口優惠等貿易工具',
-                优势: [
+                優勢: [
                     '保護本地產業與就業',
                     '政府收入增加',
                     '易於實施與監控'
                 ],
-                缺点: [
+                缺點: [
                     '易引發國際貿易爭端',
                     '提高消費品價格',
                     '損害下游產業競爭力'
@@ -710,16 +710,16 @@
                 ],
                 效率: 60,
                 公平性: 45,
-                可持续性: 40
+                可持續性: 40
             },
-            '法规': {
+            '法規': {
                 description: '技術標準、環保規範、安全要求等監管工具',
-                优势: [
+                優勢: [
                     '正當化（保護公眾利益名義）',
                     '可同時實現多個政策目標',
                     '相對隱蔽的保護措施'
                 ],
-                缺点: [
+                缺點: [
                     '易被濫用為貿易保護主義',
                     '合規成本可能很高',
                     '國際爭議風險'
@@ -731,16 +731,16 @@
                 ],
                 效率: 65,
                 公平性: 70,
-                可持续性: 75
+                可持續性: 75
             },
-            '采购': {
+            '採購': {
                 description: '優先採購本地企業產品，設置本地內容要求',
-                优势: [
+                優勢: [
                     '直接刺激本地產業需求',
                     '有助於建立供應鏈',
                     '易於測量與評估'
                 ],
-                缺点: [
+                缺點: [
                     '易提高政府成本',
                     '可能降低採購效率',
                     '有違反自由貿易協議的風險'
@@ -752,16 +752,16 @@
                 ],
                 效率: 72,
                 公平性: 60,
-                可持续性: 70
+                可持續性: 70
             },
-            '研发': {
-                description: '政府直接投資企業或機構研發項目',
-                优势: [
+            '研發': {
+                description: '政府直接投資企業或機構研發專案',
+                優勢: [
                     '降低企業研發風險',
                     '補充市場資金不足',
                     '適合高風險產業（航太、生科）'
                 ],
-                缺点: [
+                缺點: [
                     '易引發道德風險（過度依賴政府)',
                     '成果商業化困難',
                     '長期回報不確定'
@@ -773,7 +773,7 @@
                 ],
                 效率: 68,
                 公平性: 65,
-                可持续性: 68
+                可持續性: 68
             }
         };
 
@@ -783,7 +783,7 @@
             cards.forEach(card => card.classList.remove('selected'));
             event.target.closest('.tool-card').classList.add('selected');
 
-            // 更新詳細信息
+            // 更新詳細資訊
             const data = toolData[toolName];
             const detailsDiv = document.getElementById('toolDetails');
 
@@ -796,14 +796,14 @@
                 <div class="detail-section">
                     <h4>主要優勢</h4>
                     <ul>
-                        ${data.优势.map(item => `<li>${item}</li>`).join('')}
+                        ${data.優勢.map(item => `<li>${item}</li>`).join('')}
                     </ul>
                 </div>
 
                 <div class="detail-section">
                     <h4>主要缺點</h4>
                     <ul>
-                        ${data.缺点.map(item => `<li>${item}</li>`).join('')}
+                        ${data.缺點.map(item => `<li>${item}</li>`).join('')}
                     </ul>
                 </div>
 
@@ -831,7 +831,7 @@
                     <div class="rating">
                         <span class="rating-label">可持續性</span>
                         <div class="rating-bar">
-                            <div class="rating-fill" style="width: ${data.可持续性}%">${data.可持续性}%</div>
+                            <div class="rating-fill" style="width: ${data.可持續性}%">${data.可持續性}%</div>
                         </div>
                     </div>
                 </div>
@@ -840,7 +840,7 @@
             detailsDiv.innerHTML = html;
             detailsDiv.classList.add('active');
 
-            // 捲動到詳細信息
+            // 捲動到詳細資訊
             setTimeout(() => {
                 detailsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
@@ -848,8 +848,8 @@
 
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 默認選擇第一個工具
-            selectTool('补贴');
+            // 預設選擇第一個工具
+            selectTool('補貼');
         });
     </script>
 </body>
