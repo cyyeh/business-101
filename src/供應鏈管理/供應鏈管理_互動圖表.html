@@ -532,7 +532,7 @@
         <!-- Tab 3: 安全庫存計算 -->
         <div id="safety-stock" class="tab-content">
             <h2>安全庫存計算器</h2>
-            <p style="margin: 20px 0; color: #666;">計算在不同服務水平下需要保持的安全庫存量</p>
+            <p style="margin: 20px 0; color: #666;">計算在不同服務水準下需要保持的安全庫存量</p>
 
             <div class="input-row">
                 <div class="control-group">
@@ -553,7 +553,7 @@
             </div>
 
             <div class="control-group">
-                <label>🎯 目標服務水平</label>
+                <label>🎯 目標服務水準</label>
                 <select id="serviceLevel" onchange="updateServiceLevel()">
                     <option value="90">90% - 保守（允許10%缺貨風險）</option>
                     <option value="95" selected>95% - 標準（允許5%缺貨風險）</option>
@@ -571,7 +571,7 @@
 
                     <div class="formula-box">
                         <strong>公式：</strong> 安全庫存 = Z × σ × √L<br>
-                        <strong>說明：</strong> Z(服務水平) × 日需求標準差 × 根號(提前期天數)
+                        <strong>說明：</strong> Z(服務水準) × 日需求標準差 × 根號(提前期天數)
                     </div>
 
                     <div class="result-row">
@@ -606,7 +606,7 @@
                 </div>
 
                 <div class="chart-container">
-                    <h4>不同服務水平的成本比較</h4>
+                    <h4>不同服務水準的成本比較</h4>
                     <svg viewBox="0 0 800 350" id="costComparisonChart" style="border: 1px solid #ddd; border-radius: 8px;"></svg>
                 </div>
 
@@ -996,13 +996,13 @@
 
             // 提供建議
             if (serviceLevel === '90') {
-                document.getElementById('serviceAdvice').textContent = '該服務水平適合成本敏感型產品，允許偶爾缺貨。風險：消費者流失。';
+                document.getElementById('serviceAdvice').textContent = '該服務水準適合成本敏感型產品，允許偶爾缺貨。風險：消費者流失。';
             } else if (serviceLevel === '95') {
-                document.getElementById('serviceAdvice').textContent = '該服務水平是多數企業的標準選擇，在成本與服務間達到較好平衡。';
+                document.getElementById('serviceAdvice').textContent = '該服務水準是多數企業的標準選擇，在成本與服務間達到較好平衡。';
             } else if (serviceLevel === '97.5') {
-                document.getElementById('serviceAdvice').textContent = '該服務水平適合高價值產品或重要客戶，庫存成本較高但服務優秀。';
+                document.getElementById('serviceAdvice').textContent = '該服務水準適合高價值產品或重要客戶，庫存成本較高但服務優秀。';
             } else {
-                document.getElementById('serviceAdvice').textContent = '該服務水平適合關鍵物料或生命攸關產品，要求近乎零缺貨。庫存成本最高。';
+                document.getElementById('serviceAdvice').textContent = '該服務水準適合關鍵物料或生命攸關產品，要求近乎零缺貨。庫存成本最高。';
             }
 
             // 繪製成本對比圖
