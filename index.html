@@ -992,7 +992,7 @@
       const el = document.getElementById('roadmap-content');
       if (!el) return;
       try {
-        const res = await fetch(encodeURI('學習路線圖.md'));
+        const res = await fetch(encodeURI('src/學習路線圖.md'));
         if (!res.ok) throw new Error(res.status);
         const md = await res.text();
         el.className = 'content-box';
@@ -1024,7 +1024,7 @@
       const el = document.getElementById('glossary-content');
       if (!el) return;
       try {
-        const res = await fetch(encodeURI('術語總表.md'));
+        const res = await fetch(encodeURI('src/術語總表.md'));
         if (!res.ok) throw new Error(res.status);
         const md = await res.text();
         el.className = 'content-box';
@@ -1189,7 +1189,7 @@
       try {
         const [readmeRes, glossaryRes] = await Promise.all([
           fetch('README.md'),
-          fetch(encodeURI('術語總表.md'))
+          fetch(encodeURI('src/術語總表.md'))
         ]);
         const md = await readmeRes.text();
         const parsed = parseReadme(md);
