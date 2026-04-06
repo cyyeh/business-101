@@ -366,12 +366,12 @@
             </div>
 
             <div class="chart-container">
-                <h3>供應鏈信息流與資金流</h3>
+                <h3>供應鏈資訊流與資金流</h3>
                 <svg viewBox="0 0 800 400" style="border: 1px solid #ddd; border-radius: 8px;">
                     <!-- 主流程 -->
                     <line x1="50" y1="100" x2="750" y2="100" stroke="#667eea" stroke-width="3" marker-end="url(#arrowhead)"/>
 
-                    <!-- 信息流回程 -->
+                    <!-- 資訊流回程 -->
                     <line x1="750" y1="200" x2="50" y2="200" stroke="#764ba2" stroke-width="3" marker-end="url(#arrowhead-reverse)" stroke-dasharray="5,5"/>
 
                     <!-- 資金流 -->
@@ -379,7 +379,7 @@
 
                     <!-- 標籤 -->
                     <text x="400" y="85" text-anchor="middle" font-size="14" font-weight="600" fill="#667eea">物流流（產品與原料）</text>
-                    <text x="400" y="215" text-anchor="middle" font-size="14" font-weight="600" fill="#764ba2">信息流（訂單、預測、庫存）</text>
+                    <text x="400" y="215" text-anchor="middle" font-size="14" font-weight="600" fill="#764ba2">資訊流（訂單、預測、庫存）</text>
                     <text x="400" y="315" text-anchor="middle" font-size="14" font-weight="600" fill="#ff6b6b">資金流（付款、發票、融資）</text>
 
                     <!-- 節點 -->
@@ -432,14 +432,14 @@
             </div>
 
             <div class="info-box">
-                💡 <strong>關鍵概念：</strong>供應鏈的三大流——物流（產品）、信息流（數據）、資金流（金錢）必須協調一致，才能實現高效運作。
+                💡 <strong>關鍵概念：</strong>供應鏈的三大流——物流（產品）、資訊流（數據）、資金流（金錢）必須協調一致，才能實現高效運作。
             </div>
         </div>
 
         <!-- Tab 2: 長鞭效應模擬 -->
         <div id="bullwhip" class="tab-content">
             <h2>長鞭效應模擬器</h2>
-            <p style="margin: 20px 0; color: #666;">模擬供應鏈中信息失真如何導致波動放大</p>
+            <p style="margin: 20px 0; color: #666;">模擬供應鏈中資訊失真如何導致波動放大</p>
 
             <div class="control-group">
                 <label>📊 消費者實際月銷量（基線）</label>
@@ -520,7 +520,7 @@
             <div class="info-box" style="margin-top: 20px;">
                 💡 <strong>應對長鞭效應的方案：</strong><br>
                 <ul style="margin-left: 20px; margin-top: 10px;">
-                    <li>✓ 信息共享：上游直接看POS銷售數據</li>
+                    <li>✓ 資訊共享：上游直接看POS銷售數據</li>
                     <li>✓ 供應商管理庫存（VMI）</li>
                     <li>✓ 減少訂購批量，增加訂購頻率</li>
                     <li>✓ 穩定定價，減少臨時折扣</li>
@@ -662,7 +662,7 @@
 
                     <table class="decision-matrix" style="width: 100%; margin-top: 15px;">
                         <tr>
-                            <th>成本項目</th>
+                            <th>成本專案</th>
                             <th>內製方案</th>
                             <th>外包方案</th>
                             <th>差異</th>
@@ -698,10 +698,10 @@
                     <div class="info-box" style="margin-top: 20px;">
                         💡 <strong>定性因素考慮：</strong><br>
                         <ul style="margin-left: 20px; margin-top: 10px;">
-                            <li><strong>內製優勢：</strong>知識產權保護、品質控制、靈活性、成本透明</li>
+                            <li><strong>內製優勢：</strong>智慧財產權保護、品質控制、靈活性、成本透明</li>
                             <li><strong>內製劣勢：</strong>資本投資大、技術升級成本高、產能固定</li>
                             <li><strong>外包優勢：</strong>降低固定成本、聚焦核心業務、規模經濟</li>
-                            <li><strong>外包劣勢：</strong>失去控制力、供應商依賴、知識產權風險</li>
+                            <li><strong>外包劣勢：</strong>失去控制力、供應商依賴、智慧財產權風險</li>
                         </ul>
                     </div>
                 </div>
@@ -728,7 +728,7 @@
                 <input type="range" id="inventory" min="1" max="10" value="5" oninput="updateResilienceScore()">
                 <small>零庫存(1分) → 90天安全庫存(10分)</small>
 
-                <label style="margin-top: 15px;">4️⃣ 信息系統透明度</label>
+                <label style="margin-top: 15px;">4️⃣ 資訊系統透明度</label>
                 <input type="range" id="visibility" min="1" max="10" value="5" oninput="updateResilienceScore()">
                 <small>無可見性(1分) → 實時端對端追蹤(10分)</small>
 
@@ -1201,7 +1201,7 @@
         }
 
         function generateRecommendations(scores) {
-            const labels = ['地理分散度', '供應商多樣化', '庫存緩衝', '信息透明度', '應急預案', '供應商健康', '配送靈活性', '技術創新'];
+            const labels = ['地理分散度', '供應商多樣化', '庫存緩衝', '資訊透明度', '應急預案', '供應商健康', '配送靈活性', '技術創新'];
             const recommendations = document.getElementById('recommendations');
             recommendations.innerHTML = '';
 
@@ -1214,7 +1214,7 @@
                     '建立全球供應商網路，減少地理集中度',
                     '尋找替代供應商，建立多源採購',
                     '增加戰略庫存，確保30-90天安全儲備',
-                    '投資信息系統，實現端對端可見性',
+                    '投資資訊系統，實現端對端可見性',
                     '制定供應中斷應急預案，定期演練',
                     '對供應商進行財務評估，識別風險',
                     '建立多運輸路線，避免單點故障',
@@ -1234,7 +1234,7 @@
 
         function drawResilienceRadar(scores) {
             const canvas = document.getElementById('resilienceRadar');
-            const labels = ['地理分散', '供應商多樣', '庫存緩衝', '信息透明', '應急預案', '供應商健康', '配送靈活', '技術創新'];
+            const labels = ['地理分散', '供應商多樣', '庫存緩衝', '資訊透明', '應急預案', '供應商健康', '配送靈活', '技術創新'];
             const dimensions = scores.length;
 
             let svg = `<svg width="800" height="400" style="background: white; border-radius: 8px;">`;

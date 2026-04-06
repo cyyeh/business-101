@@ -505,7 +505,7 @@
                         <input type="radio" name="industry" value="retail"> 零售/服務業
                     </div>
                     <div class="radio-group">
-                        <input type="radio" name="industry" value="tech"> 科技/軟件
+                        <input type="radio" name="industry" value="tech"> 科技/軟體
                     </div>
                     <div class="radio-group">
                         <input type="radio" name="industry" value="finance"> 金融服務
@@ -524,7 +524,7 @@
                         <input type="checkbox" id="employees"> 員工 (&gt;500人)
                     </div>
                     <div class="radio-group">
-                        <input type="checkbox" id="data"> 敏感數據/客戶信息
+                        <input type="checkbox" id="data"> 敏感數據/客戶資訊
                     </div>
                     <div class="radio-group">
                         <input type="checkbox" id="highvalue"> 高價值產品/服務
@@ -559,7 +559,7 @@
             <div id="bcp" class="tab-content">
                 <h2 class="section-title">業務持續計畫 (BCP) 規劃清單</h2>
                 <div class="info-box">
-                    <strong>說明：</strong> 檢查以下 BCP 要素是否已建立。勾選完成的項目。
+                    <strong>說明：</strong> 檢查以下 BCP 要素是否已建立。勾選完成的專案。
                 </div>
 
                 <div style="margin: 20px 0;">
@@ -631,7 +631,7 @@
                         </li>
                         <li class="checklist-item">
                             <input type="checkbox">
-                            定期更新聯絡信息
+                            定期更新聯絡資訊
                         </li>
                     </ul>
                 </div>
@@ -692,7 +692,7 @@
 
                 <div id="bcpResult" class="result-box" style="display: none; margin-top: 20px;">
                     <div class="result-item">
-                        <span class="result-label">完成項目數：</span>
+                        <span class="result-label">完成專案數：</span>
                         <span id="bcpCompleted"></span> 項 / 23 項
                     </div>
                     <div class="result-item">
@@ -909,7 +909,7 @@
             }
 
             if (data) {
-                insuranceList.push('網絡責任保險 (數據洩露保護)');
+                insuranceList.push('網路責任保險 (數據洩露保護)');
                 estimatedCost += revenue * 0.008;
             }
 
@@ -943,7 +943,7 @@
             if (percentage >= 80) {
                 evaluation = '優秀！BCP 準備充分，可以應對大多數風險情景。';
             } else if (percentage >= 60) {
-                evaluation = '良好。建議補充關鍵缺失項目，特別是測試和演練。';
+                evaluation = '良好。建議補充關鍵缺失專案，特別是測試和演練。';
             } else if (percentage >= 40) {
                 evaluation = '需要改進。建議優先建立基本 BCP 要素。';
             } else {

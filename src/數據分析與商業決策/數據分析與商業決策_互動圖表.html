@@ -576,7 +576,7 @@
                     </div>
 
                     <div class="kpi-card cost">
-                        <div class="kpi-label">客戶獲取成本</div>
+                        <div class="kpi-label">客戶取得成本</div>
                         <div class="kpi-value">¥58.5</div>
                         <div class="kpi-change negative">↓ 4.2% 相比上月</div>
                     </div>
@@ -598,9 +598,9 @@
                     <h3 style="color: #667eea; margin-bottom: 15px;">KPI 解讀指南</h3>
                     <ul style="color: #4a5568; line-height: 1.8;">
                         <li><strong>月均營收：</strong>反映平台整體業務健康度，增長代表市場擴張</li>
-                        <li><strong>轉化率：</strong>用戶從訪問到購買的比例，代表營銷效率</li>
+                        <li><strong>轉化率：</strong>使用者從訪問到購買的比例，代表營銷效率</li>
                         <li><strong>30日留存率：</strong>回頭客比例，代表產品粘性</li>
-                        <li><strong>客戶獲取成本：</strong>為獲得一個新客戶的花費，越低越好</li>
+                        <li><strong>客戶取得成本：</strong>為獲得一個新客戶的花費，越低越好</li>
                         <li><strong>平均訂單金額：</strong>單次交易的金額，代表銷售能力</li>
                         <li><strong>客戶終身價值：</strong>一個客戶未來能貢獻的總利潤，決定獲客預算</li>
                     </ul>
@@ -734,7 +734,7 @@
 
                 <div class="info-box">
                     <strong>說明：</strong>
-                    漏斗分析追蹤用戶在多步驟轉化過程中的進展。以下是一個典型的電商轉化漏斗。
+                    漏斗分析追蹤使用者在多步驟轉化過程中的進展。以下是一個典型的電商轉化漏斗。
                 </div>
 
                 <div class="funnel-diagram">
@@ -770,19 +770,19 @@
                     <div style="color: #4a5568; line-height: 1.8;">
                         <div style="margin-bottom: 15px;">
                             <strong style="color: #2d3748;">階段 1 → 2：流失 1,500 人 (15%)</strong>
-                            <p style="margin: 5px 0;">問題診斷：訪客到瀏覽商品的跳失率較高。可能原因：首頁設計不清晰、商品推薦不精準、用戶體驗障礙。</p>
+                            <p style="margin: 5px 0;">問題診斷：訪客到瀏覽商品的跳失率較高。可能原因：首頁設計不清晰、商品推薦不精準、使用者體驗障礙。</p>
                             <p style="margin: 5px 0;">優化建議：改進網站導航、優化商品分類、加強首頁推薦。</p>
                         </div>
 
                         <div style="margin-bottom: 15px;">
                             <strong style="color: #2d3748;">階段 2 → 3：流失 2,550 人 (30%)</strong>
-                            <p style="margin: 5px 0;">問題診斷：這是最大的跳失點。訪客願意看商品，但不願加購物車。可能原因：價格過高、擔心購買安全、對商品信息不足。</p>
-                            <p style="margin: 5px 0;">優化建議：提供優惠、優化商品詳情頁、增加用戶評論和保障說明。</p>
+                            <p style="margin: 5px 0;">問題診斷：這是最大的跳失點。訪客願意看商品，但不願加購物車。可能原因：價格過高、擔心購買安全、對商品資訊不足。</p>
+                            <p style="margin: 5px 0;">優化建議：提供優惠、優化商品詳情頁、增加使用者評論和保障說明。</p>
                         </div>
 
                         <div>
                             <strong style="color: #2d3748;">階段 3 → 5：流失 4,760 人 (80%)</strong>
-                            <p style="margin: 5px 0;">問題診斷：購物車放棄率高。可能原因：結帳流程複雜、出現隱藏費用、支付方式有限、擔心信息安全。</p>
+                            <p style="margin: 5px 0;">問題診斷：購物車放棄率高。可能原因：結帳流程複雜、出現隱藏費用、支付方式有限、擔心資訊安全。</p>
                             <p style="margin: 5px 0;">優化建議：簡化結帳步驟、提前展示總價、增加多種支付方式、加強安全保證。</p>
                         </div>
                     </div>
@@ -933,7 +933,7 @@
 
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                             <div>
-                                <label style="display: block; margin-bottom: 8px; color: #2d3748; font-weight: 600;">資產價值（年營收或關鍵數據庫估值）</label>
+                                <label style="display: block; margin-bottom: 8px; color: #2d3748; font-weight: 600;">資產價值（年營收或關鍵資料庫估值）</label>
                                 <input type="number" id="assetValue" placeholder="例如: 50000000" value="50000000" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.95em;">
                                 <small style="color: #718096;">（單位：元）</small>
                             </div>
@@ -1098,7 +1098,7 @@
             // 簡化的 RFM 分類邏輯
             if (recency <= 30 && frequency >= 8 && monetary >= 2000) {
                 segment = '⭐ VIP 客戶';
-                recommendation = '<strong>策略：</strong>重點維護<br>• 提供專屬優惠和提前新品通知<br>• 定期主動溝通瞭解需求<br>• 建立高端會員計劃';
+                recommendation = '<strong>策略：</strong>重點維護<br>• 提供專屬優惠和提前新品通知<br>• 定期主動溝通瞭解需求<br>• 建立高階會員計劃';
             } else if (frequency >= 5 || monetary >= 1500) {
                 segment = '📈 高價值客戶';
                 recommendation = '<strong>策略：</strong>深度挖掘<br>• 推薦高價產品和組合方案<br>• 提供升級銷售機會<br>• 邀請參加品牌活動';
@@ -1154,17 +1154,17 @@
                 },
                 line: {
                     title: '折線圖',
-                    usage: '展示時間序列數據的趨勢變化，例如月度銷售趨勢、用戶增長曲線、股價走勢等。特別適合監控業務關鍵指標的變化。',
+                    usage: '展示時間序列數據的趨勢變化，例如月度銷售趨勢、使用者增長曲線、股價走勢等。特別適合監控業務關鍵指標的變化。',
                     pros: '✅ 清晰展示趨勢<br>✅ 支持多條線對比<br>✅ 便於識別異常與峰值<br><br>❌ 大量類別時會過於雜亂<br>❌ 需要足夠密度的數據點'
                 },
                 scatter: {
                     title: '散點圖',
-                    usage: '展示兩個連續變數之間的相關性，例如廣告費與銷售額的關係、用戶活躍度與留存率的關係等。可識別異常值和線性關係。',
+                    usage: '展示兩個連續變數之間的相關性，例如廣告費與銷售額的關係、使用者活躍度與留存率的關係等。可識別異常值和線性關係。',
                     pros: '✅ 清楚展示相關性<br>✅ 易於識別異常值<br>✅ 支持氣泡大小表示第三維度<br><br>❌ 數據點太多時會重疊<br>❌ 不適合分類數據'
                 },
                 heatmap: {
                     title: '熱力圖',
-                    usage: '展示矩陣數據的強度分佈，例如用戶在不同時段、不同渠道的活躍度，或地理數據的分佈。通過顏色深淺表示數值大小。',
+                    usage: '展示矩陣數據的強度分佈，例如使用者在不同時段、不同通路的活躍度，或地理數據的分佈。通過顏色深淺表示數值大小。',
                     pros: '✅ 快速識別高值區域<br>✅ 適合大量矩陣數據<br>✅ 視覺效果突出<br><br>❌ 需要色盲友善設計<br>❌ 精確數值讀取困難'
                 },
                 stacked: {
@@ -1174,7 +1174,7 @@
                 },
                 pie: {
                     title: '圓餅圖',
-                    usage: '展示占比分佈，例如收入的渠道比例、市場份額分佈。常用但需謹慎（人眼難以準確判斷圓心角）。',
+                    usage: '展示占比分佈，例如收入的通路比例、市場份額分佈。常用但需謹慎（人眼難以準確判斷圓心角）。',
                     pros: '✅ 直觀展示比例<br>✅ 易於業務人士理解<br><br>❌ 難以精準比較大小<br>❌ 超過 5 個分類效果差<br>❌ 比較多個圓餅時困難'
                 }
             };

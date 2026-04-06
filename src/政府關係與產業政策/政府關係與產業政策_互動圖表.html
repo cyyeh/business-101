@@ -450,7 +450,7 @@
                 </div>
             </div>
 
-            <!-- 詳細信息 -->
+            <!-- 詳細資訊 -->
             <div id="toolDetails" class="tool-details"></div>
         </div>
 
@@ -610,7 +610,7 @@
                         <div class="timeline-year">2016-2020</div>
                         <div class="timeline-title">「5+2產業創新計畫」與AI時代</div>
                         <div class="timeline-description">
-                            政府推出「亞洲矽谷」、「智慧機械」、「綠色能源」等重點計畫。人工智能、IC設計、晶片製造成為新焦點。英特爾、微軟等國際企業在台灣設置研發中心。
+                            政府推出「亞洲矽谷」、「智慧機械」、「綠色能源」等重點計畫。人工智慧、IC設計、晶片製造成為新焦點。英特爾、微軟等國際企業在台灣設置研發中心。
                         </div>
                     </div>
                 </div>
@@ -647,7 +647,7 @@
             event.target.classList.add('active');
         }
 
-        // 產業政策工具詳細信息
+        // 產業政策工具詳細資訊
         const toolData = {
             '補貼': {
                 description: '政府直接向企業或產業提供財政資助',
@@ -755,7 +755,7 @@
                 可持續性: 70
             },
             '研發': {
-                description: '政府直接投資企業或機構研發項目',
+                description: '政府直接投資企業或機構研發專案',
                 優勢: [
                     '降低企業研發風險',
                     '補充市場資金不足',
@@ -783,7 +783,7 @@
             cards.forEach(card => card.classList.remove('selected'));
             event.target.closest('.tool-card').classList.add('selected');
 
-            // 更新詳細信息
+            // 更新詳細資訊
             const data = toolData[toolName];
             const detailsDiv = document.getElementById('toolDetails');
 
@@ -840,7 +840,7 @@
             detailsDiv.innerHTML = html;
             detailsDiv.classList.add('active');
 
-            // 捲動到詳細信息
+            // 捲動到詳細資訊
             setTimeout(() => {
                 detailsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
@@ -848,7 +848,7 @@
 
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 默認選擇第一個工具
+            // 預設選擇第一個工具
             selectTool('補貼');
         });
     </script>

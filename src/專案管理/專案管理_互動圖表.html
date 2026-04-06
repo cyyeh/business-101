@@ -418,7 +418,7 @@
         <!-- Tab 1: 甘特圖建構器 -->
         <div class="tab-content active">
             <h2 class="section-title">甘特圖建構器</h2>
-            <p>輸入任務信息，自動生成專業甘特圖</p>
+            <p>輸入任務資訊，自動生成專業甘特圖</p>
 
             <div class="input-group">
                 <label>任務名稱</label>
@@ -859,7 +859,7 @@
             const result = document.getElementById('cpmResult');
             result.innerHTML = `
                 <h3>計算結果</h3>
-                <p><strong>項目最短完成時間：</strong> ${projectEnd} 天</p>
+                <p><strong>專案最短完成時間：</strong> ${projectEnd} 天</p>
                 <p><strong>關鍵路徑：</strong> ${criticalPath}</p>
                 <p><strong>總成本：</strong> ${cpmActivities.reduce((sum, a) => sum + a.cost, 0)} 萬元</p>
             `;
@@ -935,7 +935,7 @@
                         <td>${scheduleVariance} 個月</td>
                     </tr>
                     <tr>
-                        <td><strong>項目狀態</strong></td>
+                        <td><strong>專案狀態</strong></td>
                         <td style="font-weight: bold; color: ${spi < 0.9 || cpi < 0.9 ? '#ff6b6b' : '#51cf66'}">
                             ${spi < 0.9 || cpi < 0.9 ? '⚠️ 需要關注' : '✓ 正常'}
                         </td>
