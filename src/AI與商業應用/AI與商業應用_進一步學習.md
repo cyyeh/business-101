@@ -23,7 +23,7 @@
 - 難度：進階
 
 **《AI新世界》(李開復著中文版)**
-- 李開復的另一部力作，結閤中文市場的視角深入AI商業應用。
+- 李開復的另一部力作，結合中文市場的視角深入AI商業應用。
 - 難度：進階
 
 **[《深度學習》Deep Learning (Goodfellow, Bengio & Courville)](https://www.deeplearningbook.org/)**
@@ -85,7 +85,7 @@
 - 用美妙的視覺化解釋神經網絡和深度學習的核心概念。
 
 **[Two Minute Papers](https://www.youtube.com/@TwoMinutePapers)**
-- 快速介紹最新的AI研究論文，適合瞭解業界最前沿進展。
+- 快速介紹最新的AI研究論文，適合了解業界最前沿進展。
 
 **[Andrej Karpathy](https://www.youtube.com/@AndrejKarpathy)**
 - 特斯拉AI負責人的講座和演講，涵蓋深度學習和實務應用。
@@ -103,7 +103,7 @@
 
 ## 學習建議
 
-學習AI的關鍵是「做中學」。不要只停留在理論——選擇一個實際問題，用Python、TensorFlow或PyTorch等工具實際構建模型。Kaggle是一個很好的平臺，你可以參與數據競賽、學習他人的解決方案、建立作品集。
+學習AI的關鍵是「做中學」。不要只停留在理論——選擇一個實際問題，用Python、TensorFlow或PyTorch等工具實際構建模型。Kaggle是一個很好的平台，你可以參與數據競賽、學習他人的解決方案、建立作品集。
 
 同時，理解AI的商業應用比掌握複雜演算法更關鍵。問自己：我的組織或產業中哪些問題可以用機器學習解決？數據從何而來？投資回報率如何評估？這些問題將引導你走向實際的價值創造。
 

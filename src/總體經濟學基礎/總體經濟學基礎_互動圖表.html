@@ -589,7 +589,7 @@
 
         <div class="tabs-container">
             <button class="tab-button active" onclick="switchTab(event, 'tab1')">景氣循環圖</button>
-            <button class="tab-button" onclick="switchTab(event, 'tab2')">經濟指標儀錶板</button>
+            <button class="tab-button" onclick="switchTab(event, 'tab2')">經濟指標儀表板</button>
             <button class="tab-button" onclick="switchTab(event, 'tab3')">貨幣政策 vs 財政政策</button>
             <button class="tab-button" onclick="switchTab(event, 'tab4')">匯率與國際貿易</button>
         </div>
@@ -647,11 +647,11 @@
                         <div class="info-grid" id="phaseDetails">
                             <div class="info-item">
                                 <h4>📌 簡介</h4>
-                                <p>景氣循環描述了經濟在擴張和衰退之間的週期性波動。這四個階段反映了經濟活動的自然變化。</p>
+                                <p>景氣循環描述了經濟在擴張和衰退之間的周期性波動。這四個階段反映了經濟活動的自然變化。</p>
                             </div>
                             <div class="info-item">
                                 <h4>💡 核心特點</h4>
-                                <p>每個階段都有不同的經濟特徵、政策應對和投資機會。瞭解這些幫助預測經濟走勢。</p>
+                                <p>每個階段都有不同的經濟特徵、政策應對和投資機會。了解這些幫助預測經濟走勢。</p>
                             </div>
                         </div>
                     </div>
@@ -711,7 +711,7 @@
 
                     <!-- Exchange Rate -->
                     <div class="dashboard-card">
-                        <h3>匯率 (臺幣/美元)</h3>
+                        <h3>匯率 (台幣/美元)</h3>
                         <div class="gauge-container">
                             <svg class="gauge" id="exchangeGauge" viewBox="0 0 120 120"></svg>
                         </div>
@@ -830,7 +830,7 @@
                     <div class="exchange-scenario">
                         <!-- Appreciation Scenario -->
                         <div class="scenario-card active" id="appreciationCard" onclick="switchExchangeScenario('appreciation')">
-                            <h4>📈 臺幣升值</h4>
+                            <h4>📈 台幣升值</h4>
                             <p style="color: #64748b; margin-bottom: 15px;">1美元 = 25元 (升值)</p>
                             <div class="effect-box positive">
                                 <span>進口商成本下降</span>
@@ -852,7 +852,7 @@
 
                         <!-- Depreciation Scenario -->
                         <div class="scenario-card" id="depreciationCard" onclick="switchExchangeScenario('depreciation')">
-                            <h4>📉 臺幣貶值</h4>
+                            <h4>📉 台幣貶值</h4>
                             <p style="color: #64748b; margin-bottom: 15px;">1美元 = 35元 (貶值)</p>
                             <div class="effect-box negative">
                                 <span>進口商成本上升</span>
@@ -875,13 +875,13 @@
 
                     <!-- Exchange Rate Slider -->
                     <div class="exchange-slider-container">
-                        <h4>調整匯率 (臺幣/美元)</h4>
+                        <h4>調整匯率 (台幣/美元)</h4>
                         <div class="slider-container">
                             <input type="range" class="slider" id="exchangeRateSlider" min="20" max="40" step="0.5" value="30" oninput="updateExchangeRate()">
                             <div class="slider-value" id="exchangeRateDisplay">30.0</div>
                         </div>
                         <div class="exchange-info">
-                            <strong id="exchangeInterpretation">當前匯率: 1美元 = 30.0臺幣</strong>
+                            <strong id="exchangeInterpretation">當前匯率: 1美元 = 30.0台幣</strong>
                             <p id="exchangeImplication" style="margin-top: 10px; color: #64748b;">調整滑塊以查看不同匯率水平的影響...</p>
                         </div>
                     </div>
@@ -903,7 +903,7 @@
                             </div>
                         </div>
                         <div class="trade-result surplus" id="tradeBalance">
-                            貿易順差: 臺灣出口超過進口，外匯收入增加 📊
+                            貿易順差: 台灣出口超過進口，外匯收入增加 📊
                         </div>
                     </div>
                 </div>
@@ -1282,19 +1282,19 @@
             const interpretation = document.getElementById('exchangeInterpretation');
             const implication = document.getElementById('exchangeImplication');
 
-            interpretation.textContent = `當前匯率: 1美元 = ${rate.toFixed(1)}臺幣`;
+            interpretation.textContent = `當前匯率: 1美元 = ${rate.toFixed(1)}台幣`;
 
             if (rate < 25) {
-                implication.textContent = '臺幣大幅升值 - 出口商面臨極大壓力，進口商受惠最大。';
+                implication.textContent = '台幣大幅升值 - 出口商面臨極大壓力，進口商受惠最大。';
                 switchExchangeScenario('appreciation');
             } else if (rate < 30) {
-                implication.textContent = '臺幣升值 - 出口競爭力下降，進口商成本優勢增加。';
+                implication.textContent = '台幣升值 - 出口競爭力下降，進口商成本優勢增加。';
                 switchExchangeScenario('appreciation');
             } else if (rate < 35) {
-                implication.textContent = '臺幣貶值 - 出口商收入增加，進口商成本上升。';
+                implication.textContent = '台幣貶值 - 出口商收入增加，進口商成本上升。';
                 switchExchangeScenario('depreciation');
             } else {
-                implication.textContent = '臺幣大幅貶值 - 出口商競爭力大幅提升，進口價格明顯上升。';
+                implication.textContent = '台幣大幅貶值 - 出口商競爭力大幅提升，進口價格明顯上升。';
                 switchExchangeScenario('depreciation');
             }
 
@@ -1330,10 +1330,10 @@
             const tradeBalance = document.getElementById('tradeBalance');
             if (balance > 0) {
                 tradeBalance.className = 'trade-result surplus';
-                tradeBalance.textContent = `貿易順差: 臺灣出口超過進口 ${balance}億元，外匯收入增加 📊`;
+                tradeBalance.textContent = `貿易順差: 台灣出口超過進口 ${balance}億元，外匯收入增加 📊`;
             } else {
                 tradeBalance.className = 'trade-result deficit';
-                tradeBalance.textContent = `貿易逆差: 臺灣進口超過出口 ${Math.abs(balance)}億元，外匯支出增加 📊`;
+                tradeBalance.textContent = `貿易逆差: 台灣進口超過出口 ${Math.abs(balance)}億元，外匯支出增加 📊`;
             }
         }
 
