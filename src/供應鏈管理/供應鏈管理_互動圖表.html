@@ -830,7 +830,7 @@
             const wholesalerOrders = [];
             const manufacturerOrders = [];
 
-            // 基於正態分布生成消費者需求
+            // 基於正態分佈生成消費者需求
             for (let i = 0; i < months; i++) {
                 const variation = baseline * (Math.random() * volatility / 50 - volatility / 100);
                 consumerDemand.push(Math.max(0, baseline + variation));

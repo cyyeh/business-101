@@ -341,7 +341,7 @@
                     <select id="researchGoal">
                         <option value="">--請選擇--</option>
                         <option value="explore">探索性（發現需求、理解為什麼）</option>
-                        <option value="describe">描述性（了解市場現狀、規模）</option>
+                        <option value="describe">描述性（瞭解市場現狀、規模）</option>
                         <option value="causal">因果性（驗證假設、測試因果）</option>
                         <option value="optimize">優化性（改進產品、優化體驗）</option>
                     </select>
@@ -486,7 +486,7 @@
                 }
             } else if (goal === 'describe') {
                 if (budget === 'low') {
-                    recommendation = '<strong>推薦方法：</strong><br>• 次級數據分析（政府統計、報告）<br>• 小規模問卷調查（100-200人）<br><br><strong>特點：</strong> 成本最低，快速了解現狀。<br><strong>缺點：</strong> 次級數據可能過時或不完全符合需求。';
+                    recommendation = '<strong>推薦方法：</strong><br>• 次級數據分析（政府統計、報告）<br>• 小規模問卷調查（100-200人）<br><br><strong>特點：</strong> 成本最低，快速瞭解現狀。<br><strong>缺點：</strong> 次級數據可能過時或不完全符合需求。';
                     explanation = '描述性研究需要量化數據。低預算應優先利用現有的次級數據，再補充小規模調查。';
                 } else if (budget === 'medium') {
                     recommendation = '<strong>推薦方法：</strong><br>• 問卷調查（300-800人）<br>• 市場統計分析<br><br><strong>特點：</strong> 合理成本內獲得市場全貌。<br><strong>缺點：</strong> 深度有限。';
@@ -514,7 +514,7 @@
                     recommendation = '<strong>推薦方法：</strong><br>• 定期A/B測試（500-1000人）<br>• 用戶訪談與反饋<br>• 分析工具（Google Analytics等）<br><br><strong>特點：</strong> 持續改進，成果明顯。<br><strong>缺點：</strong> 需要組織支持。';
                     explanation = '中等預算支持常規A/B測試與用戶研究迴圈，驅動產品與體驗的持續優化。';
                 } else {
-                    recommendation = '<strong>推薦方法：</strong><br>• 大規模多變數測試<br>• 實時個性化優化<br>• 機器學習模型<br>• 綜合分析平台<br><br><strong>特點：</strong> 深度、即時、自動化。<br><strong>缺點：</strong> 技術複雜。';
+                    recommendation = '<strong>推薦方法：</strong><br>• 大規模多變數測試<br>• 實時個性化優化<br>• 機器學習模型<br>• 綜合分析平臺<br><br><strong>特點：</strong> 深度、即時、自動化。<br><strong>缺點：</strong> 技術複雜。';
                     explanation = '高預算可建立持續優化系統，運用ML驅動個性化與自動化優化。';
                 }
             }

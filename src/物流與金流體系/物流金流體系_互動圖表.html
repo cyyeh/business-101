@@ -104,7 +104,7 @@
   <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>物流角色</div>
     <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>金流角色</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>平台</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>平臺</div>
     <div class="legend-item"><div class="legend-dot" style="background:#06b6d4"></div>使用者</div>
   </div>
 
@@ -125,9 +125,9 @@
       <div class="flow-node node-payment" onclick="showDetail('acquirer')">收單銀行</div>
     </div>
     <div class="arrow-down">↕ 金流 ↕</div>
-    <!-- Row 2: 平台 -->
+    <!-- Row 2: 平臺 -->
     <div class="flow-row">
-      <div class="flow-node node-platform" onclick="showDetail('platform')">電商平台<br><small>蝦皮/momo</small></div>
+      <div class="flow-node node-platform" onclick="showDetail('platform')">電商平臺<br><small>蝦皮/momo</small></div>
     </div>
     <div class="arrow-down">↕ 物流 ↕</div>
     <!-- Row 3: 物流鏈 -->
@@ -146,7 +146,7 @@
 
   <div class="detail-panel" id="detail-panel">
     <h3>👆 點擊上方任一節點查看說明</h3>
-    <p>每個節點代表物流或金流體系中的一個關鍵角色，點擊即可了解其權責與運作方式。</p>
+    <p>每個節點代表物流或金流體系中的一個關鍵角色，點擊即可瞭解其權責與運作方式。</p>
   </div>
 
   <div class="section-title">情境走一遍：蝦皮買球鞋</div>
@@ -154,15 +154,15 @@
     <div class="step-list">
       <div class="step-item step-payment" onmouseenter="this.classList.add('highlight')" onmouseleave="this.classList.remove('highlight')">
         <div class="step-num">1</div>
-        <div class="step-content"><strong>消費者下單付款</strong><span>選擇信用卡/Line Pay/ATM，款項進入平台信託帳戶（金流啟動）</span></div>
+        <div class="step-content"><strong>消費者下單付款</strong><span>選擇信用卡/Line Pay/ATM，款項進入平臺信託帳戶（金流啟動）</span></div>
       </div>
       <div class="step-item step-both" onmouseenter="this.classList.add('highlight')" onmouseleave="this.classList.remove('highlight')">
         <div class="step-num">2</div>
-        <div class="step-content"><strong>平台通知賣家出貨</strong><span>系統自動派單，賣家收到出貨通知，準備揀貨包裝</span></div>
+        <div class="step-content"><strong>平臺通知賣家出貨</strong><span>系統自動派單，賣家收到出貨通知，準備揀貨包裝</span></div>
       </div>
       <div class="step-item step-logistics" onmouseenter="this.classList.add('highlight')" onmouseleave="this.classList.remove('highlight')">
         <div class="step-num">3</div>
-        <div class="step-content"><strong>賣家交貨給物流</strong><span>貨物交由 3PL 或平台合作物流商（如黑貓），取得追蹤編號</span></div>
+        <div class="step-content"><strong>賣家交貨給物流</strong><span>貨物交由 3PL 或平臺合作物流商（如黑貓），取得追蹤編號</span></div>
       </div>
       <div class="step-item step-logistics" onmouseenter="this.classList.add('highlight')" onmouseleave="this.classList.remove('highlight')">
         <div class="step-num">4</div>
@@ -174,7 +174,7 @@
       </div>
       <div class="step-item step-payment" onmouseenter="this.classList.add('highlight')" onmouseleave="this.classList.remove('highlight')">
         <div class="step-num">6</div>
-        <div class="step-content"><strong>平台撥款給賣家</strong><span>確認收貨後，平台將貨款（扣除手續費）撥入賣家帳戶（金流完成）</span></div>
+        <div class="step-content"><strong>平臺撥款給賣家</strong><span>確認收貨後，平臺將貨款（扣除手續費）撥入賣家帳戶（金流完成）</span></div>
       </div>
     </div>
   </div>
@@ -263,16 +263,16 @@
 <script>
 const details = {
   consumer: { title: '消費者（Buyer/Consumer）', type: '使用者', color: '#06b6d4', desc: '交易的需求發起方，透過線上或線下通路下單購買商品。', responsibilities: ['選擇商品並完成下單', '選擇付款方式（信用卡、電子支付、ATM等）', '確認收貨並完成交易閉環', '有退換貨的權利與義務'] },
-  seller: { title: '賣家 / 品牌商', type: '使用者', color: '#06b6d4', desc: '商品的供應方，負責備貨、包裝並交付物流。', responsibilities: ['管理商品庫存與上架', '接單後揀貨、包裝、出貨', '處理退換貨與售後服務', '與平台及物流商對接'] },
-  platform: { title: '電商平台', type: '平台', color: '#8b5cf6', desc: '連結買賣雙方的數位市集，同時整合物流與金流服務。', responsibilities: ['提供交易撮合環境', '代管買家款項（信託機制）', '整合物流追蹤系統', '制定交易規則與爭議處理機制', '確認收貨後撥款給賣家'] },
+  seller: { title: '賣家 / 品牌商', type: '使用者', color: '#06b6d4', desc: '商品的供應方，負責備貨、包裝並交付物流。', responsibilities: ['管理商品庫存與上架', '接單後揀貨、包裝、出貨', '處理退換貨與售後服務', '與平臺及物流商對接'] },
+  platform: { title: '電商平臺', type: '平臺', color: '#8b5cf6', desc: '連結買賣雙方的數位市集，同時整合物流與金流服務。', responsibilities: ['提供交易撮合環境', '代管買家款項（信託機制）', '整合物流追蹤系統', '制定交易規則與爭議處理機制', '確認收貨後撥款給賣家'] },
   payment_gateway: { title: '第三方支付', type: '金流', color: '#3b82f6', desc: '作為買賣雙方的資金中介，提供多元支付工具整合。如綠界（ECPay）、藍新（NewebPay）。', responsibilities: ['整合信用卡、ATM、超商繳費等多種支付方式', '處理交易授權與請款', '提供交易安全機制（SSL、3D驗證）', '定期對帳並撥款給商家'] },
   issuer: { title: '發卡銀行（Issuer）', type: '金流', color: '#3b82f6', desc: '發行信用卡或金融卡給消費者的金融機構。', responsibilities: ['核發信用卡/金融卡給持卡人', '承擔持卡人的信用風險', '處理消費者的帳單與還款', '提供紅利點數、分期等附加服務'] },
   card_network: { title: '卡組織（Card Network）', type: '金流', color: '#3b82f6', desc: 'Visa、Mastercard、JCB 等國際支付網路，是金流的「高速公路」。', responsibilities: ['建構全球支付清算網路', '制定交易標準與安全規範', '處理發卡行與收單行之間的交易路由', '管理跨境交易的匯率與結算'] },
   acquirer: { title: '收單銀行（Acquirer）', type: '金流', color: '#3b82f6', desc: '與商家簽約的金融機構，負責處理商家端的收款。', responsibilities: ['與商家簽訂收單合約', '處理刷卡交易的授權請求', '將款項結算並撥付給商家', '管理商家的風險審核（如拒付處理）'] },
   warehouse: { title: '倉儲中心', type: '物流', color: '#10b981', desc: '貨物的存放與加工中心，現代倉儲已高度自動化。', responsibilities: ['貨物入庫、存放與庫存管理', '訂單揀貨、分揀與包裝', '提供加值服務（貼標、組合包裝等）', '與WMS系統整合實現即時庫存可視化'] },
-  '3pl': { title: '第三方物流（3PL）', type: '物流', color: '#10b981', desc: '整合運輸、倉儲、配送等功能的外包服務商，如 DHL Supply Chain、嘉里大榮。', responsibilities: ['提供一站式物流外包服務', '管理倉儲與配送網路', '提供逆向物流（退貨處理）', '透過規模經濟降低客戶物流成本'] },
+  '3pl': { title: '第三方物流（3PL）', type: '物流', color: '#10b981', desc: '整合運輸、倉儲、配送等功能的外包服務商，如 DHL Supply Chain、嘉裡大榮。', responsibilities: ['提供一站式物流外包服務', '管理倉儲與配送網路', '提供逆向物流（退貨處理）', '透過規模經濟降低客戶物流成本'] },
   hub: { title: '區域集散站', type: '物流', color: '#10b981', desc: '物流網路中的轉運節點，負責貨物的集中與分流。', responsibilities: ['接收幹線運輸到達的貨物', '依目的地進行分流與轉運', '優化配送路線與載具調度', '作為最後一哩配送的起點'] },
-  lastmile: { title: '最後一哩配送', type: '物流', color: '#10b981', desc: '將貨物從集散站送達消費者手中的最終環節。', responsibilities: ['宅配到府並取得簽收', '管理超商取貨與智慧櫃', '處理配送異常（無人簽收、地址錯誤）', '回傳配送狀態至平台系統'] },
+  lastmile: { title: '最後一哩配送', type: '物流', color: '#10b981', desc: '將貨物從集散站送達消費者手中的最終環節。', responsibilities: ['宅配到府並取得簽收', '管理超商取貨與智慧櫃', '處理配送異常（無人簽收、地址錯誤）', '回傳配送狀態至平臺系統'] },
   exporter: { title: '出口商', type: '使用者', color: '#06b6d4', desc: '國際貿易中的賣方，將商品從本國銷售至海外市場。', responsibilities: ['生產或採購出口商品', '準備出口單據（發票、裝箱單等）', '依合約安排運輸與保險', '向押匯銀行提交單據以取得貨款'] },
   importer: { title: '進口商', type: '使用者', color: '#06b6d4', desc: '國際貿易中的買方，從海外採購商品至本國。', responsibilities: ['與出口商簽訂採購合約', '向銀行申請開立信用狀', '辦理進口報關與繳納關稅', '憑提單至碼頭/機場提貨'] },
   forwarder: { title: '貨運承攬業者', type: '物流', color: '#10b981', desc: '國際物流的「旅行社」，統籌安排跨國運輸的所有環節。', responsibilities: ['規劃最佳運輸路線與方式', '代訂艙位（海運/空運）', '協調各段運輸的銜接', '處理相關保險與文件'] },
@@ -288,9 +288,9 @@ const details = {
 };
 
 const relations = [
-  { title: '消費者 ↔ 電商平台', desc: '消費者在平台瀏覽、下單、付款。平台負責訂單管理、金流代管、售後保障。平台是消費者與賣家的核心橋梁。' },
-  { title: '電商平台 ↔ 賣家', desc: '平台提供流量與交易環境，賣家負責供貨與出貨。平台抽取佣金並控制撥款時機，以確認收貨為觸發條件。' },
-  { title: '平台 ↔ 第三方支付', desc: '平台串接第三方支付以提供多元收付工具。第三方支付處理交易授權、清算，並定期撥款給平台/商家。' },
+  { title: '消費者 ↔ 電商平臺', desc: '消費者在平臺瀏覽、下單、付款。平臺負責訂單管理、金流代管、售後保障。平臺是消費者與賣家的核心橋梁。' },
+  { title: '電商平臺 ↔ 賣家', desc: '平臺提供流量與交易環境，賣家負責供貨與出貨。平臺抽取佣金並控制撥款時機，以確認收貨為觸發條件。' },
+  { title: '平臺 ↔ 第三方支付', desc: '平臺串接第三方支付以提供多元收付工具。第三方支付處理交易授權、清算，並定期撥款給平臺/商家。' },
   { title: '第三方支付 ↔ 發卡銀行/收單銀行', desc: '第三方支付透過收單銀行接入卡組織網路，當消費者刷卡時，交易經發卡行授權、卡組織路由、收單行結算的三方流程。' },
   { title: '賣家 ↔ 3PL物流', desc: '賣家將倉儲、配送外包給3PL。3PL負責從入庫、揀貨、包裝到配送的全鏈路物流執行。' },
   { title: '出口商 ↔ 貨運承攬', desc: '出口商委託貨運承攬安排國際運輸。承攬業者統籌訂艙、報關、保險等，是跨國物流的總協調者。' },
