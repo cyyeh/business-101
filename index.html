@@ -429,6 +429,27 @@
       border-top: 1px solid var(--border);
     }
 
+    /* Inline reference markers (links to in-page #ref-* anchors) */
+    .content-box a[href^="#ref-"] {
+      font-size: 0.75em;
+      vertical-align: super;
+      line-height: 0;
+      text-decoration: none;
+      color: var(--primary-light);
+      padding: 0 0.15em;
+      font-weight: 600;
+    }
+    .content-box a[href^="#ref-"]:hover {
+      text-decoration: underline;
+    }
+    /* Highlight a reference list item when it's the current anchor target */
+    .content-box li:target {
+      background: #fefcbf;
+      border-radius: 4px;
+      padding: 0.15rem 0.4rem;
+      transition: background 0.3s;
+    }
+
     /* Error */
     .error { text-align: center; color: #e53e3e; padding: 2rem; }
 
@@ -1148,8 +1169,15 @@
 
     /* ---- Router ---- */
     function route() {
-      window.scrollTo(0, 0);
       const hash = decodeURIComponent(location.hash.slice(1));
+
+      // In-page anchor (e.g., #ref-fs-1) within currently rendered content —
+      // let the browser's native scroll handle it; do NOT re-render or scroll to top.
+      if (hash && document.getElementById(hash)) {
+        return;
+      }
+
+      window.scrollTo(0, 0);
       if (!hash) { renderHome(); return; }
 
       const allTopics = [...topicSections, ...crossSections];
